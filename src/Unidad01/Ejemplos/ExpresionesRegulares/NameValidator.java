@@ -1,0 +1,45 @@
+
+package Unidad01.Ejemplos.ExpresionesRegulares;
+
+/**
+ *
+ * @author kgv17
+ */
+public class NameValidator {
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
+        // Expresión regular para detectar el formato especificado
+        String regex = "[A-ZÁÉÍÓÚÑa-záéíóúñ0-9]{1,}([ -][A-ZÁÉÍÓÚÑa-záéíóúñ0-9]{1,})?\\s*,\\s*" // apellido1
+                + "[A-ZÁÉÍÓÚÑa-záéíóúñ]{1,}" // nombre
+                + "(\\s*-\\s*" // guion
+                + "([A-ZÁÉÍÓÚÑa-záéíóúñ0-9]{1,}([ -][A-ZÁÉÍÓÚÑa-záéíóúñ0-9]{1,})?\\s*,\\s*" // apellido1N
+                + "[A-ZÁÉÍÓÚÑa-záéíóúñ]{1,}" // NombreN
+                + ")?\\s*)*" // opcional: nombres adicionales
+                + "(?:(\\d)?[A-Z])?$"; // Opcional: dígito en penúltima posición y letra mayúscula al final
+
+
+
+        String[] inputs = {
+            "Gómez Pérez, Juan", 
+            "Pérez, Ana - Pérez, Ana - Pérez, Ana - ApellidoN ApellidoN, NombreN", 
+            "Pérez, Ana - Pérez, Ana - apellido1 apellido2, nombreN", 
+            "Gómez, Juan", 
+            "López García, Juan, Pérez, María", 
+            "Gómez Pérez, Juan,  López García, María", 
+            "gómez Pérez, Juan", 
+            "Gómez Pérez Juan", 
+            "Gómez Pérez,  Juan,  López García,  María", 
+            "López, Juan, Pérez, María", 
+            "Gómez Pérez, Juan, López García, ", 
+            "Gómez, Juan, Pérez García, María"
+        };
+
+        for (String input : inputs) {
+            System.out.println(input.matches(regex) ? "Entrada '" + input + "' --------- VALIDA." : "Entrada '" + input + "' --------- NO VALIDA.");
+        }
+    }
+    
+}
