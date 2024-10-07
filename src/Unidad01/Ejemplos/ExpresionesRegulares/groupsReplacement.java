@@ -14,19 +14,23 @@ public class groupsReplacement {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        String regex = "\\b(\\d{2})(\\d{4})(\\d{4})\\b";
-    
-        String replacementText = "($1) $2$3";
-        String source = "1234567890, 12345, and 9876543210";
+        String phoneNumber = "601479874"; // Número de teléfono original
 
-        Pattern p = Pattern.compile(regex);
-        Matcher m = p.matcher(source);
+        // Patrón para validar el número de teléfono
+        Pattern pattern = Pattern.compile("^(\\d{9})$");
+        Matcher matcher = pattern.matcher(phoneNumber);
 
-        String formattedSource = m.replaceAll(replacementText);
-
-        System.out.println("Text: "+source);
-        System.out.println("Formatted Text: " + formattedSource);
-
+        if (matcher.matches()) {
+            // Formatear el número de teléfono
+            String formattedNumber = formatPhoneNumber(phoneNumber);
+            System.out.println(formattedNumber);
+        } else {
+            System.err.println("Error: El número de teléfono no es válido.");
+        }
     }
-    
+
+    // Método para formatear el número de teléfono
+    private static String formatPhoneNumber(String phoneNumber) {
+        return String.format("(+34) %s", phoneNumber);
+    }
 }
