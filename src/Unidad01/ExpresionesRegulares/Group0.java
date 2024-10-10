@@ -1,5 +1,5 @@
 
-package Unidad01.Ejemplos.ExpresionesRegulares;
+package Unidad01.ExpresionesRegulares;
 
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
