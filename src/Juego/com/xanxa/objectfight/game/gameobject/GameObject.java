@@ -42,7 +42,6 @@ public abstract class GameObject{
         
     }
     
-    
     /**
      * 
      * @param g
@@ -53,9 +52,7 @@ public abstract class GameObject{
         return true;
     }
     
-    public boolean behaviour (){
-        return isAlive();
-    }
+    public boolean behaviour (){ return isAlive(); }
     
     public abstract boolean isAlive ();
     

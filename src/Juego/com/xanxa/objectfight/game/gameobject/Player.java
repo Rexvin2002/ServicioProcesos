@@ -64,7 +64,7 @@ public class Player extends GameObject{
         return color.getAlpha() > 0;//Morirá cuando el gameManager vea que no hay balls.
         
     }
-
+    
     public void updateSpeed(double rightPushed, double leftPushed) {
         
         if (rightPushed > 0){

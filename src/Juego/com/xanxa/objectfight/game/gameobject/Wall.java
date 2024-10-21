@@ -71,7 +71,6 @@ public class Wall extends GameObject {
     public Color getBorderColor() { return this.borderColor; }
     public void setBorderColor(Color borderColor) {  this.borderColor = borderColor;  }
 
-    
     @Override
     public String toString() {
         

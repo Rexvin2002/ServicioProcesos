@@ -184,7 +184,7 @@ public class JFrameFight extends JFrame {
             for (int rowIndex = 0; rowIndex < numRows; rowIndex++) {
                 
                 for (int i = 0, e = 50; i < murosPorFila; i++, e += 50) {
-                    Wall muro = new Wall(e, 100 + (rowIndex * rowHeight), 50, 50, 1, Color.GREEN);
+                    Wall muro = new Wall(e, 100 + (rowIndex * rowHeight), 50, 50, 2, Color.BLUE);
                     muro.setBorderColor(Color.BLACK);
                     manager.addGameObject(muro);
                 }
@@ -197,6 +197,8 @@ public class JFrameFight extends JFrame {
         int playerY = (altura-100);
         
         Player jugador = new Player(playerX, playerY, 50, 50, Color.WHITE);
+        boolean comportamiento = jugador.behaviour();
+        System.out.println(comportamiento);
         manager.addGameObject(jugador);
 
         manager.setGameZone(new Rectangle(this.getX(), this.getY(), this.getWidth(), this.getHeight()));
