@@ -27,17 +27,19 @@ public abstract class GameObject{
      * @param gameObjects
      * @return A list of gameObjects that collides with the actual GameObject
      */
-    public static List<GameObject> collision(GameObject actual, List<GameObject> gameObjects)
-    {
+    public static List<GameObject> collision(GameObject actual, List<GameObject> gameObjects){
+        
         List<GameObject> result = new ArrayList<GameObject>();
-        for (GameObject gameObject : gameObjects)
-        {
-            if (actual != gameObject && actual.collides (gameObject))
-            {
+        for (GameObject gameObject : gameObjects){
+            
+            if (actual != gameObject && actual.collides (gameObject)){
                 result.add(gameObject);
             }
+            
         }
+        
         return result;
+        
     }
     
     
@@ -46,8 +48,7 @@ public abstract class GameObject{
      * @param g
      * @return true if the GameObject still Alive
      */
-    public boolean paint (Graphics g)
-    {
+    public boolean paint (Graphics g){
         col.paintDebug (g);
         return true;
     }

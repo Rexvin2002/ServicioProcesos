@@ -17,15 +17,17 @@ public class Ball extends GameObject{
     private double speedX = -1, speedY = -1;
 
     public Ball(double x, double y, double width, double height, Color color) {
+        
         super(x, y, width, height);
         this.color = color;
+        
     }
+    
     /**
      * 
      * @param g
      * @return 
      */
-    
     @Override
     public boolean paint (Graphics g){
         
@@ -53,6 +55,7 @@ public class Ball extends GameObject{
      */
     @Override
     public boolean behaviour() {
+        
         boolean result = super.behaviour();
         double x = getX();
         double y = getY();
@@ -60,6 +63,7 @@ public class Ball extends GameObject{
         y = y + speedY;
         updatePosition (x, y);
         return result;
+        
     }
     
     /**

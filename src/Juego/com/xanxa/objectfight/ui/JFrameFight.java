@@ -171,17 +171,23 @@ public class JFrameFight extends JFrame {
         if (manager.getGameZone() == null) {
 
             int ballX = (int) ((ancho - 50) / 2);
-            int ballY = (int) ((altura - 50) / 2);
+            int ballY = (int) ((altura - 50) / 1.1);
             Ball bola = new Ball(ballX, ballY, 50, 50, Color.RED);
             bola.setSpeedX(2);
             bola.setSpeedY(2);
             manager.addGameObject(bola);
 
-            for (int i = 0, e = 50; i < 10; i++, e += 50) {
+            int murosPorFila = ancho / 53;
+            int numRows = 8; 
+            int rowHeight = 50; 
+
+            for (int rowIndex = 0; rowIndex < numRows; rowIndex++) {
                 
-                Wall muro = new Wall(e, 100, 50, 50, 1, Color.GREEN);
-                muro.setBorderColor(Color.BLACK);
-                manager.addGameObject(muro);
+                for (int i = 0, e = 50; i < murosPorFila; i++, e += 50) {
+                    Wall muro = new Wall(e, 100 + (rowIndex * rowHeight), 50, 50, 1, Color.GREEN);
+                    muro.setBorderColor(Color.BLACK);
+                    manager.addGameObject(muro);
+                }
                 
             }
 
