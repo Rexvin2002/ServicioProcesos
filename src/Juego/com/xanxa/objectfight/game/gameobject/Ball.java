@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package Juego.com.xanxa.objectfight.game.gameobject;
 
 import Juego.com.xanxa.objectfight.colliders.Collider;
@@ -11,7 +8,7 @@ import java.awt.Rectangle;
 
 /**
  *
- * @author Manuel
+ * @author kgv17
  */
 public class Ball extends GameObject{
     private Color color;
@@ -144,4 +141,5 @@ public class Ball extends GameObject{
     public String toString() {
         return "Ball ["+((int)getX())+", "+((int)getY())+", "+((int)getWidth())+", "+((int)getHeight())+"]";
     }
+    
 }

@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
- */
+
 package Juego.com.xanxa.objectfight.colliders;
 
 import java.awt.Color;
@@ -11,9 +8,10 @@ import java.awt.geom.Point2D;
 
 /**
  *
- * @author Manuel
+ * @author kgv17
  */
 public interface Collider {
+    
     /**
      * 
      * @param collider
@@ -105,4 +103,5 @@ public interface Collider {
     public Point2D getTop ();
     
     public Rectangle getRectangle ();
+    
 }

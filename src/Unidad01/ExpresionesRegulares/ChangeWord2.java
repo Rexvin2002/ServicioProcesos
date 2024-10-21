@@ -11,11 +11,13 @@ import java.util.regex.Pattern;
  * @author kgv17
  */
 public class ChangeWord2 {
+    
     public static void main(String[] args) {
+        
         try {
+            // Configuración de la salida a UTF-8
             System.setOut(new PrintStream(System.out, true, "UTF-8"));
             String text = """
-                          
                           El lobo soplo y soplo pero la casa de madera no se
                           call\u00f3. Entonces pens\u00f3, \u00bfy si en vez de usar mis
                           pulmones uso un palo de madera?. Fue entonces
@@ -32,20 +34,32 @@ public class ChangeWord2 {
             StringBuffer modifiedText = new StringBuffer();
             
             while (matcher.find()) {
+                
                 count++;
+                
                 if (count == 2 || count == 4) {
+                    
                     matcher.appendReplacement(modifiedText, "metal");
+                    
                 } else {
+                    
                     matcher.appendReplacement(modifiedText, matcher.group());
+                    
                 }
+                
             }
+            
             matcher.appendTail(modifiedText);
             
             System.out.println(modifiedText.toString());
             
         } catch (UnsupportedEncodingException e) {
-            System.out.println("\nERROR: "+e.getMessage());
+            
+            System.err.println("\nERROR: "+e.getMessage());
+            
         }
+        
     }
+    
 }
 

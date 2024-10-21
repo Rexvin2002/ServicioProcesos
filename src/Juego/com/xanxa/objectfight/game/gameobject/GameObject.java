@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package Juego.com.xanxa.objectfight.game.gameobject;
 
 import Juego.com.xanxa.objectfight.colliders.Collider;
@@ -15,7 +12,7 @@ import java.util.List;
 
 /**
  *
- * @author Manuel
+ * @author kgv17
  */
 public abstract class GameObject{ 
     protected Collider col;
@@ -55,8 +52,7 @@ public abstract class GameObject{
         return true;
     }
     
-    public boolean behaviour ()
-    {
+    public boolean behaviour (){
         return isAlive();
     }
     
@@ -64,8 +60,7 @@ public abstract class GameObject{
     
     //public abstract checkCollision (Collider collider);
     
-    public boolean collides (GameObject checkCollision)
-    {
+    public boolean collides (GameObject checkCollision){
         //TODO BUG hay que ver porqué el rectangle de ball vale 500 en vez de 212
         //Ball x = 212.0 y = 100.0   checkCollision x = 100 y = 100
         //ball [500, 100, 20, 20] checkCollision --> [100, 100, 120, 130]
@@ -78,51 +73,40 @@ public abstract class GameObject{
         return col;
     }
     
-    public double getX ()
-    {
+    public double getX (){
         return col.getX();
     }
     
-    public double getY ()
-    {
+    public double getY (){
         return col.getY();
     }
-
-  
+    
     public double getWidth() {
         return col.getWidth();
     }
-   
     
-    
-    public double getHeight ()
-    {
+    public double getHeight (){
         return col.getHeight();
     }
     
-    public void updatePosition (double x, double y)
-    {
+    public void updatePosition (double x, double y){
         setX(x);
         setY(y);
     }
     
-    public void setX (double x)
-    {
+    public void setX (double x){
         col.setX(x);
     }
     
-    public void setY (double y)
-    {
+    public void setY (double y){
         col.setY(y);
     }
     
-    public void setWidth (double width)
-    {
+    public void setWidth (double width){
         col.setWidth(width);
     }
     
-    public void setHeight (double height)
-    {
+    public void setHeight (double height){
         col.setHeight(height);
     }
     
@@ -130,8 +114,7 @@ public abstract class GameObject{
      * 
      * @return 
      */
-    public Point2D getLeft ()
-    {
+    public Point2D getLeft (){
         double x = this.getX()-this.getWidth();
         Point2D point = new Point2D.Double(x, getY());
         return point;
@@ -141,8 +124,7 @@ public abstract class GameObject{
      * 
      * @return 
      */
-    public Point2D getRight ()
-    {
+    public Point2D getRight (){
         double x = this.getX()+this.getWidth();
         Point2D point = new Point2D.Double(x, getY());
         return point;
@@ -152,8 +134,7 @@ public abstract class GameObject{
      *
      * @return 
      */
-    public Point2D getBottom ()
-    {
+    public Point2D getBottom (){
         double y = this.getY()+this.getHeight();
         Point2D point = new Point2D.Double(getX(), y);
         return point;
@@ -163,12 +144,10 @@ public abstract class GameObject{
      * 
      * @return 
      */
-    public Point2D getTop ()
-    {
+    public Point2D getTop (){
         double y = this.getY();
         Point2D point = new Point2D.Double(getX(), y);
         return point;
     }
-
     
 }
