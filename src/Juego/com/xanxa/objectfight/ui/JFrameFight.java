@@ -177,13 +177,13 @@ public class JFrameFight extends JFrame {
             bola.setSpeedY(2);
             manager.addGameObject(bola);
 
-            int murosPorFila = ancho / 53;
+            int murosPorFila = ancho / 58;
             int numRows = 8; 
-            int rowHeight = 50; 
+            int rowHeight = 60; 
 
             for (int rowIndex = 0; rowIndex < numRows; rowIndex++) {
                 
-                for (int i = 0, e = 50; i < murosPorFila; i++, e += 50) {
+                for (int i = 0, e = 55; i < murosPorFila; i++, e += 55) {
                     Wall muro = new Wall(e, 100 + (rowIndex * rowHeight), 50, 50, 2, Color.BLUE);
                     muro.setBorderColor(Color.BLACK);
                     manager.addGameObject(muro);
