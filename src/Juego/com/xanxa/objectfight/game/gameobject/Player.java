@@ -69,11 +69,13 @@ public class Player extends GameObject{
         
         if (rightPushed > 0){
             
-            speedX += accelerationX;
+            speedX = 10;
+            // speedX += accelerationX;
             
         }else if (leftPushed > 0){
             
-            speedX -= accelerationX;
+            speedX = -10;
+            // speedX -= accelerationX;
             
         }else{
             
