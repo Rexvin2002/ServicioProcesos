@@ -190,16 +190,14 @@ public class JFrameFight extends JFrame {
                 }
                 
             }
+            
+            int playerX = ((ancho - 50) / 2);
+            int playerY = (altura-100);
+
+            Player jugador = new Player(playerX, playerY, 200, 50, Color.WHITE);
+            manager.addGameObject(jugador);
 
         }
-
-        int playerX = ((ancho - 50) / 2);
-        int playerY = (altura-100);
-        
-        Player jugador = new Player(playerX, playerY, 50, 50, Color.WHITE);
-        boolean comportamiento = jugador.behaviour();
-        System.out.println(comportamiento);
-        manager.addGameObject(jugador);
 
         manager.setGameZone(new Rectangle(this.getX(), this.getY(), this.getWidth(), this.getHeight()));
         panel.setBackground(Color.DARK_GRAY);
