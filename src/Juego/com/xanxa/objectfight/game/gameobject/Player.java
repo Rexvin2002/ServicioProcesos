@@ -3,6 +3,7 @@ package Juego.com.xanxa.objectfight.game.gameobject;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -13,8 +14,8 @@ public class Player extends GameObject{
     Color color;
     Color borderColor;
     double speedX = 0;
-    double accelerationX = 0.1;
-    int lessLife = 50;
+    // double accelerationX = 0.1;
+    int lessLife = 55;
     
     public Player(double x, double y, double width, double height, Color color) {
         
@@ -69,12 +70,12 @@ public class Player extends GameObject{
         
         if (rightPushed > 0){
             
-            speedX = 10;
+            speedX = 5;
             // speedX += accelerationX;
             
         }else if (leftPushed > 0){
             
-            speedX = -10;
+            speedX = -5;
             // speedX -= accelerationX;
             
         }else{
@@ -102,6 +103,14 @@ public class Player extends GameObject{
             
         }
         
+        if(alpha==0){
+            
+            JOptionPane.showMessageDialog(null, "GAME OVER", "GAME OVER", JOptionPane.ERROR_MESSAGE);
+            System.exit(0);
+            
+        }
+        
+        borderColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
         color = new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
         
     }

@@ -17,6 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -24,11 +25,11 @@ import javax.swing.JPanel;
  */
 public class JFrameFight extends JFrame {
 
-    private final double FPMILLIS = 165.0 / 1000.0; //60fps
+    private final double FPMILLIS = 165.0 / 1000.0; //165fps
     private final double TIME_DIFF_STANDARD = 1 / FPMILLIS;//Constant value.
     private long lastUpdateTime = 0;
     private GameManager manager;
-
+    
     public JFrameFight() throws HeadlessException {
 
         super();
@@ -161,10 +162,9 @@ public class JFrameFight extends JFrame {
     }
 
     public void initGameObjects(JPanel panel) {
-        
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int ancho = (int) screenSize.getWidth();
-        int altura = (int) screenSize.getHeight();
+
+        int ancho = (int) this.getWidth();
+        int altura = (int) this.getHeight();
 
         if (manager == null) { manager = new GameManager(); }
 
@@ -184,7 +184,7 @@ public class JFrameFight extends JFrame {
             for (int rowIndex = 0; rowIndex < numRows; rowIndex++) {
                 
                 for (int i = 0, e = 55; i < murosPorFila; i++, e += 55) {
-                    Wall muro = new Wall(e, 100 + (rowIndex * rowHeight), 50, 50, 2, Color.BLUE);
+                    Wall muro = new Wall(e, 100 + (rowIndex * rowHeight), 50, 50, 1, Color.BLUE);
                     muro.setBorderColor(Color.BLACK);
                     manager.addGameObject(muro);
                 }
@@ -194,7 +194,7 @@ public class JFrameFight extends JFrame {
             int playerX = ((ancho - 50) / 2);
             int playerY = (altura-100);
 
-            Player jugador = new Player(playerX, playerY, 200, 50, Color.WHITE);
+            Player jugador = new Player(playerX, playerY, 200, 20, Color.GREEN);
             manager.addGameObject(jugador);
 
         }

@@ -28,7 +28,7 @@ public class GameManager {
 
         super();
         this.gameObjects = new ArrayList<GameObject>();
-        //this.gameZone = gameZone;
+        // this.gameZone = gameZone;
 
     }
 

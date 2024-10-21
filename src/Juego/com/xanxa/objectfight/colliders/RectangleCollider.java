@@ -13,7 +13,6 @@ public class RectangleCollider implements Collider {
 
     private double x, y, width, height;
     private Rectangle collisionRect;
-
     private Color debugColor = Color.RED;
 
     /**

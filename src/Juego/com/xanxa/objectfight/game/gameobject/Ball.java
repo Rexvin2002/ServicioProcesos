@@ -71,7 +71,7 @@ public class Ball extends GameObject{
      * @return true si está dentro del tablero. TODO
      */
     @Override
-    public boolean isAlive () { return alive; }
+    public boolean isAlive () { return this.alive; }
 
     /**
      * Su velocidad cambia a sentido contrario.
