@@ -40,7 +40,7 @@ public class GameManager {
         }
 
     }
-
+    
     public void fixedUpdate() {
 
         boolean isInside = true;
