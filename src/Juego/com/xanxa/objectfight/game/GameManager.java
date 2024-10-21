@@ -25,56 +25,58 @@ public class GameManager {
     double leftPushed = 0;
 
     public GameManager() {
-        
+
         super();
         this.gameObjects = new ArrayList<GameObject>();
         //this.gameZone = gameZone;
-        
+
     }
 
     public void update(Graphics g) {
-        
+
         //Moving
         for (GameObject enemy : gameObjects) {
             enemy.paint(g);
         }
-        
+
     }
 
     public void fixedUpdate() {
-        
+
         boolean isInside = true;
         List<Player> players = new ArrayList<>();
-        
+
         for (int i = gameObjects.size() - 1; i >= 0; i--) {
-            
+
             GameObject actual = gameObjects.get(i);
             actual.behaviour();
             List<GameObject> collisions = GameObject.collision(actual, gameObjects);
             boolean isInsideTmp = solveCollision(actual, collisions);
-            
+
             if (!isInsideTmp) {
                 isInside = isInsideTmp;
             }
-            
+
             if (actual instanceof Player player) {
                 player.updateSpeed(rightPushed, leftPushed);
                 players.add(player);
             }
-            
+
             if (!actual.isAlive()) {
                 //TODO se podría hacer una animación de desaparición.
                 gameObjects.remove(i);
             }
-            
+
         }
 
         if (!isInside && !players.isEmpty()) {
-            
-            for (Player player : players) { player.touched(); }
-            
+
+            for (Player player : players) {
+                player.touched();
+            }
+
         }
-        
+
     }
 
     /**
@@ -85,30 +87,38 @@ public class GameManager {
      */
     private boolean solveCollision(GameObject actual, List<GameObject> collided) {
         boolean inside = true;
-        if (actual instanceof Ball) {
-            Ball ball = (Ball) actual;
+        
+        if (actual instanceof Ball ball) {
+            
             for (GameObject gameObject : collided) {
-                if (gameObject instanceof Wall) {
-                    Wall block = (Wall) gameObject;
-                    block.touched();
-                    ball.goAway(block);
-                } else if (gameObject instanceof Player) {
-                    //TODO se podría hacer que si el player se mueve la velocidad de la pelota cambiase.
-                    Player player = (Player) gameObject;
-                    if (ball.goAway(player)) {
-                        double speedXBall = ball.getSpeedX();
-                        double speedXPlayer = player.getSpeedX();
-                        double speedX = speedXBall + speedXPlayer;
-                        ball.setSpeedX(speedX);
+                
+                switch (gameObject) {
+                    case Wall block -> {
+                        block.touched();
+                        ball.goAway(block);
                     }
+                    case Player player -> {
+                        //TODO se podría hacer que si el player se mueve la velocidad de la pelota cambiase.
+                        if (ball.goAway(player)) {
+                            double speedXBall = ball.getSpeedX();
+                            double speedXPlayer = player.getSpeedX();
+                            double speedX = speedXBall + speedXPlayer;
+                            ball.setSpeedX(speedX);
+                        }
+                    }
+                    default -> {
+                    }
+                    
                 }
+                
             }
+            
             inside = checkBallInside(ball);
 
-        } else if (actual instanceof Wall) {
-            //DO NOTHING
-        }
+        } else if (actual instanceof Wall) { /*DO NOTHING*/ }
+        
         return inside;
+        
     }
 
     /**

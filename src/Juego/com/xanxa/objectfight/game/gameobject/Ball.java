@@ -11,9 +11,9 @@ import java.awt.Rectangle;
  * @author kgv17
  */
 public class Ball extends GameObject{
+    
     private Color color;
     private boolean alive = true;
-    
     private double speedX = -1, speedY = -1;
 
     public Ball(double x, double y, double width, double height, Color color) {
@@ -25,9 +25,10 @@ public class Ball extends GameObject{
      * @param g
      * @return 
      */
+    
     @Override
-    public boolean paint (Graphics g)
-    {
+    public boolean paint (Graphics g){
+        
         Color previousColor = g.getColor();
         g.setColor(color);
         double tmpX = col.getX();//-(col.getWidth()/2);
@@ -43,6 +44,7 @@ public class Ball extends GameObject{
         g.setColor (previousColor);
         super.paint(g);
         return isAlive();
+        
     }
 
     /**
@@ -65,18 +67,15 @@ public class Ball extends GameObject{
      * @return true si está dentro del tablero. TODO
      */
     @Override
-    public boolean isAlive ()
-    {
-        return alive;
-    }
+    public boolean isAlive () { return alive; }
 
     /**
      * Su velocidad cambia a sentido contrario.
      * @param block con lo que se ha chocado.
      * @return true si se ha chocado con arriba.
      */
-    public boolean goAway(GameObject block) 
-    {
+    public boolean goAway(GameObject block) {
+        
         boolean normalCollision = false;
         col.setDebugColor (Color.CYAN);
         double x = this.col.getX();
@@ -85,61 +84,50 @@ public class Ball extends GameObject{
         double height = this.col.getHeight();
         
         Collider blockCollider = block.getCollider();
-        if (blockCollider.collide(getBottom()))
-        {
+        if (blockCollider.collide(getBottom())) {
+            
             //Hemos chocado por la abajo de la pelota.
-            if (speedY > 0)
-            {
+            if (speedY > 0) {
                 speedY = -speedY;
             }
             normalCollision = true;
-        }else if (blockCollider.collide(getTop()))
-        {
+            
+        }else if (blockCollider.collide(getTop())){
+            
             //hemos chocado con arriba de nuestra pelota.
-            if (speedY < 0)
-            {
+            if (speedY < 0){
                 speedY = -speedY;
             }
-        }else if (blockCollider.collide(getLeft()))
-        {
+            
+        }else if (blockCollider.collide(getLeft())){
+            
             //Hemos chocado por la izquierda de la pelota.
-            if (speedX < 0)
-            {
+            if (speedX < 0){
                 speedX = -speedX;
             }
-        }else if (blockCollider.collide(getRight()))
-        {
+            
+        }else if (blockCollider.collide(getRight())){
+            
             //hemos chocado con la derecha de nuestra pelota.
-            if (speedX > 0)
-            {
+            if (speedX > 0){
                 speedX = -speedX;
             }
+            
         }
-        
-        
         
         return normalCollision;
     }
 
-    public double getSpeedX() {
-        return speedX;
-    }
-
-    public void setSpeedX(double speedX) {
-        this.speedX = speedX;
-    }
-
-    public double getSpeedY() {
-        return speedY;
-    }
-
-    public void setSpeedY(double speedY) {
-        this.speedY = speedY;
-    }
+    public double getSpeedX() { return this.speedX; }
+    public void setSpeedX(double speedX) { this.speedX = speedX; }
+    public double getSpeedY() { return this.speedY; }
+    public void setSpeedY(double speedY) { this.speedY = speedY; }
     
     @Override
     public String toString() {
+        
         return "Ball ["+((int)getX())+", "+((int)getY())+", "+((int)getWidth())+", "+((int)getHeight())+"]";
+        
     }
     
 }
