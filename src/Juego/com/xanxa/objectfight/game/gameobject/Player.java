@@ -143,6 +143,7 @@ public class Player extends GameObject {
         } catch (InterruptedException ex) {
             Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
         borderColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
         color = new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
     }
