@@ -27,7 +27,7 @@ public class GameManager {
     public GameManager() {
 
         super();
-        this.gameObjects = new ArrayList<GameObject>();
+        this.gameObjects = new ArrayList<>();
         // this.gameZone = gameZone;
 
     }
@@ -193,4 +193,19 @@ public class GameManager {
         }
     }
 
+    // Método para obtener todos los muros (Walls) en el juego
+    public List<Wall> getWalls() {
+        List<Wall> walls = new ArrayList<>();
+        for (GameObject obj : gameObjects) {
+            if (obj instanceof Wall) {
+                walls.add((Wall) obj);
+            }
+        }
+        return walls;
+    }
+
+    // Método para limpiar todos los objetos de la lista gameObjects
+    public void clearGameObjects() {
+        gameObjects.clear();
+    }
 }

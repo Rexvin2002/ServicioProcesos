@@ -13,6 +13,8 @@ import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
@@ -29,7 +31,25 @@ public class JFrameFight extends JFrame {
     private final double TIME_DIFF_STANDARD = 1 / FPMILLIS;//Constant value.
     private long lastUpdateTime = 0;
     private GameManager manager;
-    
+
+    // NIVEL
+    private int nivel = 0;
+
+    // FILAS COLUMNAS
+    private int alturaFila = 60;
+
+    // JUGADOR
+    private int anchoJugador = 700;
+    private int alturaJugador = 20;
+
+    // BOLA
+    private int tamañoBola = 250;
+
+    // MURO
+    private int anchoMuro = 225;
+    private int alturaMuro = 50;
+    private int anchoMuroTotal = 232;
+
     public JFrameFight() throws HeadlessException {
 
         super();
@@ -40,13 +60,8 @@ public class JFrameFight extends JFrame {
             @Override
             public void paint(Graphics g) {
 
-                super.paint(g); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/OverriddenMethodBody
+                super.paint(g);
 
-                /* TODO BORRAR TEST PARA ALUMNADO.
-                g.setColor(new Color(255,0,0));
-                g.drawOval(position, position, 20, 20);
-                position++;
-                 */
                 initGameObjects(this);
 
                 manager.fixedUpdate();
@@ -65,11 +80,7 @@ public class JFrameFight extends JFrame {
                 long actualTime = System.currentTimeMillis();
                 double timeDiff = actualTime - lastUpdateTime;
                 lastUpdateTime = actualTime;
-                /*
-                            60f --> 1000millis
-                            1f  --> x
-                
-                 */
+
                 if (timeDiff > TIME_DIFF_STANDARD) {
 
                     repaint();
@@ -82,7 +93,7 @@ public class JFrameFight extends JFrame {
 
                         public void run() {
 
-                            super.run(); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/OverriddenMethodBody
+                            super.run();
 
                             try {
 
@@ -154,55 +165,72 @@ public class JFrameFight extends JFrame {
         this.add(panel);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Already there
 
-        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        // this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.setUndecorated(true); // <-- the title bar is removed here
-        //this.setBounds(300, 300, 700, 400);
+        Dimension pantalla = Toolkit.getDefaultToolkit().getScreenSize();
+        this.setBounds(0, 0, pantalla.width, pantalla.height);
         this.setVisible(true);
 
     }
 
     public void initGameObjects(JPanel panel) {
 
-        int ancho = (int) this.getWidth();
-        int altura = (int) this.getHeight();
+        double ancho = this.getWidth();
+        double altura = this.getHeight();
 
-        if (manager == null) { manager = new GameManager(); }
+        if (manager == null) {
+            manager = new GameManager();
+        }
 
-        if (manager.getGameZone() == null) {
+        if (Wall.muros.isEmpty()) {
 
-            int ballX = (int) ((ancho - 50) / 2);
-            int ballY = (int) ((altura - 50) / 1.1);
-            Ball bola = new Ball(ballX, ballY, 50, 50, Color.RED);
-            bola.setSpeedX(2);
-            bola.setSpeedY(2);
+            // NIVEL
+            nivel++;
+
+            anchoJugador -= 100;
+            tamañoBola -= 25;
+            anchoMuro -= 35;
+
+            manager.clearGameObjects(); // Limpiar los objetos actuales
+
+            // Crear una bola en el centro
+            double ballX = (ancho - tamañoBola) / 2;
+            double ballY = (int) ((altura - tamañoBola) / 1.1);
+            Ball bola = new Ball(ballX, ballY, tamañoBola, tamañoBola, Color.RED);
+            bola.setSpeedX(2 + nivel); // Aumenta la velocidad de la bola con cada nivel
+            bola.setSpeedY(2 + nivel);
             manager.addGameObject(bola);
 
-            int murosPorFila = ancho / 58;
-            int numRows = 8; 
-            int rowHeight = 60; 
+            // Crear nuevos muros con mayor cantidad según el nivel
+            double murosPorFila = Math.floor(ancho / anchoMuro); // Número de muros por fila
+            double separacion = (ancho - (murosPorFila * anchoMuro)) / (murosPorFila + 1); // Separación inicial
+
+            // Verificar si se superponen y ajustar el número de muros por fila
+            while (murosPorFila * anchoMuro + (murosPorFila + 1) * separacion > ancho) {
+                murosPorFila--; // Reducir el número de muros por fila
+                separacion = (ancho - (murosPorFila * anchoMuro)) / (murosPorFila + 1); // Recalcular separación
+            }
+
+            int numRows = 1; // Agrega filas de muros en cada nivel
+            int rowHeight = alturaFila;
 
             for (int rowIndex = 0; rowIndex < numRows; rowIndex++) {
-                
-                for (int i = 0, e = 55; i < murosPorFila; i++, e += 55) {
-                    Wall muro = new Wall(e, 100 + (rowIndex * rowHeight), 50, 50, 1, Color.BLUE);
+                for (double i = 0, e = separacion; i < murosPorFila; i++, e += anchoMuro + separacion) {
+                    Wall muro = new Wall(e, 100 + (rowIndex * rowHeight), anchoMuro, alturaMuro, 1, Color.GREEN);
                     muro.setBorderColor(Color.BLACK);
                     manager.addGameObject(muro);
                 }
-                
             }
-            
-            int playerX = ((ancho - 50) / 2);
-            int playerY = (altura-100);
 
-            Player jugador = new Player(playerX, playerY, 200, 20, Color.GREEN);
+            // Crear el jugador
+            double playerX = (ancho - anchoJugador) / 2;
+            double playerY = altura - alturaJugador;
+            Player jugador = new Player(playerX, playerY, anchoJugador, alturaJugador, Color.WHITE);
             manager.addGameObject(jugador);
-
         }
 
         manager.setGameZone(new Rectangle(this.getX(), this.getY(), this.getWidth(), this.getHeight()));
         panel.setBackground(Color.DARK_GRAY);
-
     }
 
 }
-

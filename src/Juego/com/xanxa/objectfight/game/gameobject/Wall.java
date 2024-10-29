@@ -3,6 +3,8 @@ package Juego.com.xanxa.objectfight.game.gameobject;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -14,6 +16,7 @@ public class Wall extends GameObject {
     int maxLives;
     Color color;
     Color borderColor;
+    public static List<Wall> muros = new ArrayList<>();
     
     public Wall(double x, double y, double width, double height, int lives, Color color) {
         
@@ -22,6 +25,7 @@ public class Wall extends GameObject {
         this.maxLives = lives;
         this.color = color;
         this.borderColor  = color;
+        Wall.muros.add(this);
         
     }
 
@@ -55,6 +59,7 @@ public class Wall extends GameObject {
      */
     public void touched() {
         
+        Wall.muros.remove(this);
         lives--;
         int alpha = (int)(255f*(float)lives/(float)maxLives);
         
@@ -65,6 +70,8 @@ public class Wall extends GameObject {
         
         color = new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
         //System.out.println ("Touched "+lives);
+        
+        
         
     }
 

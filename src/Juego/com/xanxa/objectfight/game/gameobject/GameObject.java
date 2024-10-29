@@ -65,12 +65,13 @@ public abstract class GameObject{
         boolean collides = this.col.collide(checkCollision.getCollider());
         
         return collides;
+        
     }
 
     public Collider getCollider() {
         return col;
     }
-    
+
     public double getX (){
         return col.getX();
     }
