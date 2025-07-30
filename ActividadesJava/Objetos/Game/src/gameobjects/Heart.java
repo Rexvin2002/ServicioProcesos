@@ -1,5 +1,8 @@
 package gameobjects;
 
+/**
+ * Kevin Gómez Valderas 2ºDAM
+ */
 import java.awt.Graphics;
 import java.awt.Image;
 import java.util.LinkedList;

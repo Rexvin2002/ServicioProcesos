@@ -1,5 +1,8 @@
 package ui;
 
+/**
+ * Kevin Gómez Valderas 2ºDAM
+ */
 import controllers.Controller;
 import java.io.File;
 import java.io.IOException;
@@ -17,10 +20,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/**
- *
- * @author kgv17
- */
 public class ConsoleMode {
 
     /**
@@ -960,6 +959,7 @@ public class ConsoleMode {
 
     /**
      * Main
+     *
      * @param args
      */
     public static void main(String args[]) {

@@ -1,24 +1,20 @@
 package com.mycompany.createparsedisplay;
 
+/**
+ * Kevin Gómez Valderas 2ºDAM
+ */
 import java.io.FileWriter;
 import java.io.IOException;
 
-/**
- *
- * @author kgv17
- */
 public class CreateFiles {
 
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String[] args) {
         createJSONFile();
         createXMLFile();
         createMoodleFile();
         createCSVFile();
     }
-    
+
     public static void createJSONFile() {
         String jsonContent = "{ \"name\": \"John\", \"age\": 30, \"city\": \"New York\" }";
         createFile("src/main/java/com/mycompany/createparsedisplay/example.json", jsonContent);

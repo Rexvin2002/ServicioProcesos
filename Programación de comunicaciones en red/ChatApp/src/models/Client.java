@@ -1,5 +1,8 @@
 package models;
 
+/**
+ * Kevin Gómez Valderas 2ºDAM
+ */
 import controllers.Controller;
 import java.io.*;
 import java.net.*;
@@ -44,18 +47,24 @@ public class Client {
      * Conectar al servidor
      */
     public void connect() {
-
         try {
-            socket = new Socket(serverIP, port);  // Conectar al servidor
-            out = new PrintWriter(socket.getOutputStream(), true);  // Salida para enviar mensajes
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));  // Entrada para leer mensajes
-            out.println("\n" + username + " se ha unido al chat");  // Enviar nombre de usuario y avatar
+            socket = new Socket(serverIP, port);
+            out = new PrintWriter(socket.getOutputStream(), true);
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+            // Send join message with username and avatar info
+            JSONObject joinMessage = new JSONObject();
+            joinMessage.put("type", "join");
+            joinMessage.put("username", username);
+            joinMessage.put("avatar", avatar);
+            out.println(joinMessage.toString());
 
         } catch (IOException e) {
-            System.err.println("\nError al conectar al servidor: " + e.getMessage());
-            closeResources();  // Cerrar recursos si la conexión falla
+            System.err.println("Error al conectar al servidor: " + e.getMessage());
+            closeResources();
+        } catch (JSONException e) {
+            System.err.println("Error creating join message: " + e.getMessage());
         }
-
     }
 
     public boolean isConnected() {

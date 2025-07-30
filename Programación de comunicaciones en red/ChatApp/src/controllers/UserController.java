@@ -1,9 +1,11 @@
 package controllers;
 
+/**
+ * Kevin Gómez Valderas 2ºDAM
+ */
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -22,16 +24,11 @@ import org.json.JSONObject;
 import ui.ChatApp;
 import ui.MensajeDialog;
 
-/**
- *
- * @author kgv17
- */
 public class UserController {
 
     private Controller CTRLR;
     private ChatApp APP;
     private PanelsController PC;
-
 
     /**
      * Constructor

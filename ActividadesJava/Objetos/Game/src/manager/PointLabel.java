@@ -1,6 +1,8 @@
-
 package manager;
 
+/**
+ * Kevin Gómez Valderas 2ºDAM
+ */
 public class PointLabel {
 
     public String text;

@@ -1,5 +1,8 @@
 package gameobjects;
 
+/**
+ * Kevin Gómez Valderas 2ºDAM
+ */
 import collider.Collider;
 import manager.GameManager;
 import java.awt.BasicStroke;
@@ -20,14 +23,14 @@ public class Ball extends GameObject {
 
     public Ball(double x, double y, double width, double height, Color color, double initialSpeedX, double initialSpeedY) {
 
-        super(x, y, height, width, true); 
+        super(x, y, height, width, true);
         this.initialSpeedX = initialSpeedX;
         this.initialSpeedY = initialSpeedY;
         this.speedX = 0;
         this.speedY = initialSpeedY;
 
     }
-    
+
     @Override
     public boolean paint(Graphics g) {
 
@@ -90,7 +93,7 @@ public class Ball extends GameObject {
         if (blockCollider.collide(getBottom())) {
 
             this.speedY = -Math.abs(this.speedY);
-            
+
             if (block instanceof Player) {
                 normalCollision = true;
             }
@@ -98,7 +101,6 @@ public class Ball extends GameObject {
         } else if (blockCollider.collide(getTop())) {
 
             this.speedY = Math.abs(this.speedY);
-            
 
         } else if (blockCollider.collide(getLeft())) {
 

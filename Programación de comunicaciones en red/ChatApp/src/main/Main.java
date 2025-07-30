@@ -1,5 +1,8 @@
 package main;
 
+/**
+ * Kevin Gómez Valderas 2ºDAM
+ */
 import controllers.Controller;
 import controllers.PanelsController;
 import controllers.UserController;
@@ -9,10 +12,6 @@ import models.Server;
 import ui.ChatApp;
 import ui.ConsoleMode;
 
-/**
- *
- * @author kgv17
- */
 public class Main {
 
     private static String avatarPathSelected;
@@ -21,7 +20,7 @@ public class Main {
     private static final String FILE_ICON_PATH = System.getProperty("user.dir") + Controller.getSeparator() + "img" + Controller.getSeparator() + "userIcon.png";
     private static final String CLIENTS_FOLDER_PATH = System.getProperty("user.dir") + Controller.getSeparator() + "clients";
     private static final String CLIENT_JSON_NAME = "client_data.json";
-    
+
     private static String serverIP;
     private static int port;
     private static Server server = new Server(Main.serverIP, Main.port);
@@ -37,11 +36,8 @@ public class Main {
         uc = app.getUc();
     }
 
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String args[]) {
-        
+
         if (GraphicsEnvironment.isHeadless()) {
             ConsoleMode.runCLI(); // Ejecutar en modo CLI
         } else {
@@ -62,7 +58,7 @@ public class Main {
             });
         }
     }
-    
+
     public static String getAvatarPathSelected() {
         return avatarPathSelected;
     }

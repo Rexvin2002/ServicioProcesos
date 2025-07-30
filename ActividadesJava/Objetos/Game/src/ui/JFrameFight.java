@@ -1,7 +1,9 @@
 package ui;
 
+/**
+ * Kevin Gómez Valderas 2ºDAM
+ */
 import manager.GameManager;
-import ui.GameOverDialog;
 import gameobjects.Ball;
 import gameobjects.Heart;
 import gameobjects.Player;
@@ -100,7 +102,6 @@ public class JFrameFight extends JFrame {
 
         }
 
-        
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         // this.setSize(GameManager.pantalla.width, GameManager.pantalla.height);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -580,7 +581,7 @@ public class JFrameFight extends JFrame {
         this.tamañoBola = 150;
         this.anchoMuro = 225;
         this.puntos = 0;
-        
+
         if (!Wall.muros.isEmpty()) {
             Wall.muros.clear();
         }

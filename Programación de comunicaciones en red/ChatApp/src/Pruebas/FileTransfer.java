@@ -1,8 +1,9 @@
 package Pruebas;
 
+
+
 /**
- *
- * @author kgv17
+ * Kevin Gómez Valderas 2ºDAM
  */
 import java.io.*;
 import java.net.*;
@@ -10,7 +11,7 @@ import java.net.*;
 public class FileTransfer {
 
     private static final int PORT = 5000;
-    private static final String FILE_PATH = "C:\\Users\\kgv17\\OneDrive\\Escritorio\\archivo.txt";
+    private static final String FILE_PATH = "src\\lib\\archivo.txt";
 
     public static void main(String[] args) {
         // Iniciar el servidor en un hilo separado
@@ -35,9 +36,7 @@ public class FileTransfer {
             System.out.println("Server listening on port " + PORT + "...");
 
             while (true) {
-                try (Socket socket = serverSocket.accept(); 
-                        DataInputStream dis = new DataInputStream(socket.getInputStream()); 
-                        FileOutputStream fos = new FileOutputStream(dis.readUTF())) {
+                try (Socket socket = serverSocket.accept(); DataInputStream dis = new DataInputStream(socket.getInputStream()); FileOutputStream fos = new FileOutputStream(dis.readUTF())) {
 
                     System.out.println("Receiving file...");
 

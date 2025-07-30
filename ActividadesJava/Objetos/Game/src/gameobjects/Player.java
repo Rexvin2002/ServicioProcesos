@@ -1,5 +1,8 @@
 package gameobjects;
 
+/**
+ * Kevin Gómez Valderas 2ºDAM
+ */
 import manager.GameManager;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -48,16 +51,20 @@ public class Player extends GameObject {
     }
 
     public void updateSpeed(double rightPushed, double leftPushed) {
-        if (rightPushed > 0) this.speedX = MAX_SPEED;
-        else if (leftPushed > 0) this.speedX = -MAX_SPEED;
-        else this.speedX = 0;
+        if (rightPushed > 0) {
+            this.speedX = MAX_SPEED;
+        } else if (leftPushed > 0) {
+            this.speedX = -MAX_SPEED;
+        } else {
+            this.speedX = 0;
+        }
     }
 
     public void touched() {
         if (!GameManager.stopSound) {
             GameManager.playEffectSound(GameManager.lesslife);
         }
-        
+
         if (!Heart.hearts.isEmpty()) {
             Heart.hearts.remove(Heart.hearts.size() - 1);
         }
@@ -85,7 +92,12 @@ public class Player extends GameObject {
     public String toString() {
         return "Player [" + ((int) getX()) + ", " + ((int) getY()) + ", " + ((int) getWidth()) + ", " + ((int) getHeight()) + "]";
     }
-    
-    public double getSpeedX() { return this.speedX; }
-    public void setSpeedX(double speedX) { this.speedX = speedX; }
+
+    public double getSpeedX() {
+        return this.speedX;
+    }
+
+    public void setSpeedX(double speedX) {
+        this.speedX = speedX;
+    }
 }

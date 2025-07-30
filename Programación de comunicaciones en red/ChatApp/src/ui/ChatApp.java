@@ -1,5 +1,8 @@
 package ui;
 
+/**
+ * Kevin Gómez Valderas 2ºDAM
+ */
 import controllers.Controller;
 import controllers.PanelsController;
 import controllers.UserController;
@@ -15,7 +18,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import javax.accessibility.AccessibleContext;
@@ -34,10 +36,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/**
- *
- * @author kgv17
- */
 public class ChatApp extends javax.swing.JFrame {
 
     private CardLayout cardLayout;

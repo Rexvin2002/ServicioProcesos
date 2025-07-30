@@ -1,5 +1,8 @@
 package manager;
 
+/**
+ * Kevin Gómez Valderas 2ºDAM
+ */
 import gameobjects.Ball;
 import gameobjects.GameObject;
 import gameobjects.Player;
@@ -9,7 +12,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
-import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -36,7 +38,7 @@ public class GameManager {
 
     // PAUSA
     private boolean isPaused = false;
-    
+
     // URLS
     // IMG
     public static String background = "src\\img\\background.jpg";
@@ -315,7 +317,7 @@ public class GameManager {
                 switch (gameObject) {
                     case Wall block -> {
                         if (!GameManager.stopSound) {
-                            
+
                             if (block.breackable) {
                                 GameManager.playEffectSound(GameManager.brickhit);
                                 GameManager.playEffectSound(GameManager.pointsEarned);
@@ -441,7 +443,7 @@ public class GameManager {
         }
 
     }
-    
+
     public void pause() {
         isPaused = true;
     }

@@ -1,5 +1,8 @@
 package models;
 
+/**
+ * Kevin Gómez Valderas 2ºDAM
+ */
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -190,7 +193,7 @@ public class Server {
                     clientWriters.add(out);  // Agregar escritor del cliente a la lista
                 }
             } catch (IOException e) {
-                System.out.println( "Error al agregar escritor del cliente a la lista: " + e.getMessage());
+                System.out.println("Error al agregar escritor del cliente a la lista: " + e.getMessage());
             }
         }
 

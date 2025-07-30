@@ -1,5 +1,8 @@
 package controllers;
 
+/**
+ * Kevin Gómez Valderas 2ºDAM
+ */
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -32,10 +35,6 @@ import org.json.JSONObject;
 import ui.ChatApp;
 import ui.MensajeDialog;
 
-/**
- *
- * @author kgv17
- */
 public class PanelsController {
 
     private Controller ctrlr;
@@ -108,28 +107,28 @@ public class PanelsController {
     }
 
     public void updateServerPanels() {
-        
+
         APP.getjPanelChats().removeAll();  // Limpiar el panel antes de añadir los servidores
 
         for (List<ServerMessage> mensajes : Main.getCurrentUser().getServerList().values()) {
-            
+
             for (ServerMessage msg : mensajes) {
                 APP.getjPanelChats().add(createServerPanel(msg.getMessage()));
             }
-            
+
         }
 
         APP.getjPanelChats().revalidate();
         APP.getjPanelChats().repaint();
-        
+
     }
 
     public void updateServersPanel(String message) {
-        
+
         String[] parts = message.split(": ", 2);
-        
+
         if (parts.length == 2) {
-            
+
             String username = Main.getCurrentUser().getUsername();
             String text = parts[1];
 
@@ -145,7 +144,7 @@ public class PanelsController {
             APP.getjPanelChats().repaint();
 
         }
-        
+
     }
 
     /**
@@ -154,18 +153,18 @@ public class PanelsController {
      * @param textToRemove El texto del panel que se desea eliminar
      */
     public void removeServerPanel(String textToRemove) {
-        
+
         Component[] panels = APP.getjPanelChats().getComponents();
 
         for (Component panel : panels) {
-            
+
             if (panel instanceof JPanel serverPanel) {
-                
+
                 // Buscar el JLabel dentro del panel
                 for (Component comp : serverPanel.getComponents()) {
-                    
+
                     if (comp instanceof JLabel label) {
-                        
+
                         // Obtener el texto del HTML (eliminando las etiquetas)
                         String labelText = label.getText()
                                 .replaceAll("<html>.*?>", "")
@@ -174,24 +173,24 @@ public class PanelsController {
                                 .trim();
 
                         if (labelText.equals(textToRemove.trim())) {
-                            
+
                             APP.getjPanelChats().remove(panel);
                             // También eliminar de la lista de servidores
                             removeFromServerList(textToRemove);
                             APP.getjPanelChats().revalidate();
                             APP.getjPanelChats().repaint();
                             return;
-                            
+
                         }
-                        
+
                     }
-                    
+
                 }
-                
+
             }
-            
+
         }
-        
+
     }
 
     /**
@@ -200,11 +199,11 @@ public class PanelsController {
      * @param serverText El texto del servidor a eliminar
      */
     private void removeFromServerList(String serverText) {
-        
+
         String username = Main.getCurrentUser().getUsername();
-        
+
         if (Main.getCurrentUser().getServerList().containsKey(username)) {
-            
+
             List<ServerMessage> messages = Main.getCurrentUser().getServerList().get(username);
             // Buscar y eliminar el mensaje que coincida
             messages.removeIf(msg -> msg.getMessage().equals(serverText));
@@ -216,9 +215,9 @@ public class PanelsController {
 
             // Guardar los cambios
             APP.saveClientsServers();
-            
+
         }
-        
+
     }
 
     private JPanel createMessagePanel(String username, String text, ImageIcon avatarIcon) {

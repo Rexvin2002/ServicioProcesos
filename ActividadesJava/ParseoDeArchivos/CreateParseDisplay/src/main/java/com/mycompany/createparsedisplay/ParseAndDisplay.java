@@ -1,5 +1,8 @@
 package com.mycompany.createparsedisplay;
 
+/**
+ * Kevin Gómez Valderas 2ºDAM
+ */
 import java.awt.HeadlessException;
 import org.json.JSONObject;
 import org.w3c.dom.*;
@@ -45,14 +48,14 @@ public class ParseAndDisplay {
             jsonFrame.setLocationRelativeTo(null);
             jsonFrame.setSize(400, 200);
             JTextArea textArea = new JTextArea();
-            textArea.setText("Name: " + jsonObject.getString("name") + "\n" +
-                             "Age: " + jsonObject.getInt("age") + "\n" +
-                             "City: " + jsonObject.getString("city"));
+            textArea.setText("Name: " + jsonObject.getString("name") + "\n"
+                    + "Age: " + jsonObject.getInt("age") + "\n"
+                    + "City: " + jsonObject.getString("city"));
             jsonFrame.add(textArea);
             jsonFrame.setVisible(true);
 
         } catch (HeadlessException | IOException | JSONException e) {
-            System.err.println("\nERROR: "+e.getMessage());
+            System.err.println("\nERROR: " + e.getMessage());
         }
     }
 
@@ -84,9 +87,9 @@ public class ParseAndDisplay {
             xmlFrame.setLocationRelativeTo(null);
             xmlFrame.setSize(400, 200);
             JTextArea textArea = new JTextArea();
-            textArea.setText("Name: " + name + "\n" +
-                             "Age: " + age + "\n" +
-                             "City: " + city);
+            textArea.setText("Name: " + name + "\n"
+                    + "Age: " + age + "\n"
+                    + "City: " + city);
             xmlFrame.add(textArea);
             xmlFrame.setVisible(true);
 
@@ -97,7 +100,7 @@ public class ParseAndDisplay {
             doc.getDocumentElement().normalize();
 
         } catch (HeadlessException | IOException | ParserConfigurationException | SAXException e) {
-            System.err.println("\nERROR: "+e.getMessage());
+            System.err.println("\nERROR: " + e.getMessage());
         }
     }
 
@@ -122,7 +125,7 @@ public class ParseAndDisplay {
             moodleFrame.setVisible(true);
 
         } catch (HeadlessException | IOException | ParserConfigurationException | DOMException | SAXException e) {
-            System.err.println("\nERROR: "+e.getMessage());
+            System.err.println("\nERROR: " + e.getMessage());
         }
     }
 
@@ -139,8 +142,8 @@ public class ParseAndDisplay {
                 Matcher matcher = pattern.matcher(line);
                 if (matcher.find()) {
                     csvData.append("Name: ").append(matcher.group(1))
-                           .append(", Age: ").append(matcher.group(2))
-                           .append(", City: ").append(matcher.group(3)).append("\n");
+                            .append(", Age: ").append(matcher.group(2))
+                            .append(", City: ").append(matcher.group(3)).append("\n");
                 }
             }
 
@@ -153,7 +156,7 @@ public class ParseAndDisplay {
             csvFrame.setVisible(true);
 
         } catch (HeadlessException | IOException e) {
-            System.err.println("\nERROR: "+e.getMessage());
+            System.err.println("\nERROR: " + e.getMessage());
         }
     }
 }

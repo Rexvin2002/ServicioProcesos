@@ -1,5 +1,8 @@
 package gameobjects;
 
+/**
+ * Kevin Gómez Valderas 2ºDAM
+ */
 import ui.JFrameFight;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -8,10 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-/**
- *
- * @author kgv17
- */
 public class Wall extends GameObject {
 
     public int lives;

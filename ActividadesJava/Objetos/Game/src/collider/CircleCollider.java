@@ -1,5 +1,8 @@
 package collider;
 
+/**
+ * Kevin Gómez Valderas 2ºDAM
+ */
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -9,6 +12,7 @@ import java.awt.geom.Point2D;
  * Collider para objetos de tipo círculo.
  */
 public class CircleCollider implements Collider {
+
     private double x, y, radius;
     private Color debugColor = Color.RED;
     private Collider colliderDebug;
@@ -29,21 +33,24 @@ public class CircleCollider implements Collider {
             g.drawRect((int) colliderDebug.getX(), (int) colliderDebug.getY(),
                     (int) colliderDebug.getWidth(), (int) colliderDebug.getHeight());
         }
-        */
+         */
     }
 
     @Override
     public boolean collide(Collider collider) {
         // Lógica de detección de colisiones entre círculos
-        if (collider instanceof CircleCollider) {
-            CircleCollider otherCircle = (CircleCollider) collider;
-            double dx = this.x - otherCircle.x;
-            double dy = this.y - otherCircle.y;
-            double distance = Math.sqrt(dx * dx + dy * dy);
-            return distance <= this.radius + otherCircle.radius;
-        } else if (collider instanceof RectangleCollider) {
-            RectangleCollider rect = (RectangleCollider) collider;
-            return rect.collide(this);
+        switch (collider) {
+            case CircleCollider otherCircle -> {
+                double dx = this.x - otherCircle.x;
+                double dy = this.y - otherCircle.y;
+                double distance = Math.sqrt(dx * dx + dy * dy);
+                return distance <= this.radius + otherCircle.radius;
+            }
+            case RectangleCollider rect -> {
+                return rect.collide(this);
+            }
+            default -> {
+            }
         }
         return false;
     }
