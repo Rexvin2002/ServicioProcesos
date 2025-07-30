@@ -1,14 +1,11 @@
 
 package models;
 
-/**
- * Kevin Gómez Valderas 2ºDAM
- */
 import java.io.Serializable;
 
 public class ServerMessage implements Serializable {
-    private final String username;
-    private final String message;
+    private String username;
+    private String message;
 
     public ServerMessage(String username, String message) {
         this.username = username;

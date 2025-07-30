@@ -1,11 +1,12 @@
 package ui;
 
-/**
- * Kevin Gómez Valderas 2ºDAM
- */
 import controllers.Controller;
 import javax.swing.JFrame;
 
+/**
+ *
+ * @author kgv17
+ */
 public class MensajeDialog extends javax.swing.JDialog {
 
     /**
@@ -94,7 +95,7 @@ public class MensajeDialog extends javax.swing.JDialog {
         MensajeDialog mensajeDialog = new MensajeDialog(chatWindow, true);
 
         mensajeDialog.setTitle(titulo);
-
+        
         // Establecer el texto con salto de línea automático usando HTML
         mensajeDialog.jLabelMensaje.setText(
                 "<html><body style='width: fit-content;'>" + mensaje + "</body></html>"

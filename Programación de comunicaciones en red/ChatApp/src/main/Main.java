@@ -36,6 +36,9 @@ public class Main {
         uc = app.getUc();
     }
 
+    /**
+     * @param args the command line arguments
+     */
     public static void main(String args[]) {
 
         if (GraphicsEnvironment.isHeadless()) {
