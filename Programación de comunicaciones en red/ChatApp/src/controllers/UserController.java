@@ -27,16 +27,19 @@ import ui.MensajeDialog;
 
 public class UserController {
 
-    private Controller CTRLR;
-    private ChatApp APP;
-    private PanelsController PC;
+    private final Controller CTRLR;
+    private final ChatApp APP;
+    private final PanelsController PC;
 
     private static final String USER_ICON_URL = "src\\img\\userIcon.png";
     private static final String CLIENTS_FOLDER_PATH = "src\\clients";
     private static final String CLIENT_JSON_NAME = "client_data.json";
     private static final String AVATAR_FILE_NAME = "avatar.jpg";
 
-    private static String avatarPathSelected;
+    private String originalUsername;
+    private String originalPassword;
+    private String originalAvatar;
+    private String avatarPathSelected;
     private static Client currentUser;
 
     /*
@@ -46,9 +49,9 @@ public class UserController {
      */
     public UserController(ChatApp APP) {
 
-        this.CTRLR = new Controller();
+        this.CTRLR = Main.getCTRLR();
         this.APP = APP;
-        this.PC = APP.getPc();
+        this.PC = Main.getPc();
 
     }
 
@@ -483,8 +486,8 @@ public class UserController {
                 for (ServerMessage srv : entry.getValue()) {
 
                     JSONObject messageJson = new JSONObject();
-                    messageJson.put("username", srv.getUsername());
-                    messageJson.put("servers", srv.getMessage());
+                    messageJson.put("username", srv.getUSERNAME());
+                    messageJson.put("servers", srv.getMESSAGE());
                     serverArray.put(messageJson);
 
                 }
@@ -561,32 +564,20 @@ public class UserController {
         return CTRLR;
     }
 
-    public void setCTRLR(Controller CTRLR) {
-        this.CTRLR = CTRLR;
-    }
-
     public ChatApp getAPP() {
         return APP;
-    }
-
-    public void setAPP(ChatApp APP) {
-        this.APP = APP;
     }
 
     public PanelsController getPC() {
         return PC;
     }
 
-    public void setPC(PanelsController PC) {
-        this.PC = PC;
-    }
-
-    public static String getAvatarPathSelected() {
+    public String getAvatarPathSelected() {
         return avatarPathSelected;
     }
 
-    public static void setAvatarPathSelected(String avatarPathSelected) {
-        UserController.avatarPathSelected = avatarPathSelected;
+    public void setAvatarPathSelected(String avatarPathSelected) {
+        this.avatarPathSelected = avatarPathSelected;
     }
 
     public static Client getCurrentUser() {
@@ -595,6 +586,30 @@ public class UserController {
 
     public static void setCurrentUser(Client currentUser) {
         UserController.currentUser = currentUser;
+    }
+
+    public String getOriginalUsername() {
+        return originalUsername;
+    }
+
+    public void setOriginalUsername(String originalUsername) {
+        this.originalUsername = originalUsername;
+    }
+
+    public String getOriginalPassword() {
+        return originalPassword;
+    }
+
+    public void setOriginalPassword(String originalPassword) {
+        this.originalPassword = originalPassword;
+    }
+
+    public String getOriginalAvatar() {
+        return originalAvatar;
+    }
+
+    public void setOriginalAvatar(String originalAvatar) {
+        this.originalAvatar = originalAvatar;
     }
 
     /*

@@ -37,8 +37,9 @@ import ui.MensajeDialog;
 
 public class PanelsController {
 
-    private Controller ctrlr;
-    private ChatApp APP;
+    private final Controller CTRLR;
+    private final ChatApp APP;
+    private final UserController UC;
 
     /*
      * -----------------------------------------------------------------------
@@ -47,8 +48,9 @@ public class PanelsController {
      */
     public PanelsController(ChatApp APP) {
 
-        this.ctrlr = new Controller();
+        this.CTRLR = Main.getCTRLR();
         this.APP = APP;
+        this.UC = Main.getUc();
 
     }
 
@@ -92,17 +94,17 @@ public class PanelsController {
 
                         Main.getServer().connect(selectedIP, selectedPort);
 
-                        UserController.getCurrentUser().setServerIP(selectedIP);
-                        UserController.getCurrentUser().setPort(selectedPort);
-                        UserController.getCurrentUser().connect();
+                        UC.getCurrentUser().setServerIP(selectedIP);
+                        UC.getCurrentUser().setPort(selectedPort);
+                        UC.getCurrentUser().connect();
                         new Thread(() -> showMessagesOnServer()).start();  // Escuchar mensajes en un hilo separado
 
-                        String connectionMsg = UserController.getCurrentUser().isConnected()
-                                ? UserController.getCurrentUser().getUsername() + ": Conectado a " + selectedIP + ":" + selectedPort
-                                : UserController.getCurrentUser().getUsername() + ": Error al conectar a " + selectedIP + ":" + selectedPort;
+                        String connectionMsg = UC.getCurrentUser().isConnected()
+                                ? UC.getCurrentUser().getUsername() + ": Conectado a " + selectedIP + ":" + selectedPort
+                                : UC.getCurrentUser().getUsername() + ": Error al conectar a " + selectedIP + ":" + selectedPort;
 
                         // Enviar mensaje al servidor
-                        UserController.getCurrentUser().sendMessage(connectionMsg);
+                        UC.getCurrentUser().sendMessage(connectionMsg);
 
                         APP.getjTextFieldMensaje().setText("");
 
@@ -110,7 +112,7 @@ public class PanelsController {
 
                         MensajeDialog.showMessageDialog(APP, "Conexión establecida", "Información");
 
-                        if (UserController.getCurrentUser().isConnected()) {
+                        if (UC.getCurrentUser().isConnected()) {
                             APP.getRootPane().setDefaultButton(APP.getjButtonEnviar());
                             APP.cambiarLayout("cardChat");
                         }
@@ -135,10 +137,10 @@ public class PanelsController {
 
         APP.getjPanelServidores().removeAll();  // Limpiar el panel antes de añadir los servidores
 
-        for (List<ServerMessage> mensajes : UserController.getCurrentUser().getServerList().values()) {
+        for (List<ServerMessage> mensajes : UC.getCurrentUser().getServerList().values()) {
 
             for (ServerMessage msg : mensajes) {
-                APP.getjPanelServidores().add(createServerPanel(msg.getMessage()));
+                APP.getjPanelServidores().add(createServerPanel(msg.getMESSAGE()));
             }
 
         }
@@ -154,12 +156,12 @@ public class PanelsController {
 
         if (parts.length == 2) {
 
-            String username = UserController.getCurrentUser().getUsername();
+            String username = UC.getCurrentUser().getUsername();
             String text = parts[1];
 
             // Si no existe una lista para el cliente, crear una nueva
-            UserController.getCurrentUser().getServerList().putIfAbsent(username, new ArrayList<>());
-            UserController.getCurrentUser().getServerList().get(username).add(new ServerMessage(username, text));
+            UC.getCurrentUser().getServerList().putIfAbsent(username, new ArrayList<>());
+            UC.getCurrentUser().getServerList().get(username).add(new ServerMessage(username, text));
 
             APP.saveClientsServers();
 
@@ -215,17 +217,17 @@ public class PanelsController {
 
     private void removeFromServerList(String serverText) {
 
-        String username = UserController.getCurrentUser().getUsername();
+        String username = UC.getCurrentUser().getUsername();
 
-        if (UserController.getCurrentUser().getServerList().containsKey(username)) {
+        if (UC.getCurrentUser().getServerList().containsKey(username)) {
 
-            List<ServerMessage> messages = UserController.getCurrentUser().getServerList().get(username);
+            List<ServerMessage> messages = UC.getCurrentUser().getServerList().get(username);
             // Buscar y eliminar el mensaje que coincida
-            messages.removeIf(msg -> msg.getMessage().equals(serverText));
+            messages.removeIf(msg -> msg.getMESSAGE().equals(serverText));
 
             // Si la lista queda vacía, eliminar la entrada del mapa
             if (messages.isEmpty()) {
-                UserController.getCurrentUser().getServerList().remove(username);
+                UC.getCurrentUser().getServerList().remove(username);
             }
 
             // Guardar los cambios
@@ -377,7 +379,7 @@ public class PanelsController {
                 String fileData = fileObj.getString("data");
 
                 // Guardar el archivo en la carpeta del cliente para descarga posterior
-                String saveDir = UserController.getCurrentUser().getClientFolderPath() + "/" + "downloads";
+                String saveDir = UC.getCurrentUser().getClientFolderPath() + "/" + "downloads";
 
                 // Crear directorio si no existe
                 File dir = new File(saveDir);
@@ -413,9 +415,9 @@ public class PanelsController {
                         ImageIcon avatarIcon;
 
                         // Si el remitente es el usuario actual, usar su avatar
-                        if (sender.equals(UserController.getCurrentUser().getUsername())) {
+                        if (sender.equals(UC.getCurrentUser().getUsername())) {
 
-                            Image avatarImage = ImageIO.read(new File(UserController.getCurrentUser().getAvatar()));
+                            Image avatarImage = ImageIO.read(new File(UC.getCurrentUser().getAvatar()));
                             avatarImage = avatarImage.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
                             avatarIcon = new ImageIcon(avatarImage);
 
@@ -575,7 +577,7 @@ public class PanelsController {
 
             String message;
 
-            while ((message = UserController.getCurrentUser().getIn().readLine()) != null) {  // Leer línea a línea
+            while ((message = UC.getCurrentUser().getIn().readLine()) != null) {  // Leer línea a línea
 
                 System.out.println("Servidor: " + message);  // Mostrar mensajes del servidor
 
@@ -591,7 +593,7 @@ public class PanelsController {
             System.err.println("Ocurrió un error inesperado. Intente nuevamente más tarde: " + e.getMessage());
 
         } finally {
-            UserController.getCurrentUser().closeResources();  // Asegurar el cierre de la conexión
+            UC.getCurrentUser().closeResources();  // Asegurar el cierre de la conexión
 
         }
 
@@ -602,8 +604,8 @@ public class PanelsController {
         try {
 
             // Si es el usuario actual
-            if (username.equals(UserController.getCurrentUser().getUsername())) {
-                return loadAvatarIcon(UserController.getCurrentUser().getAvatar());
+            if (username.equals(UC.getCurrentUser().getUsername())) {
+                return loadAvatarIcon(UC.getCurrentUser().getAvatar());
             }
 
             // Para otros usuarios
@@ -680,20 +682,16 @@ public class PanelsController {
      * GETTERS Y SETTERS
      * -----------------------------------------------------------------------
      */
-    public Controller getCtrlr() {
-        return ctrlr;
-    }
-
-    public void setCtrlr(Controller ctrlr) {
-        this.ctrlr = ctrlr;
+    public Controller getCTRLR() {
+        return CTRLR;
     }
 
     public ChatApp getAPP() {
         return APP;
     }
 
-    public void setAPP(ChatApp APP) {
-        this.APP = APP;
+    public UserController getUC() {
+        return UC;
     }
 
     /*
@@ -703,7 +701,7 @@ public class PanelsController {
      */
     @Override
     public String toString() {
-        return "PanelsController{" + "ctrlr=" + ctrlr + ", APP=" + APP + '}';
+        return "PanelsController{" + "ctrlr=" + CTRLR + ", APP=" + APP + '}';
     }
 
     /*
@@ -714,7 +712,7 @@ public class PanelsController {
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 71 * hash + Objects.hashCode(this.ctrlr);
+        hash = 71 * hash + Objects.hashCode(this.CTRLR);
         hash = 71 * hash + Objects.hashCode(this.APP);
         return hash;
     }
@@ -736,7 +734,7 @@ public class PanelsController {
             return false;
         }
         final PanelsController other = (PanelsController) obj;
-        if (!Objects.equals(this.ctrlr, other.ctrlr)) {
+        if (!Objects.equals(this.CTRLR, other.CTRLR)) {
             return false;
         }
         return Objects.equals(this.APP, other.APP);

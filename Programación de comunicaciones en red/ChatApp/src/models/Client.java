@@ -15,11 +15,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import main.Main;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Client {
+
+    private final UserController UC;
 
     private String serverIP;
     private int port;
@@ -27,12 +30,13 @@ public class Client {
 
     private Socket socket;
     private PrintWriter out;
-    public BufferedReader in;
+    private BufferedReader in;
 
-    private String clientFolderPath;
     private String username;
-    private String avatar;
     private char[] passwd;
+    private String avatar;
+    private String clientFolderPath;
+
 
     /*
      * -----------------------------------------------------------------------
@@ -41,10 +45,12 @@ public class Client {
      */
     public Client(String username, char[] passwd, String avatar) {
 
+        this.UC = Main.getUc();
+
         this.username = username;
-        this.avatar = avatar;
         this.passwd = passwd;
-        this.clientFolderPath = UserController.getCLIENTS_FOLDER_PATH() + File.separator + username;
+        this.avatar = avatar;
+        this.clientFolderPath = UserController.getCLIENTS_FOLDER_PATH() + "\\" + username;
 
     }
 
@@ -109,7 +115,7 @@ public class Client {
         // Guardar datos del cliente
         System.out.println("⌛ Guardando datos del cliente...");
         client.saveClientData();
-        File clientDataFile = new File(client.getClientFolderPath() + File.separator + UserController.getCLIENT_JSON_NAME());
+        File clientDataFile = new File(client.getClientFolderPath() + "\\" + UserController.getCLIENT_JSON_NAME());
 
         if (clientDataFile.exists()) {
             System.out.println("✅ Datos del cliente guardados exitosamente");
@@ -273,8 +279,8 @@ public class Client {
                 for (ServerMessage srv : entry.getValue()) {
 
                     JSONObject mensajeJson = new JSONObject();
-                    mensajeJson.put("username", srv.getUsername());
-                    mensajeJson.put("servers", srv.getMessage());
+                    mensajeJson.put("username", srv.getUSERNAME());
+                    mensajeJson.put("servers", srv.getMESSAGE());
                     serversArray.put(mensajeJson);
 
                 }
@@ -379,7 +385,7 @@ public class Client {
 
     public void sendMessage(String messageToSend) {
 
-        if (UserController.getCurrentUser() != null && messageToSend != null && !messageToSend.isEmpty()) {
+        if (UC.getCurrentUser() != null && messageToSend != null && !messageToSend.isEmpty()) {
 
             if (out != null) {
                 out.println(messageToSend);  // Enviar mensaje al servidor
@@ -473,12 +479,8 @@ public class Client {
      * GETTERS Y SETTERS
      * -----------------------------------------------------------------------
      */
-    public String getClientFolderPath() {
-        return clientFolderPath;
-    }
-
-    public void setClientFolderPath(String username) {
-        this.clientFolderPath = UserController.getCLIENTS_FOLDER_PATH() + "/" + username;
+    public UserController getUC() {
+        return UC;
     }
 
     public String getServerIP() {
@@ -537,6 +539,18 @@ public class Client {
         this.username = username;
     }
 
+    public char[] getPasswd() {
+        return passwd;
+    }
+
+    public String getPasswdAsString() {
+        return new String(passwd);
+    }
+
+    public void setPasswd(char[] passwd) {
+        this.passwd = passwd;
+    }
+
     public String getAvatar() {
         return avatar;
     }
@@ -545,16 +559,12 @@ public class Client {
         this.avatar = avatar;
     }
 
-    public char[] getPasswd() {
-        return passwd;
+    public String getClientFolderPath() {
+        return clientFolderPath;
     }
 
-    public void setPasswd(char[] passwd) {
-        this.passwd = passwd;
-    }
-
-    public String getPasswdAsString() {
-        return new String(passwd);
+    public void setClientFolderPath(String username) {
+        this.clientFolderPath = UserController.getCLIENTS_FOLDER_PATH() + "/" + username;
     }
 
     /*
@@ -623,6 +633,10 @@ public class Client {
             return false;
         }
         return Arrays.equals(this.passwd, other.passwd);
+    }
+
+    private String String(char[] passwd) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
 }

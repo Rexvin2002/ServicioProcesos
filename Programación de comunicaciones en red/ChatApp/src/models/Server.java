@@ -39,9 +39,6 @@ public class Server {
         private PrintWriter out;
         private BufferedReader in;
 
-        /**
-         * @param socket
-         */
         public ClientHandler(Socket socket) {
 
             this.clientSocket = socket;
@@ -57,6 +54,7 @@ public class Server {
 
             } catch (IOException e) {
                 System.err.println("Error al agregar escritor del cliente a la lista: " + e.getMessage());
+
             }
 
         }
@@ -101,11 +99,6 @@ public class Server {
 
         }
 
-        /**
-         * Recibir un archivo del cliente
-         *
-         * @param clientSocket
-         */
         private void receiveFile(Socket clientSocket) {
 
             try (DataInputStream dataInputStream = new DataInputStream(clientSocket.getInputStream())) {
@@ -172,14 +165,17 @@ public class Server {
 
         // Esperar un poco para que el servidor se inicie
         try {
+
             Thread.sleep(1000);
 
         } catch (InterruptedException e) {
             System.err.println("Error: " + e.getMessage());
+
         }
 
         // Verificar si el servidor está funcionando
         if (server.serverSocket != null && !server.serverSocket.isClosed()) {
+
             System.out.println("Servidor funcionando correctamente");
 
         } else {
@@ -188,10 +184,12 @@ public class Server {
 
         // Mantener el programa en ejecución por un tiempo
         try {
+
             Thread.sleep(5000);
 
         } catch (InterruptedException e) {
             System.err.println("Error: " + e.getMessage());
+
         }
 
         // Cerrar el servidor

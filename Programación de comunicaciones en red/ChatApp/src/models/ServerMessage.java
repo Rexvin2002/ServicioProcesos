@@ -7,8 +7,8 @@ import java.io.Serializable;
 
 public class ServerMessage implements Serializable {
 
-    private final String username;
-    private final String message;
+    private final String USERNAME;
+    private final String MESSAGE;
 
     /*
      * -----------------------------------------------------------------------
@@ -16,8 +16,8 @@ public class ServerMessage implements Serializable {
      * -----------------------------------------------------------------------
      */
     public ServerMessage(String username, String message) {
-        this.username = username;
-        this.message = message;
+        this.USERNAME = username;
+        this.MESSAGE = message;
     }
 
     /*
@@ -25,12 +25,12 @@ public class ServerMessage implements Serializable {
      * GETTERS Y SETTERS
      * -----------------------------------------------------------------------
      */
-    public String getUsername() {
-        return username;
+    public String getUSERNAME() {
+        return USERNAME;
     }
 
-    public String getMessage() {
-        return message;
+    public String getMESSAGE() {
+        return MESSAGE;
     }
 
 }

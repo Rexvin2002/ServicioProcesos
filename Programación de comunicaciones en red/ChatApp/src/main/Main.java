@@ -13,13 +13,13 @@ import ui.ConsoleMode;
 
 public class Main {
 
+    private static final Controller CTRLR = new Controller();
+    private static UserController uc;
+    private static PanelsController pc;
+
     private static String serverIP;
     private static int port;
     private static Server server = new Server(Main.serverIP, Main.port);
-
-    private static Controller ctrlr;
-    private static PanelsController pc;
-    private static UserController uc;
 
     /*
      * -----------------------------------------------------------------------
@@ -28,9 +28,8 @@ public class Main {
      */
     public Main(ChatApp app) {
 
-        ctrlr = new Controller();
-        pc = app.getPc();
-        uc = app.getUc();
+        Main.uc = new UserController(app);
+        Main.pc = new PanelsController(app);
 
     }
 
@@ -76,6 +75,26 @@ public class Main {
      * GETTERS Y SETTERS
      * -----------------------------------------------------------------------
      */
+    public static Controller getCTRLR() {
+        return CTRLR;
+    }
+
+    public static UserController getUc() {
+        return uc;
+    }
+
+    public static void setUc(UserController uc) {
+        Main.uc = uc;
+    }
+
+    public static PanelsController getPc() {
+        return pc;
+    }
+
+    public static void setPc(PanelsController pc) {
+        Main.pc = pc;
+    }
+
     public static String getServerIP() {
         return serverIP;
     }
@@ -98,30 +117,6 @@ public class Main {
 
     public static void setServer(Server server) {
         Main.server = server;
-    }
-
-    public static Controller getCtrlr() {
-        return ctrlr;
-    }
-
-    public static void setCtrlr(Controller ctrlr) {
-        Main.ctrlr = ctrlr;
-    }
-
-    public static PanelsController getPc() {
-        return pc;
-    }
-
-    public static void setPc(PanelsController pc) {
-        Main.pc = pc;
-    }
-
-    public static UserController getUc() {
-        return uc;
-    }
-
-    public static void setUc(UserController uc) {
-        Main.uc = uc;
     }
 
 }
