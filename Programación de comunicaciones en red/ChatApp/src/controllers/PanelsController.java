@@ -20,6 +20,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Objects;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -28,7 +29,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.SwingUtilities;
 import main.Main;
-import models.Client;
 import models.ServerMessage;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,12 +40,25 @@ public class PanelsController {
     private Controller ctrlr;
     private ChatApp APP;
 
+    /*
+     * -----------------------------------------------------------------------
+     * CONSTRUCTOR
+     * -----------------------------------------------------------------------
+     */
     public PanelsController(ChatApp APP) {
+
         this.ctrlr = new Controller();
         this.APP = APP;
+
     }
 
+    /*
+     * -----------------------------------------------------------------------
+     * MÉTODOS
+     * -----------------------------------------------------------------------
+     */
     public JPanel createServerPanel(String text) {
+
         JPanel messagePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         messagePanel.setBackground(new Color(204, 204, 204));
 
@@ -54,6 +67,7 @@ public class PanelsController {
                 + text.replace("\\n", "<br>")
                 + "</div></html>"
         );
+
         messageLabel.setFont(new Font("Arial", Font.PLAIN, 12));
         messageLabel.setForeground(Color.white);
         messageLabel.setOpaque(true);
@@ -63,27 +77,32 @@ public class PanelsController {
         messagePanel.setMaximumSize(new Dimension(600, 50));
 
         messageLabel.addMouseListener(new MouseAdapter() {
+
             @Override
             public void mouseClicked(MouseEvent e) {
+
                 String[] parts = text.split(":");
+
                 if (parts.length == 2) {
+
                     try {
+
                         String selectedIP = parts[0].trim();
                         int selectedPort = Integer.parseInt(parts[1].trim());
 
                         Main.getServer().connect(selectedIP, selectedPort);
 
-                        Main.getCurrentUser().setServerIP(selectedIP);
-                        Main.getCurrentUser().setPort(selectedPort);
-                        Main.getCurrentUser().connect();
+                        UserController.getCurrentUser().setServerIP(selectedIP);
+                        UserController.getCurrentUser().setPort(selectedPort);
+                        UserController.getCurrentUser().connect();
                         new Thread(() -> showMessagesOnServer()).start();  // Escuchar mensajes en un hilo separado
 
-                        String connectionMsg = Main.getCurrentUser().isConnected()
-                                ? Main.getCurrentUser().getUsername() + ": Conectado a " + selectedIP + ":" + selectedPort
-                                : Main.getCurrentUser().getUsername() + ": Error al conectar a " + selectedIP + ":" + selectedPort;
+                        String connectionMsg = UserController.getCurrentUser().isConnected()
+                                ? UserController.getCurrentUser().getUsername() + ": Conectado a " + selectedIP + ":" + selectedPort
+                                : UserController.getCurrentUser().getUsername() + ": Error al conectar a " + selectedIP + ":" + selectedPort;
 
                         // Enviar mensaje al servidor
-                        Main.getCurrentUser().sendMessage(connectionMsg);
+                        UserController.getCurrentUser().sendMessage(connectionMsg);
 
                         APP.getjTextFieldMensaje().setText("");
 
@@ -91,35 +110,41 @@ public class PanelsController {
 
                         MensajeDialog.showMessageDialog(APP, "Conexión establecida", "Información");
 
-                        if (Main.getCurrentUser().isConnected()) {
+                        if (UserController.getCurrentUser().isConnected()) {
                             APP.getRootPane().setDefaultButton(APP.getjButtonEnviar());
                             APP.cambiarLayout("cardChat");
                         }
+
                     } catch (NumberFormatException ex) {
                         updateChatPanel("Sistema: Puerto inválido. No es un número.");
+
                     }
+
                 }
+
             }
+
         });
 
         messagePanel.add(messageLabel);
         return messagePanel;
+
     }
 
     public void updateServerPanels() {
 
-        APP.getjPanelChats().removeAll();  // Limpiar el panel antes de añadir los servidores
+        APP.getjPanelServidores().removeAll();  // Limpiar el panel antes de añadir los servidores
 
-        for (List<ServerMessage> mensajes : Main.getCurrentUser().getServerList().values()) {
+        for (List<ServerMessage> mensajes : UserController.getCurrentUser().getServerList().values()) {
 
             for (ServerMessage msg : mensajes) {
-                APP.getjPanelChats().add(createServerPanel(msg.getMessage()));
+                APP.getjPanelServidores().add(createServerPanel(msg.getMessage()));
             }
 
         }
 
-        APP.getjPanelChats().revalidate();
-        APP.getjPanelChats().repaint();
+        APP.getjPanelServidores().revalidate();
+        APP.getjPanelServidores().repaint();
 
     }
 
@@ -129,32 +154,27 @@ public class PanelsController {
 
         if (parts.length == 2) {
 
-            String username = Main.getCurrentUser().getUsername();
+            String username = UserController.getCurrentUser().getUsername();
             String text = parts[1];
 
             // Si no existe una lista para el cliente, crear una nueva
-            Main.getCurrentUser().getServerList().putIfAbsent(username, new ArrayList<>());
-            Main.getCurrentUser().getServerList().get(username).add(new ServerMessage(username, text));
+            UserController.getCurrentUser().getServerList().putIfAbsent(username, new ArrayList<>());
+            UserController.getCurrentUser().getServerList().get(username).add(new ServerMessage(username, text));
 
             APP.saveClientsServers();
 
             JPanel messagePanel = createServerPanel(text);
-            APP.getjPanelChats().add(messagePanel);
-            APP.getjPanelChats().revalidate();
-            APP.getjPanelChats().repaint();
+            APP.getjPanelServidores().add(messagePanel);
+            APP.getjPanelServidores().revalidate();
+            APP.getjPanelServidores().repaint();
 
         }
 
     }
 
-    /**
-     * Elimina un panel de servidor específico basado en el texto que contiene
-     *
-     * @param textToRemove El texto del panel que se desea eliminar
-     */
     public void removeServerPanel(String textToRemove) {
 
-        Component[] panels = APP.getjPanelChats().getComponents();
+        Component[] panels = APP.getjPanelServidores().getComponents();
 
         for (Component panel : panels) {
 
@@ -174,11 +194,11 @@ public class PanelsController {
 
                         if (labelText.equals(textToRemove.trim())) {
 
-                            APP.getjPanelChats().remove(panel);
+                            APP.getjPanelServidores().remove(panel);
                             // También eliminar de la lista de servidores
                             removeFromServerList(textToRemove);
-                            APP.getjPanelChats().revalidate();
-                            APP.getjPanelChats().repaint();
+                            APP.getjPanelServidores().revalidate();
+                            APP.getjPanelServidores().repaint();
                             return;
 
                         }
@@ -193,24 +213,19 @@ public class PanelsController {
 
     }
 
-    /**
-     * Elimina un servidor de la lista de servidores del usuario actual
-     *
-     * @param serverText El texto del servidor a eliminar
-     */
     private void removeFromServerList(String serverText) {
 
-        String username = Main.getCurrentUser().getUsername();
+        String username = UserController.getCurrentUser().getUsername();
 
-        if (Main.getCurrentUser().getServerList().containsKey(username)) {
+        if (UserController.getCurrentUser().getServerList().containsKey(username)) {
 
-            List<ServerMessage> messages = Main.getCurrentUser().getServerList().get(username);
+            List<ServerMessage> messages = UserController.getCurrentUser().getServerList().get(username);
             // Buscar y eliminar el mensaje que coincida
             messages.removeIf(msg -> msg.getMessage().equals(serverText));
 
             // Si la lista queda vacía, eliminar la entrada del mapa
             if (messages.isEmpty()) {
-                Main.getCurrentUser().getServerList().remove(username);
+                UserController.getCurrentUser().getServerList().remove(username);
             }
 
             // Guardar los cambios
@@ -221,6 +236,7 @@ public class PanelsController {
     }
 
     private JPanel createMessagePanel(String username, String text, ImageIcon avatarIcon) {
+
         JPanel messagePanel = new JPanel();
         messagePanel.setMaximumSize(new Dimension(600, 50));
         messagePanel.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -236,6 +252,7 @@ public class PanelsController {
         JLabel messageLabel = new JLabel(
                 "<html><div style='width:300px;'>" + text.replace("\n", "<br>") + "</div></html>"
         );
+
         messageLabel.setFont(new Font("Arial", Font.PLAIN, 12));
         messageLabel.setOpaque(true);
         messageLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
@@ -243,17 +260,23 @@ public class PanelsController {
         messagePanel.add(messageLabel);
 
         return messagePanel;
+
     }
 
     public void updateChatPanel(String message) {
+
         String[] parts = message.split(": ", 2);
+
         if (parts.length == 2) {
+
             String username = parts[0];
             String text = parts[1];
 
             // Usar SwingUtilities para asegurar que se ejecute en el hilo de UI
             SwingUtilities.invokeLater(() -> {
+
                 try {
+
                     ImageIcon avatarIcon = loadAvatarForUser(username);
 
                     JPanel messagePanel = createMessagePanel(username, text, avatarIcon);
@@ -265,27 +288,26 @@ public class PanelsController {
                     // Auto-scroll al último mensaje
                     JScrollBar vertical = APP.getjScrollPaneChat().getVerticalScrollBar();
                     vertical.setValue(vertical.getMaximum());
+
                 } catch (Exception e) {
+
                     System.err.println("Error al mostrar mensaje: " + e.getMessage());
                     // Mostrar mensaje con avatar predeterminado si hay error
                     JPanel messagePanel = createMessagePanel(username, text, getDefaultAvatarIcon());
                     APP.getjPanelMensajes().add(messagePanel);
                     APP.getjPanelMensajes().revalidate();
                     APP.getjPanelMensajes().repaint();
+
                 }
+
             });
+
         }
+
     }
 
-    /**
-     * Crea un panel para mostrar un archivo recibido
-     *
-     * @param username Nombre de usuario que envió el archivo
-     * @param filename Nombre del archivo
-     * @param avatarIcon Icono de avatar del usuario
-     * @return Panel que representa el archivo en el chat
-     */
     private JPanel createFilePanel(String username, String filename, ImageIcon avatarIcon) {
+
         JPanel filePanel = new JPanel();
         filePanel.setMaximumSize(new Dimension(600, 70));
         filePanel.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -309,9 +331,11 @@ public class PanelsController {
         // Icono de archivo
         ImageIcon fileIcon;
         try {
-            Image iconImage = ImageIO.read(new File(Main.getFILE_ICON_PATH()));
+
+            Image iconImage = ImageIO.read(new File(UserController.getUSER_ICON_URL()));
             iconImage = iconImage.getScaledInstance(30, 30, Image.SCALE_SMOOTH);
             fileIcon = new ImageIcon(iconImage);
+
         } catch (IOException e) {
             // Si no se puede cargar el icono, usar un texto como alternativa
             fileIcon = new ImageIcon();
@@ -337,25 +361,23 @@ public class PanelsController {
         filePanel.add(attachmentPanel);
 
         return filePanel;
+
     }
 
-    /**
-     * Actualiza el panel de chat cuando se recibe un mensaje que contiene un
-     * archivo
-     *
-     * @param jsonMessage Mensaje JSON que contiene la información del archivo
-     */
     public void updateChatPanelWithFile(String jsonMessage) {
+
         try {
+
             JSONObject fileObj = new JSONObject(jsonMessage);
 
             if (fileObj.getString("type").equals("file")) {
+
                 String sender = fileObj.getString("sender");
                 String filename = fileObj.getString("filename");
                 String fileData = fileObj.getString("data");
 
                 // Guardar el archivo en la carpeta del cliente para descarga posterior
-                String saveDir = Main.getCurrentUser().getClientFolderPath() + Controller.getSeparator() + "downloads";
+                String saveDir = UserController.getCurrentUser().getClientFolderPath() + "/" + "downloads";
 
                 // Crear directorio si no existe
                 File dir = new File(saveDir);
@@ -364,49 +386,66 @@ public class PanelsController {
                 }
 
                 // Guardar el archivo
-                final String filePath = saveDir + Controller.getSeparator() + filename;
+                final String filePath = saveDir + "/" + filename;
                 final File outputFile = new File(filePath);
 
                 // Decodificar y guardar en un hilo separado para no bloquear la UI
                 new Thread(() -> {
+
                     try {
+
                         byte[] decodedBytes = Base64.getDecoder().decode(fileData);
                         Files.write(outputFile.toPath(), decodedBytes);
                         System.out.println("Archivo guardado: " + filePath);
+
                     } catch (IOException e) {
                         System.err.println("Error al guardar el archivo: " + e.getMessage());
                     }
+
                 }).start();
 
                 // Mostrar en la UI
                 SwingUtilities.invokeLater(() -> {
+
                     try {
+
                         // Obtener avatar para el remitente
                         ImageIcon avatarIcon;
 
                         // Si el remitente es el usuario actual, usar su avatar
-                        if (sender.equals(Main.getCurrentUser().getUsername())) {
-                            Image avatarImage = ImageIO.read(new File(Main.getCurrentUser().getAvatar()));
+                        if (sender.equals(UserController.getCurrentUser().getUsername())) {
+
+                            Image avatarImage = ImageIO.read(new File(UserController.getCurrentUser().getAvatar()));
                             avatarImage = avatarImage.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
                             avatarIcon = new ImageIcon(avatarImage);
+
                         } else {
+
                             // Para otros usuarios, intentar buscar su avatar o usar uno predeterminado
                             String otherUserAvatar = getUserAvatar(sender);
+
                             if (otherUserAvatar != null && new File(otherUserAvatar).exists()) {
+
                                 Image avatarImage = ImageIO.read(new File(otherUserAvatar));
                                 avatarImage = avatarImage.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
                                 avatarIcon = new ImageIcon(avatarImage);
+
                             } else {
+
                                 // Usar avatar predeterminado
                                 try {
-                                    Image defaultImage = ImageIO.read(new File(Main.getUSER_ICON_URL()));
+
+                                    Image defaultImage = ImageIO.read(new File(UserController.getUSER_ICON_URL()));
                                     defaultImage = defaultImage.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
                                     avatarIcon = new ImageIcon(defaultImage);
+
                                 } catch (IOException ex) {
                                     // Si no se puede cargar el avatar predeterminado, crear uno vacío
                                     avatarIcon = new ImageIcon();
                                 }
+
                             }
+
                         }
 
                         // Crear panel de archivo
@@ -414,22 +453,34 @@ public class PanelsController {
 
                         // Agregar listener para descargar
                         JLabel downloadLabel = (JLabel) ((JPanel) filePanel.getComponent(2)).getComponent(2);
+
                         downloadLabel.addMouseListener(new MouseAdapter() {
+
                             @Override
                             public void mouseClicked(MouseEvent e) {
+
                                 try {
+
                                     File file = new File(filePath);
+
                                     if (file.exists()) {
+
                                         Desktop.getDesktop().open(file);
+
                                     } else {
+
                                         MensajeDialog.showMessageDialog(APP,
                                                 "El archivo aún se está descargando. Intente nuevamente en unos segundos.", "Información");
+
                                     }
+
                                 } catch (IOException ex) {
                                     MensajeDialog.showMessageDialog(APP,
                                             "Error al abrir el archivo: " + ex.getMessage(), "Error");
                                 }
+
                             }
+
                         });
 
                         // Añadir a la interfaz
@@ -446,82 +497,113 @@ public class PanelsController {
                     } catch (IOException e) {
                         MensajeDialog.showMessageDialog(APP, "Error al cargar el avatar: " + e.getMessage(), "Error");
                     }
+
                 });
+
             }
+
         } catch (JSONException e) {
             System.err.println("Error al procesar mensaje JSON: " + e.getMessage());
         }
+
     }
 
     public String getUserAvatar(String username) {
+
         // Si no se encuentra, intentar cargar desde archivo
-        String userFile = Main.getCLIENTS_FOLDER_PATH() + Controller.getSeparator() + username + Controller.getSeparator() + "profile.json";
+        String userFile = UserController.getCLIENTS_FOLDER_PATH() + "/" + username + "/" + "profile.json";
         File file = new File(userFile);
 
         if (file.exists()) {
+
             try {
+
                 String content = new String(Files.readAllBytes(file.toPath()));
                 JSONObject userObj = new JSONObject(content);
+
                 if (userObj.has("avatar")) {
                     return userObj.getString("avatar");
                 }
+
             } catch (IOException | JSONException e) {
                 System.err.println("Error al leer el avatar del usuario: " + e.getMessage());
             }
+
         }
 
         // Si todo falla, retornar null
         return null;
+
     }
 
-    /**
-     * Método para determinar si un mensaje es un archivo o texto regular
-     *
-     * @param message Mensaje a procesar
-     */
-    // Add this to PanelsController.processMessage()
     public void processMessage(String message) {
+
         if (message.trim().startsWith("{") && message.trim().endsWith("}")) {
+
             try {
+
                 JSONObject jsonObj = new JSONObject(message);
+
                 if (jsonObj.has("type") && jsonObj.getString("type").equals("file")) {
 
                     updateChatPanelWithFile(message);
-                    System.out.println("\nArchivo enviado." + "\n");
+                    System.out.println("""
+                                       
+                                       Archivo enviado.
+                                       """);
                     return;
+
                 }
+
             } catch (JSONException e) {
                 System.err.println("\nJSON parsing error: " + e.getMessage() + "\n");
             }
+
         }
 
         updateChatPanel(message);
-        System.out.println("\nMensaje de texto enviado." + "\n");
+        System.out.println("""
+                           
+                           Mensaje de texto enviado.
+                           """);
+
     }
 
     public void showMessagesOnServer() {
+
         try {
+
             String message;
-            while ((message = Main.getCurrentUser().getIn().readLine()) != null) {  // Leer línea a línea
+
+            while ((message = UserController.getCurrentUser().getIn().readLine()) != null) {  // Leer línea a línea
+
                 System.out.println("Servidor: " + message);  // Mostrar mensajes del servidor
 
                 // Procesar el mensaje (puede ser texto o archivo)
                 processMessage(message);
+
             }
+
         } catch (IOException e) {
-            System.out.println("Conexión cerrada: " + e.getMessage());
+            System.err.println("Conexión cerrada: " + e.getMessage());
+
         } catch (Exception e) {
             System.err.println("Ocurrió un error inesperado. Intente nuevamente más tarde: " + e.getMessage());
+
         } finally {
-            Main.getCurrentUser().closeResources();  // Asegurar el cierre de la conexión
+            UserController.getCurrentUser().closeResources();  // Asegurar el cierre de la conexión
+
         }
+
     }
 
     private ImageIcon loadAvatarForUser(String username) {
+
         try {
+
             // Si es el usuario actual
-            if (username.equals(Main.getCurrentUser().getUsername())) {
-                return loadAvatarIcon(Main.getCurrentUser().getAvatar());
+            if (username.equals(UserController.getCurrentUser().getUsername())) {
+                return loadAvatarIcon(UserController.getCurrentUser().getAvatar());
             }
 
             // Para otros usuarios
@@ -532,14 +614,18 @@ public class PanelsController {
 
             // Avatar predeterminado si no se encuentra
             return getDefaultAvatarIcon();
-        } catch (Exception e) {
+
+        } catch (IOException e) {
             System.err.println("Error cargando avatar para " + username + ": " + e.getMessage());
             return getDefaultAvatarIcon();
+
         }
+
     }
 
     private ImageIcon loadAvatarIcon(String avatarPath) throws IOException {
-        if (avatarPath == null || avatarPath.isEmpty() || avatarPath.equals(Client.DEFAULT_AVATAR_ID)) {
+
+        if (avatarPath == null || avatarPath.isEmpty() || avatarPath.equals(UserController.getUSER_ICON_URL())) {
             return getDefaultAvatarIcon();
         }
 
@@ -555,12 +641,16 @@ public class PanelsController {
 
         avatarImage = avatarImage.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
         return new ImageIcon(avatarImage);
+
     }
 
     private ImageIcon getDefaultAvatarIcon() {
+
         try {
+
             // Cargar desde recursos si está en JAR
             InputStream is = getClass().getResourceAsStream("/images/default_avatar.jpg");
+
             if (is != null) {
                 Image defaultImage = ImageIO.read(is);
                 defaultImage = defaultImage.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
@@ -568,17 +658,88 @@ public class PanelsController {
             }
 
             // Intentar cargar desde ruta externa
-            File defaultFile = new File(Main.getUSER_ICON_URL());
+            File defaultFile = new File(UserController.getUSER_ICON_URL());
+
             if (defaultFile.exists()) {
                 Image defaultImage = ImageIO.read(defaultFile);
                 defaultImage = defaultImage.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
                 return new ImageIcon(defaultImage);
             }
+
         } catch (IOException e) {
             System.err.println("Error cargando avatar predeterminado: " + e.getMessage());
         }
 
         // Crear icono vacío como último recurso
         return new ImageIcon();
+
     }
+
+    /*
+     * -----------------------------------------------------------------------
+     * GETTERS Y SETTERS
+     * -----------------------------------------------------------------------
+     */
+    public Controller getCtrlr() {
+        return ctrlr;
+    }
+
+    public void setCtrlr(Controller ctrlr) {
+        this.ctrlr = ctrlr;
+    }
+
+    public ChatApp getAPP() {
+        return APP;
+    }
+
+    public void setAPP(ChatApp APP) {
+        this.APP = APP;
+    }
+
+    /*
+     * -----------------------------------------------------------------------
+     * TOSTRING
+     * -----------------------------------------------------------------------
+     */
+    @Override
+    public String toString() {
+        return "PanelsController{" + "ctrlr=" + ctrlr + ", APP=" + APP + '}';
+    }
+
+    /*
+     * -----------------------------------------------------------------------
+     * HASHCODE
+     * -----------------------------------------------------------------------
+     */
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 71 * hash + Objects.hashCode(this.ctrlr);
+        hash = 71 * hash + Objects.hashCode(this.APP);
+        return hash;
+    }
+
+    /*
+     * -----------------------------------------------------------------------
+     * EQUALS
+     * -----------------------------------------------------------------------
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final PanelsController other = (PanelsController) obj;
+        if (!Objects.equals(this.ctrlr, other.ctrlr)) {
+            return false;
+        }
+        return Objects.equals(this.APP, other.APP);
+    }
+
 }

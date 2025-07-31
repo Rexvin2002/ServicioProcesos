@@ -1,25 +1,25 @@
 package ui;
 
+/**
+ * Kevin Gómez Valderas 2ºDAM
+ */
 import controllers.Controller;
 import javax.swing.JFrame;
 
-/**
- *
- * @author kgv17
- */
 public class MensajeDialog extends javax.swing.JDialog {
 
-    /**
-     * Creates new form MessageDialog
-     *
-     * @param parent
-     * @param modal
+    /*
+     * -----------------------------------------------------------------------
+     * CONSTRUCTOR
+     * -----------------------------------------------------------------------
      */
     public MensajeDialog(java.awt.Frame parent, boolean modal) {
+
         super(parent, modal);
         initComponents();
         setLocationRelativeTo(parent);
         Controller.applyHandCursorToAllButtons(rootPane);
+
     }
 
     @SuppressWarnings("unchecked")
@@ -87,15 +87,17 @@ public class MensajeDialog extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButtonCerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCerrarActionPerformed
-        dispose();
-    }//GEN-LAST:event_jButtonCerrarActionPerformed
-
+    /*
+     * -----------------------------------------------------------------------
+     * MÉTODOS
+     * -----------------------------------------------------------------------
+     */
     public static void showMessageDialog(JFrame chatWindow, String mensaje, String titulo) {
+
         MensajeDialog mensajeDialog = new MensajeDialog(chatWindow, true);
 
         mensajeDialog.setTitle(titulo);
-        
+
         // Establecer el texto con salto de línea automático usando HTML
         mensajeDialog.jLabelMensaje.setText(
                 "<html><body style='width: fit-content;'>" + mensaje + "</body></html>"
@@ -112,49 +114,60 @@ public class MensajeDialog extends javax.swing.JDialog {
 
         // Mostrar el diálogo
         mensajeDialog.setVisible(true);
+
     }
 
-    /**
-     * @param args the command line arguments
+    /*
+     * -----------------------------------------------------------------------
+     * EVENTOS
+     * -----------------------------------------------------------------------
+     */
+
+    private void jButtonCerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCerrarActionPerformed
+
+        dispose();
+
+    }//GEN-LAST:event_jButtonCerrarActionPerformed
+
+    /*
+     * -----------------------------------------------------------------------
+     * MAIN
+     * -----------------------------------------------------------------------
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
+
         try {
+
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MensajeDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(MensajeDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(MensajeDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(MensajeDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
 
-        /* Create and display the dialog */
+            }
+
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(MensajeDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
+        }
+
         java.awt.EventQueue.invokeLater(() -> {
+
             MensajeDialog dialog = new MensajeDialog(new javax.swing.JFrame(), true);
             dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+
                 @Override
                 public void windowClosing(java.awt.event.WindowEvent e) {
                     System.exit(0);
                 }
+
             });
+
             dialog.setVisible(true);
+
         });
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

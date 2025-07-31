@@ -20,7 +20,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import javax.accessibility.AccessibleContext;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -39,19 +38,27 @@ import org.json.JSONObject;
 public class ChatApp extends javax.swing.JFrame {
 
     private CardLayout cardLayout;
+
     private Controller ctrlr;
     private PanelsController pc;
     private UserController uc;
     private Main main;
+
     private String originalUsername;
     private String originalPassword;
     private String originalAvatar;
 
-    /**
-     * Creates new form ChatWindow
+    private final String APP_ICON_URL = "src\\img\\chatAppIcon.png";
+
+    /*
+     * -----------------------------------------------------------------------
+     * CONSTRUCTOR
+     * -----------------------------------------------------------------------
      */
     public ChatApp() {
+
         if (!GraphicsEnvironment.isHeadless()) {
+
             initComponents(); // Solo inicializar componentes gráficos si no estamos en modo headless
             setLocationRelativeTo(null);
 
@@ -62,69 +69,79 @@ public class ChatApp extends javax.swing.JFrame {
 
             System.out.println("\nAPP INICIADA\n");
 
-            Image image = Toolkit.getDefaultToolkit().getImage(Main.getAPP_ICON_URL());
+            Image image = Toolkit.getDefaultToolkit().getImage(APP_ICON_URL);
             setIconImage(image);
-            ctrlr.escalarEstablecerImagenFromString(jLabelIconoApp, Main.getAPP_ICON_URL());
-            System.out.println("Icono de App establecido: " + Main.getAPP_ICON_URL());
+            ctrlr.escalarEstablecerImagenFromString(jLabelIconoApp, APP_ICON_URL);
+            System.out.println("Icono de App establecido: " + APP_ICON_URL);
 
             Controller.applyHandCursorToAllButtons(rootPane);
             getRootPane().setDefaultButton(jButtonAcceder);
+
         }
+
     }
 
+    /*
+     * -----------------------------------------------------------------------
+     * MÉTODOS
+     * -----------------------------------------------------------------------
+     */
     public void cambiarLayout(String card) {
+
         setCardLayout((CardLayout) jPanelLayout.getLayout());
         getCardLayout().show(jPanelLayout, card);
+
     }
 
-    /**
-     * Existencia Cliente
-     *
-     * @param user
-     * @return
-     */
     public boolean existUser(String user) {
-        File jsonFile = new File(Main.getCLIENTS_FOLDER_PATH() + Controller.getSeparator() + user + Controller.getSeparator() + Main.getCLIENT_JSON_NAME());
+
+        File jsonFile = new File(UserController.getCLIENTS_FOLDER_PATH() + "/" + user + "/" + UserController.getCLIENT_JSON_NAME());
 
         if (!jsonFile.exists()) {
             return false;
         }
 
         try {
+
             String content = new String(Files.readAllBytes(jsonFile.toPath()));
             JSONObject clientData = new JSONObject(content);
 
             if (clientData.has("username") && clientData.getString("username").equalsIgnoreCase(user)) {
-                Main.setCurrentUser(new Client(clientData.getString("username"),
+
+                UserController.setCurrentUser(new Client(clientData.getString("username"),
                         clientData.getString("password").toCharArray(),
-                        Main.getAvatarPathSelected()));
+                        UserController.getAvatarPathSelected()));
                 return true;
+
             }
+
         } catch (IOException | JSONException e) {
             MensajeDialog.showMessageDialog(this, "Error al acceder a los datos del usuario: " + e.getMessage(), "Error");
+
         }
 
         return false;
     }
 
-    /**
-     * Establecer Perfil
-     */
     private void setProfile() {
-        Main.getCurrentUser().loadClientData();
+
+        UserController.getCurrentUser().loadClientData();
         // Actualizar la interfaz de usuario
         Main.getPc().updateServerPanels();
-        ctrlr.escalarEstablecerImagenFromString(this.getjLabelImagenPerfilCliente(), Main.getCurrentUser().getAvatar());
-        this.getjTextFieldNombrePerfil().setText(Main.getCurrentUser().getUsername());
-        this.getjPasswordFieldContraseñaPerfil().setText(Main.getCurrentUser().getPasswdAsString());
-        this.getjPasswordFieldConfirmarContraseñaPerfil().setText(Main.getCurrentUser().getPasswdAsString());
+        ctrlr.escalarEstablecerImagenFromString(this.getjLabelImagenPerfilCliente(), UserController.getCurrentUser().getAvatar());
+        this.getjTextFieldNombrePerfil().setText(UserController.getCurrentUser().getUsername());
+        this.getjPasswordFieldContraseñaPerfil().setText(UserController.getCurrentUser().getPasswdAsString());
+        this.getjPasswordFieldConfirmarContraseñaPerfil().setText(UserController.getCurrentUser().getPasswdAsString());
 
     }
 
     public void saveClientsServers() {
+
         try {
+
             // Cargar los datos existentes del archivo JSON
-            File jsonFile = new File(Main.getCurrentUser().getClientFolderPath() + Controller.getSeparator() + Main.getCLIENT_JSON_NAME());
+            File jsonFile = new File(UserController.getCurrentUser().getClientFolderPath() + "/" + UserController.getCLIENT_JSON_NAME());
+
             if (!jsonFile.exists()) {
                 MensajeDialog.showMessageDialog(this, "El archivo de datos del cliente no existe.", "Error");
                 return;
@@ -136,20 +153,27 @@ public class ChatApp extends javax.swing.JFrame {
 
             // Crear o actualizar la sección de servidores
             JSONObject serversJSON = clientData.optJSONObject("servers");
+
             if (serversJSON == null) {
                 serversJSON = new JSONObject(); // Si no existe, crear el objeto
             }
 
             // Agregar los servidores al JSON
-            for (Map.Entry<String, List<ServerMessage>> entry : Main.getCurrentUser().getServerList().entrySet()) {
+            for (Map.Entry<String, List<ServerMessage>> entry : UserController.getCurrentUser().getServerList().entrySet()) {
+
                 JSONArray serverArray = new JSONArray();
+
                 for (ServerMessage srv : entry.getValue()) {
+
                     JSONObject messageJson = new JSONObject();
                     messageJson.put("username", srv.getUsername());
                     messageJson.put("servers", srv.getMessage());
                     serverArray.put(messageJson);
+
                 }
+
                 serversJSON.put(entry.getKey(), serverArray);
+
             }
 
             // Actualizar la sección "servers" en el JSON principal
@@ -165,17 +189,19 @@ public class ChatApp extends javax.swing.JFrame {
         } catch (IOException e) {
             System.err.println("Error al guardar los datos de los servidores: " + e.getMessage());
             MensajeDialog.showMessageDialog(this, "Error al guardar los datos de los servidores: " + e.getMessage(), "Error");
+
         } catch (JSONException e) {
             System.err.println("Error inesperado: " + e.getMessage());
             MensajeDialog.showMessageDialog(this, "Error inesperado al guardar los datos de los servidores.", "Error");
+
         }
+
     }
 
-    /**
-     * Conectar Cliente a Servidor
-     */
     public void connectUserToServer() {
-        if (Main.getCurrentUser().isConnected()) {
+
+        if (UserController.getCurrentUser().isConnected()) {
+
             MensajeDialog.showMessageDialog(this, "Ya estás conectado al servidor.", "Advertencia");
 
             this.getjLabelServidorPuerto().setText("Servidor: " + Main.getServerIP() + " | Puerto: " + Main.getPort());
@@ -183,6 +209,7 @@ public class ChatApp extends javax.swing.JFrame {
             cambiarLayout("cardChat");
 
             return;  // Salir del método si ya está conectado
+
         }
 
         Main.setServerIP(this.getjTextFieldServerIP().getText());  // Obtener IP desde el campo de texto
@@ -194,74 +221,81 @@ public class ChatApp extends javax.swing.JFrame {
         }
 
         try {
+
             Main.setPort(Integer.parseInt(puertoText));  // Convertir el puerto a entero
+
         } catch (NumberFormatException e) {
             MensajeDialog.showMessageDialog(this, "Puerto inválido. Debe ser un número.", "Error");
             return;
+
         }
 
-        Main.getCurrentUser().setPort(Main.getPort());
-        Main.getCurrentUser().setServerIP(Main.getServerIP());
+        UserController.getCurrentUser().setPort(Main.getPort());
+        UserController.getCurrentUser().setServerIP(Main.getServerIP());
 
         try {
-            Main.getCurrentUser().connect();  // Conectar al servidor
 
-            if (Main.getCurrentUser().isConnected()) {
+            UserController.getCurrentUser().connect();  // Conectar al servidor
+
+            if (UserController.getCurrentUser().isConnected()) {
+
                 MensajeDialog.showMessageDialog(this, "Conectado al servidor en " + Main.getServerIP() + ":" + Main.getPort(), "Información");
-                this.getjLabelServidorPuerto().setText(Main.getCurrentUser().getUsername() + ": " + Main.getServerIP() + " | Puerto: " + Main.getPort());
+                this.getjLabelServidorPuerto().setText(UserController.getCurrentUser().getUsername() + ": " + Main.getServerIP() + " | Puerto: " + Main.getPort());
 
                 cambiarLayout("cardChat");
 
                 // Agregar mensaje de conexión al chat
                 String message = Main.getServerIP() + ":" + Main.getPort();
-                String currentUserName = Main.getCurrentUser().getUsername();
+                String currentUserName = UserController.getCurrentUser().getUsername();
 
                 // Evitar mostrar el mensaje duplicado si el servidor lo reenvía
                 if (!existServer(message)) {
                     Main.getPc().updateServersPanel(currentUserName + ": " + message);
                 }
-                Main.getCurrentUser().sendMessage(Main.getCurrentUser().getUsername() + ": Conectado a " + Main.getCurrentUser().getServerIP() + ":" + Main.getCurrentUser().getPort());
+
+                UserController.getCurrentUser().sendMessage(UserController.getCurrentUser().getUsername() + ": Conectado a " + UserController.getCurrentUser().getServerIP() + ":" + UserController.getCurrentUser().getPort());
 
             }
 
         } catch (Exception e) {
             // Mostrar error detallado
             MensajeDialog.showMessageDialog(this, "Error al conectar: " + e.getMessage() + "\n" + "Por favor, verifica la IP y el puerto.", "Error");
+
         }
 
     }
 
-    /**
-     * Existencia Servidor
-     *
-     * @param serverAddress
-     * @return
-     */
     public boolean existServer(String serverAddress) {
+
         // Obtener los datos del archivo JSON
-        File jsonFile = new File(Main.getCurrentUser().getClientFolderPath() + Controller.getSeparator() + Main.getCLIENT_JSON_NAME());
+        File jsonFile = new File(UserController.getCurrentUser().getClientFolderPath() + "/" + UserController.getCLIENT_JSON_NAME());
+
         if (!jsonFile.exists()) {
             MensajeDialog.showMessageDialog(this, "El archivo de datos del cliente no existe.", "Error");
             return false;
         }
 
         try {
+
             // Leer el contenido actual del archivo JSON
             String content = new String(Files.readAllBytes(jsonFile.toPath()));
             JSONObject clientData = new JSONObject(content);
 
             // Obtener la sección de servidores
             JSONObject serversJSON = clientData.optJSONObject("servers");
+
             if (serversJSON == null) {
                 return false;  // No hay servidores registrados
             }
 
             // Comprobar cada servidor registrado
             for (String serverName : serversJSON.keySet()) {
+
                 JSONArray serverArray = serversJSON.getJSONArray(serverName);
 
                 // Buscar en cada servidor si el address coincide
                 for (int i = 0; i < serverArray.length(); i++) {
+
                     JSONObject server = serverArray.getJSONObject(i);
                     String serverAddressInJson = server.getString("servers");
 
@@ -269,22 +303,246 @@ public class ChatApp extends javax.swing.JFrame {
                     if (serverAddressInJson.equals(serverAddress)) {
                         return true; // El servidor ya existe
                     }
+
                 }
+
             }
 
         } catch (IOException | JSONException e) {
             MensajeDialog.showMessageDialog(this, "Error al comprobar los servidores: " + e.getMessage(), "Error");
+
         }
 
         return false; // No se encontró el servidor
+
     }
 
-    public JScrollPane getjScrollPaneChat() {
-        return jScrollPaneChat;
+    private void enterEditMode() {
+
+        // Guardar valores originales
+        Client currentUser2 = UserController.getCurrentUser();
+        originalUsername = currentUser2.getUsername();
+        originalPassword = currentUser2.getPasswdAsString();
+
+        // Habilitar edición
+        this.getjButtonEditarPerfil().setText("Aceptar");
+        this.getjTextFieldNombrePerfil().setEnabled(true);
+        this.getjPasswordFieldContraseñaPerfil().setEnabled(true);
+        this.getjPasswordFieldConfirmarContraseñaPerfil().setEnabled(true);
+
     }
 
-    public void setjScrollPaneChat(JScrollPane jScrollPaneChat) {
-        this.jScrollPaneChat = jScrollPaneChat;
+    private void saveProfileChanges() {
+
+        // Obtener valores del formulario
+        String nuevoNombre = this.getjTextFieldNombrePerfil().getText().trim();
+        char[] nuevaPasswd = this.getjPasswordFieldContraseñaPerfil().getPassword();
+        char[] confirmPasswd = this.getjPasswordFieldConfirmarContraseñaPerfil().getPassword();
+
+        // Validaciones básicas
+        if (!validateProfileFields(nuevoNombre, nuevaPasswd, confirmPasswd)) {
+            return;
+        }
+
+        try {
+
+            // Verificar nombre único si cambió
+            if (!nuevoNombre.equals(originalUsername) && existUser(nuevoNombre)) {
+                MensajeDialog.showMessageDialog(this, "Nombre de usuario ya existe.", "Alerta");
+                return;
+            }
+
+            // Actualizar datos del usuario
+            updateUserProfile(nuevoNombre, nuevaPasswd);
+
+            // Guardar cambios
+            UserController.getCurrentUser().saveClientData();
+            MensajeDialog.showMessageDialog(this, "Perfil actualizado correctamente", "Éxito");
+
+            // Restablecer UI
+            exitEditMode();
+
+        } catch (IOException e) {
+            MensajeDialog.showMessageDialog(this, "Error al actualizar perfil: " + e.getMessage(), "Error");
+
+        } finally {
+            // Limpiar arrays de contraseña por seguridad
+            Arrays.fill(nuevaPasswd, '\0');
+            Arrays.fill(confirmPasswd, '\0');
+
+        }
+
+    }
+
+    private boolean validateProfileFields(String nombre, char[] passwd, char[] confirmPasswd) {
+
+        if (nombre.isEmpty()) {
+            MensajeDialog.showMessageDialog(this, "El nombre de usuario no puede estar vacío.", "Alerta");
+            return false;
+        }
+
+        if (passwd.length == 0 || confirmPasswd.length == 0) {
+            MensajeDialog.showMessageDialog(this, "Complete ambos campos de contraseña.", "Alerta");
+            return false;
+        }
+
+        if (!Arrays.equals(passwd, confirmPasswd)) {
+            MensajeDialog.showMessageDialog(this, "Las contraseñas no coinciden.", "Alerta");
+            return false;
+        }
+
+        if (passwd.length < 6) {
+            MensajeDialog.showMessageDialog(this, "La contraseña debe tener al menos 6 caracteres.", "Alerta");
+            return false;
+        }
+
+        return true;
+
+    }
+
+    private void updateUserProfile(String nuevoNombre, char[] nuevaPasswd) throws IOException {
+
+        Client currentUser2 = UserController.getCurrentUser();
+        boolean nombreCambiado = !nuevoNombre.equals(originalUsername);
+
+        // Manejar cambio de nombre (y carpeta)
+        if (nombreCambiado) {
+            handleUsernameChange(currentUser2, nuevoNombre);
+        }
+
+        // Actualizar datos del usuario
+        currentUser2.setUsername(nuevoNombre);
+        currentUser2.setPasswd(nuevaPasswd);
+
+        // Manejar avatar (si hay uno nuevo seleccionado o si cambió el nombre)
+        if (UserController.getAvatarPathSelected() != null && !UserController.getAvatarPathSelected().equals(originalAvatar)) {
+
+            handleAvatarChange(currentUser2);
+
+        } else if (nombreCambiado && currentUser2.getAvatar() != null
+                && !currentUser2.getAvatar().equals(UserController.getUSER_ICON_URL())) {
+
+            // Si cambió el nombre pero no el avatar, y el avatar no es el por defecto,
+            // asegurarnos de que la ruta del avatar sea correcta
+            String avatarPath = currentUser2.getAvatar();
+
+            if (avatarPath.contains(originalUsername)) {
+
+                String nuevoAvatarPath = avatarPath.replace(
+                        File.separator + originalUsername + File.separator,
+                        File.separator + nuevoNombre + File.separator
+                );
+
+                currentUser2.setAvatar(nuevoAvatarPath);
+
+            }
+
+        }
+
+    }
+
+    private void handleUsernameChange(Client user, String nuevoNombre) throws IOException {
+
+        // 1. Crear nueva estructura de carpetas
+        Path nuevaCarpeta = Paths.get(UserController.getCLIENTS_FOLDER_PATH(), nuevoNombre);
+        Files.createDirectories(nuevaCarpeta);
+
+        // 2. Copiar archivos de la carpeta antigua a la nueva
+        Path carpetaAntigua = Paths.get(UserController.getCLIENTS_FOLDER_PATH(), originalUsername);
+
+        if (Files.exists(carpetaAntigua)) {
+
+            Files.walk(carpetaAntigua)
+                    .filter(path -> !Files.isDirectory(path))
+                    .forEach(path -> {
+
+                        try {
+
+                            Path destino = nuevaCarpeta.resolve(path.getFileName());
+                            Files.copy(path, destino, StandardCopyOption.REPLACE_EXISTING);
+
+                            // 3. Si es el archivo de avatar, actualizar la referencia
+                            if (path.getFileName().toString().equals("avatar.jpg")) {
+                                user.setAvatar(destino.toString());
+                            }
+
+                        } catch (IOException e) {
+                            System.err.println("Error copiando archivo: " + e.getMessage());
+
+                        }
+
+                    });
+        }
+
+        // 4. Actualizar ruta de la carpeta en el usuario
+        user.setClientFolderPath(nuevoNombre);
+
+        // 5. Manejar el avatar por defecto
+        if (user.getAvatar() != null && user.getAvatar().equals(UserController.getUSER_ICON_URL())) {
+
+            // No necesita cambios, sigue siendo el avatar por defecto
+        } else if (user.getAvatar() != null && user.getAvatar().contains(originalUsername)) {
+
+            // Actualizar ruta del avatar si estaba en la carpeta antigua
+            String nuevoAvatarPath = user.getAvatar().replace(
+                    File.separator + originalUsername + File.separator,
+                    File.separator + nuevoNombre + File.separator
+            );
+
+            user.setAvatar(nuevoAvatarPath);
+
+        }
+
+        // 6. Eliminar carpeta antigua si es diferente
+        if (!originalUsername.equals(nuevoNombre)) {
+            deleteDirectory(carpetaAntigua.toFile());
+        }
+
+    }
+
+    private void handleAvatarChange(Client user) throws IOException {
+
+        String nuevoAvatarPath = UserController.getAvatarPathSelected();
+
+        // Si es el avatar por defecto, solo guardar la referencia
+        if (nuevoAvatarPath.equals(UserController.getUSER_ICON_URL())) {
+
+            user.setAvatar(nuevoAvatarPath);
+
+        } else {
+
+            // Copiar el archivo de avatar a la carpeta del usuario
+            Path destinoAvatar = Paths.get(user.getClientFolderPath(), "avatar.jpg");
+            Files.copy(Paths.get(nuevoAvatarPath), destinoAvatar, StandardCopyOption.REPLACE_EXISTING);
+            user.setAvatar(destinoAvatar.toString());
+
+        }
+
+    }
+
+    private void exitEditMode() {
+
+        this.getjButtonEditarPerfil().setText("Editar");
+        this.getjTextFieldNombrePerfil().setEnabled(false);
+        this.getjPasswordFieldContraseñaPerfil().setEnabled(false);
+        this.getjPasswordFieldConfirmarContraseñaPerfil().setEnabled(false);
+
+    }
+
+    private boolean deleteDirectory(File directory) {
+
+        File[] allContents = directory.listFiles();
+
+        if (allContents != null) {
+
+            for (File file : allContents) {
+                deleteDirectory(file);
+            }
+
+        }
+
+        return directory.delete();
+
     }
 
     @SuppressWarnings("unchecked")
@@ -699,7 +957,7 @@ public class ChatApp extends javax.swing.JFrame {
 
         jTextFieldServerIP.setBackground(new java.awt.Color(204, 204, 204));
         jTextFieldServerIP.setForeground(new java.awt.Color(0, 0, 0));
-        jTextFieldServerIP.setText("192.168.1.129");
+        jTextFieldServerIP.setText("192.168.1.130");
         jTextFieldServerIP.setMaximumSize(new java.awt.Dimension(205, 30));
         jTextFieldServerIP.setMinimumSize(new java.awt.Dimension(205, 30));
         jTextFieldServerIP.setPreferredSize(new java.awt.Dimension(205, 30));
@@ -1142,8 +1400,13 @@ public class ChatApp extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-
+    /*
+     * -----------------------------------------------------------------------
+     * EVENTOS
+     * -----------------------------------------------------------------------
+     */
     private void jButtonAccederActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAccederActionPerformed
+
         String usuarioIntroducido = this.getjTextFieldNombreInicioSesion().getText();
 
         if (usuarioIntroducido.isEmpty()) {
@@ -1156,28 +1419,38 @@ public class ChatApp extends javax.swing.JFrame {
             return;
         }
 
-        char[] contraseñaUsuario = Main.getCurrentUser().getPasswd();
+        char[] contraseñaUsuario = UserController.getCurrentUser().getPasswd();
         char[] contraseñaIntroducida = this.getjPasswordFieldContraseñaInicioSesion().getPassword();
 
         if (contraseñaIntroducida.length == 0) {
+
             MensajeDialog.showMessageDialog(this, "Por favor, complete todos los campos.", "Alerta");
+
         } else if (!Arrays.equals(contraseñaIntroducida, contraseñaUsuario)) {
+
             MensajeDialog.showMessageDialog(this, "Contraseña incorrecta.", "Alerta");
+
         } else {
+
             setProfile();
             this.cambiarLayout("cardInicio");
+
         }
 
         // Limpiar la contraseña ingresada por seguridad
         Arrays.fill(contraseñaIntroducida, '\0');
+
     }//GEN-LAST:event_jButtonAccederActionPerformed
 
     private void jButtonCrearCuentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCrearCuentaActionPerformed
-        ctrlr.escalarEstablecerImagenFromString(jLabelImagenCrearCliente, Client.DEFAULT_AVATAR_ID);
+
+        ctrlr.escalarEstablecerImagenFromString(jLabelImagenCrearCliente, UserController.getUSER_ICON_URL());
         cambiarLayout("cardCrearCuenta");
+
     }//GEN-LAST:event_jButtonCrearCuentaActionPerformed
 
     private void jButtonConfirmarCrearCuentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonConfirmarCrearCuentaActionPerformed
+
         // Validaciones de campos
         if (this.getjTextFieldCrearNombre().getText().trim().isEmpty()
                 || this.getjPasswordFieldCrearContraseña().getPassword().length == 0
@@ -1204,18 +1477,18 @@ public class ChatApp extends javax.swing.JFrame {
             return;
         }
 
-        if (Main.getAvatarPathSelected() == null || Main.getAvatarPathSelected().isBlank()) {
-            Main.setAvatarPathSelected(Main.getUSER_ICON_URL());
-            ctrlr.escalarEstablecerImagenFromString(this.getjLabelImagenCrearCliente(), Main.getUSER_ICON_URL());
+        if (UserController.getAvatarPathSelected() == null || UserController.getAvatarPathSelected().isBlank()) {
+            UserController.setAvatarPathSelected(UserController.getUSER_ICON_URL());
+            ctrlr.escalarEstablecerImagenFromString(this.getjLabelImagenCrearCliente(), UserController.getUSER_ICON_URL());
         }
 
         char[] contraseña = this.getjPasswordFieldCrearContraseña().getPassword();
 
-        System.out.println("avatarPathSelected: " + Main.getAvatarPathSelected());
+        System.out.println("avatarPathSelected: " + UserController.getAvatarPathSelected());
 
-        Client cliente = new Client(nombre, contraseña, Main.getAvatarPathSelected());
+        Client cliente = new Client(nombre, contraseña, UserController.getAvatarPathSelected());
 
-        Main.setCurrentUser(cliente);
+        UserController.setCurrentUser(cliente);
         cliente.createClientFolder();
         cliente.saveClientData();
 
@@ -1229,13 +1502,17 @@ public class ChatApp extends javax.swing.JFrame {
         this.getjPasswordFieldCrearContraseña().setText("");
         this.getjPasswordFieldConfirmarContraseña().setText("");
         this.getjLabelImagenCrearCliente().setIcon(null);
+
     }//GEN-LAST:event_jButtonConfirmarCrearCuentaActionPerformed
 
     private void jButtonVolverCrearCuentaToInicioSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonVolverCrearCuentaToInicioSesionActionPerformed
+
         cambiarLayout("cardInicioSesion");
+
     }//GEN-LAST:event_jButtonVolverCrearCuentaToInicioSesionActionPerformed
 
     private void jButtonCrearAvatarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCrearAvatarActionPerformed
+
         // Crear el FileChooser
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Seleccionar imagen");
@@ -1247,24 +1524,29 @@ public class ChatApp extends javax.swing.JFrame {
         int seleccion = fileChooser.showOpenDialog(this);
 
         if (seleccion == JFileChooser.APPROVE_OPTION) {
+
             // Obtener el path seleccionado
             String imagePath = fileChooser.getSelectedFile().getAbsolutePath();
 
-            Main.setAvatarPathSelected(imagePath);
+            UserController.setAvatarPathSelected(imagePath);
 
-            ctrlr.escalarEstablecerImagenFromString(this.getjLabelImagenCrearCliente(), Main.getAvatarPathSelected());
+            ctrlr.escalarEstablecerImagenFromString(this.getjLabelImagenCrearCliente(), UserController.getAvatarPathSelected());
+
         }
+
     }//GEN-LAST:event_jButtonCrearAvatarActionPerformed
 
     private void jButtonConectarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonConectarClienteActionPerformed
+
         getRootPane().setDefaultButton(jButtonEnviar);
         this.connectUserToServer();
         new Thread(() -> Main.getPc().showMessagesOnServer()).start();
+
     }//GEN-LAST:event_jButtonConectarClienteActionPerformed
 
     private void jButtonConectarServidorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonConectarServidorActionPerformed
-        // Obtener IP y puerto desde los campos de texto
 
+        // Obtener IP y puerto desde los campos de texto
         Main.setServerIP(jTextFieldServerIP.getText());
         Main.setPort(Integer.parseInt(jTextFieldPuerto.getText()));
 
@@ -1276,20 +1558,25 @@ public class ChatApp extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonConectarServidorActionPerformed
 
     private void jButtonEnviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEnviarActionPerformed
+
         String message = getjTextFieldMensaje().getText(); // Obtener mensaje del campo de texto
-        String messageToSend = Main.getCurrentUser().getUsername() + ": " + message;
-        Main.getCurrentUser().sendMessage(messageToSend);
+        String messageToSend = UserController.getCurrentUser().getUsername() + ": " + message;
+        UserController.getCurrentUser().sendMessage(messageToSend);
         jTextFieldMensaje.setText("");  // Limpiar el campo de texto
+
     }//GEN-LAST:event_jButtonEnviarActionPerformed
 
     private void jButtonEnviarKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jButtonEnviarKeyPressed
+
         Controller.funcionBoton(evt, jButtonEnviar);
+
     }//GEN-LAST:event_jButtonEnviarKeyPressed
 
     private void jButtonVolverChatToChatsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonVolverChatToChatsActionPerformed
 
-        Main.getCurrentUser().close();
+        UserController.getCurrentUser().close();
         cambiarLayout("cardInicio");
+
     }//GEN-LAST:event_jButtonVolverChatToChatsActionPerformed
 
     private void jButtonCerrarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCerrarSesionActionPerformed
@@ -1306,16 +1593,18 @@ public class ChatApp extends javax.swing.JFrame {
             Main.getServer().close();
         }
 
-        if (Main.getCurrentUser() != null) {
-            Main.getCurrentUser().close();
-            Main.setCurrentUser(null);
+        if (UserController.getCurrentUser() != null) {
+            UserController.getCurrentUser().close();
+            UserController.setCurrentUser(null);
         }
 
         getRootPane().setDefaultButton(jButtonAcceder);
         cambiarLayout("cardInicioSesion");
+
     }//GEN-LAST:event_jButtonCerrarSesionActionPerformed
 
     private void jButtonCambiarAvatarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCambiarAvatarActionPerformed
+
         // Crear el FileChooser
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Seleccionar imagen");
@@ -1327,27 +1616,31 @@ public class ChatApp extends javax.swing.JFrame {
         int seleccion = fileChooser.showOpenDialog(this);
 
         if (seleccion == JFileChooser.APPROVE_OPTION) {
+
             // Obtener el path seleccionado
             String imagePath = fileChooser.getSelectedFile().getAbsolutePath();
 
             // Guardar el path en una variable (puedes usar una variable de clase si es necesario)
-            Main.getCurrentUser().setAvatar(imagePath);
-            Main.getCurrentUser().createClientFolder();
-            Main.getCurrentUser().saveClientData();
+            UserController.getCurrentUser().setAvatar(imagePath);
+            UserController.getCurrentUser().createClientFolder();
+            UserController.getCurrentUser().saveClientData();
 
-            ctrlr.escalarEstablecerImagenFromString(this.getjLabelImagenCrearCliente(), Main.getCurrentUser().getAvatar());
-            ctrlr.escalarEstablecerImagenFromString(this.getjLabelImagenPerfilCliente(), Main.getCurrentUser().getAvatar());
+            ctrlr.escalarEstablecerImagenFromString(this.getjLabelImagenCrearCliente(), UserController.getCurrentUser().getAvatar());
+            ctrlr.escalarEstablecerImagenFromString(this.getjLabelImagenPerfilCliente(), UserController.getCurrentUser().getAvatar());
+
         }
+
     }//GEN-LAST:event_jButtonCambiarAvatarActionPerformed
 
     private void jButtonVolverPerfilToChatsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonVolverPerfilToChatsActionPerformed
+
         // Restablecer el texto del botón a "Editar"
         this.getjButtonEditarPerfil().setText("Editar");
 
         // Guardar valores originales
-        Client currentUser = Main.getCurrentUser();
-        originalUsername = currentUser.getUsername();
-        originalPassword = currentUser.getPasswdAsString();
+        Client currentUser2 = UserController.getCurrentUser();
+        originalUsername = currentUser2.getUsername();
+        originalPassword = currentUser2.getPasswdAsString();
 
         this.getjTextFieldNombrePerfil().setText(originalUsername);
         this.getjPasswordFieldContraseñaPerfil().setText(originalPassword);
@@ -1360,15 +1653,18 @@ public class ChatApp extends javax.swing.JFrame {
 
         // Cambiar el layout
         cambiarLayout("cardInicio");
+
     }//GEN-LAST:event_jButtonVolverPerfilToChatsActionPerformed
 
     private void jButtonEditarPerfilActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEditarPerfilActionPerformed
 
         if (this.getjButtonEditarPerfil().getText().equals("Editar")) {
+
             // Modo edición - Guardar valores originales y habilitar campos
             enterEditMode();
 
         } else {
+
             // Modo aceptar - Validar y guardar cambios
             saveProfileChanges();
 
@@ -1376,245 +1672,710 @@ public class ChatApp extends javax.swing.JFrame {
 
     }//GEN-LAST:event_jButtonEditarPerfilActionPerformed
 
-    private void enterEditMode() {
-        // Guardar valores originales
-        Client currentUser = Main.getCurrentUser();
-        originalUsername = currentUser.getUsername();
-        originalPassword = currentUser.getPasswdAsString();
-
-        // Habilitar edición
-        this.getjButtonEditarPerfil().setText("Aceptar");
-        this.getjTextFieldNombrePerfil().setEnabled(true);
-        this.getjPasswordFieldContraseñaPerfil().setEnabled(true);
-        this.getjPasswordFieldConfirmarContraseñaPerfil().setEnabled(true);
-
-    }
-
-    private void saveProfileChanges() {
-        // Obtener valores del formulario
-        String nuevoNombre = this.getjTextFieldNombrePerfil().getText().trim();
-        char[] nuevaPasswd = this.getjPasswordFieldContraseñaPerfil().getPassword();
-        char[] confirmPasswd = this.getjPasswordFieldConfirmarContraseñaPerfil().getPassword();
-
-        // Validaciones básicas
-        if (!validateProfileFields(nuevoNombre, nuevaPasswd, confirmPasswd)) {
-            return;
-        }
-
-        try {
-            // Verificar nombre único si cambió
-            if (!nuevoNombre.equals(originalUsername) && existUser(nuevoNombre)) {
-                MensajeDialog.showMessageDialog(this, "Nombre de usuario ya existe.", "Alerta");
-                return;
-            }
-
-            // Actualizar datos del usuario
-            updateUserProfile(nuevoNombre, nuevaPasswd);
-
-            // Guardar cambios
-            Main.getCurrentUser().saveClientData();
-            MensajeDialog.showMessageDialog(this, "Perfil actualizado correctamente", "Éxito");
-
-            // Restablecer UI
-            exitEditMode();
-
-        } catch (IOException e) {
-            MensajeDialog.showMessageDialog(this, "Error al actualizar perfil: " + e.getMessage(), "Error");
-
-        } finally {
-            // Limpiar arrays de contraseña por seguridad
-            Arrays.fill(nuevaPasswd, '\0');
-            Arrays.fill(confirmPasswd, '\0');
-
-        }
-
-    }
-
-    private boolean validateProfileFields(String nombre, char[] passwd, char[] confirmPasswd) {
-        if (nombre.isEmpty()) {
-            MensajeDialog.showMessageDialog(this, "El nombre de usuario no puede estar vacío.", "Alerta");
-            return false;
-        }
-
-        if (passwd.length == 0 || confirmPasswd.length == 0) {
-            MensajeDialog.showMessageDialog(this, "Complete ambos campos de contraseña.", "Alerta");
-            return false;
-        }
-
-        if (!Arrays.equals(passwd, confirmPasswd)) {
-            MensajeDialog.showMessageDialog(this, "Las contraseñas no coinciden.", "Alerta");
-            return false;
-        }
-
-        if (passwd.length < 6) {
-            MensajeDialog.showMessageDialog(this, "La contraseña debe tener al menos 6 caracteres.", "Alerta");
-            return false;
-        }
-
-        return true;
-    }
-
-    private void updateUserProfile(String nuevoNombre, char[] nuevaPasswd) throws IOException {
-        Client currentUser = Main.getCurrentUser();
-        boolean nombreCambiado = !nuevoNombre.equals(originalUsername);
-
-        // Manejar cambio de nombre (y carpeta)
-        if (nombreCambiado) {
-            handleUsernameChange(currentUser, nuevoNombre);
-        }
-
-        // Actualizar datos del usuario
-        currentUser.setUsername(nuevoNombre);
-        currentUser.setPasswd(nuevaPasswd);
-
-        // Manejar avatar (si hay uno nuevo seleccionado o si cambió el nombre)
-        if (Main.getAvatarPathSelected() != null && !Main.getAvatarPathSelected().equals(originalAvatar)) {
-            handleAvatarChange(currentUser);
-        } else if (nombreCambiado && currentUser.getAvatar() != null
-                && !currentUser.getAvatar().equals(Main.getUSER_ICON_URL())) {
-            // Si cambió el nombre pero no el avatar, y el avatar no es el por defecto,
-            // asegurarnos de que la ruta del avatar sea correcta
-            String avatarPath = currentUser.getAvatar();
-            if (avatarPath.contains(originalUsername)) {
-                String nuevoAvatarPath = avatarPath.replace(
-                        File.separator + originalUsername + File.separator,
-                        File.separator + nuevoNombre + File.separator
-                );
-                currentUser.setAvatar(nuevoAvatarPath);
-            }
-        }
-    }
-
-    private void handleUsernameChange(Client user, String nuevoNombre) throws IOException {
-        // 1. Crear nueva estructura de carpetas
-        Path nuevaCarpeta = Paths.get(Main.getCLIENTS_FOLDER_PATH(), nuevoNombre);
-        Files.createDirectories(nuevaCarpeta);
-
-        // 2. Copiar archivos de la carpeta antigua a la nueva
-        Path carpetaAntigua = Paths.get(Main.getCLIENTS_FOLDER_PATH(), originalUsername);
-        if (Files.exists(carpetaAntigua)) {
-            Files.walk(carpetaAntigua)
-                    .filter(path -> !Files.isDirectory(path))
-                    .forEach(path -> {
-                        try {
-                            Path destino = nuevaCarpeta.resolve(path.getFileName());
-                            Files.copy(path, destino, StandardCopyOption.REPLACE_EXISTING);
-
-                            // 3. Si es el archivo de avatar, actualizar la referencia
-                            if (path.getFileName().toString().equals("avatar.jpg")) {
-                                user.setAvatar(destino.toString());
-                            }
-                        } catch (IOException e) {
-                            System.err.println("Error copiando archivo: " + e.getMessage());
-                        }
-                    });
-        }
-
-        // 4. Actualizar ruta de la carpeta en el usuario
-        user.setClientFolderPath(nuevoNombre);
-
-        // 5. Manejar el avatar por defecto
-        if (user.getAvatar() != null && user.getAvatar().equals(Main.getUSER_ICON_URL())) {
-            // No necesita cambios, sigue siendo el avatar por defecto
-        } else if (user.getAvatar() != null && user.getAvatar().contains(originalUsername)) {
-            // Actualizar ruta del avatar si estaba en la carpeta antigua
-            String nuevoAvatarPath = user.getAvatar().replace(
-                    File.separator + originalUsername + File.separator,
-                    File.separator + nuevoNombre + File.separator
-            );
-            user.setAvatar(nuevoAvatarPath);
-        }
-
-        // 6. Eliminar carpeta antigua si es diferente
-        if (!originalUsername.equals(nuevoNombre)) {
-            deleteDirectory(carpetaAntigua.toFile());
-        }
-    }
-
-    private void handleAvatarChange(Client user) throws IOException {
-        String nuevoAvatarPath = Main.getAvatarPathSelected();
-
-        // Si es el avatar por defecto, solo guardar la referencia
-        if (nuevoAvatarPath.equals(Main.getUSER_ICON_URL())) {
-            user.setAvatar(nuevoAvatarPath);
-        } else {
-            // Copiar el archivo de avatar a la carpeta del usuario
-            Path destinoAvatar = Paths.get(user.getClientFolderPath(), "avatar.jpg");
-            Files.copy(Paths.get(nuevoAvatarPath), destinoAvatar, StandardCopyOption.REPLACE_EXISTING);
-            user.setAvatar(destinoAvatar.toString());
-        }
-    }
-
-    private void exitEditMode() {
-        this.getjButtonEditarPerfil().setText("Editar");
-        this.getjTextFieldNombrePerfil().setEnabled(false);
-        this.getjPasswordFieldContraseñaPerfil().setEnabled(false);
-        this.getjPasswordFieldConfirmarContraseñaPerfil().setEnabled(false);
-    }
-
-    private boolean deleteDirectory(File directory) {
-        File[] allContents = directory.listFiles();
-        if (allContents != null) {
-            for (File file : allContents) {
-                deleteDirectory(file);
-            }
-        }
-        return directory.delete();
-    }
-
-
     private void jButtonVerPerfilActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonVerPerfilActionPerformed
+
         cambiarLayout("cardPerfil");
+
     }//GEN-LAST:event_jButtonVerPerfilActionPerformed
 
-    // (REVISAR)
     private void jButtonEnviarArchivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEnviarArchivoActionPerformed
-
+        // (REVISAR)
         JFileChooser fileChooser = new JFileChooser();
         int result = fileChooser.showOpenDialog(this);
+
         if (result == JFileChooser.APPROVE_OPTION) {
+
             File file = fileChooser.getSelectedFile();
-            Main.getCurrentUser().sendFile(file.getPath());  // Llamar al método de envío de archivo
+            UserController.getCurrentUser().sendFile(file.getPath());  // Llamar al método de envío de archivo
+
         }
 
     }//GEN-LAST:event_jButtonEnviarArchivoActionPerformed
 
     private void jButtonEliminarServidorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEliminarServidorActionPerformed
+
         // Ejemplo de uso:
         pc.removeServerPanel(jTextFieldServerIP.getText() + ":" + jTextFieldPuerto.getText());
+
     }//GEN-LAST:event_jButtonEliminarServidorActionPerformed
 
     private void jButtonAccederKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jButtonAccederKeyPressed
+
         Controller.funcionBoton(evt, jButtonAcceder);
+
     }//GEN-LAST:event_jButtonAccederKeyPressed
 
-    @Override
-    public AccessibleContext getAccessibleContext() {
-        return super.getAccessibleContext();
-    }
-
-    public JButton getjButtonEnviar() {
-        return jButtonEnviar;
+    /*
+     * -----------------------------------------------------------------------
+     * GETTERS Y SETTERS
+     * -----------------------------------------------------------------------
+     */
+    public String getAPP_ICON_URL() {
+        return APP_ICON_URL;
     }
 
     public CardLayout getCardLayout() {
         return cardLayout;
     }
 
-    public JPanel getjPanelMensajes() {
-        return jPanelMensajes;
+    public void setCardLayout(CardLayout cardLayout) {
+        this.cardLayout = cardLayout;
+    }
+
+    public Controller getCtrlr() {
+        return ctrlr;
+    }
+
+    public void setCtrlr(Controller ctrlr) {
+        this.ctrlr = ctrlr;
+    }
+
+    public PanelsController getPc() {
+        return pc;
+    }
+
+    public void setPc(PanelsController pc) {
+        this.pc = pc;
+    }
+
+    public UserController getUc() {
+        return uc;
+    }
+
+    public void setUc(UserController uc) {
+        this.uc = uc;
+    }
+
+    public Main getMain() {
+        return main;
+    }
+
+    public void setMain(Main main) {
+        this.main = main;
+    }
+
+    public String getOriginalUsername() {
+        return originalUsername;
+    }
+
+    public void setOriginalUsername(String originalUsername) {
+        this.originalUsername = originalUsername;
+    }
+
+    public String getOriginalPassword() {
+        return originalPassword;
+    }
+
+    public void setOriginalPassword(String originalPassword) {
+        this.originalPassword = originalPassword;
+    }
+
+    public String getOriginalAvatar() {
+        return originalAvatar;
+    }
+
+    public void setOriginalAvatar(String originalAvatar) {
+        this.originalAvatar = originalAvatar;
+    }
+
+    public JButton getjButtonAcceder() {
+        return jButtonAcceder;
+    }
+
+    public void setjButtonAcceder(JButton jButtonAcceder) {
+        this.jButtonAcceder = jButtonAcceder;
+    }
+
+    public JButton getjButtonCambiarAvatar() {
+        return jButtonCambiarAvatar;
+    }
+
+    public void setjButtonCambiarAvatar(JButton jButtonCambiarAvatar) {
+        this.jButtonCambiarAvatar = jButtonCambiarAvatar;
+    }
+
+    public JButton getjButtonCerrarSesion() {
+        return jButtonCerrarSesion;
+    }
+
+    public void setjButtonCerrarSesion(JButton jButtonCerrarSesion) {
+        this.jButtonCerrarSesion = jButtonCerrarSesion;
+    }
+
+    public JButton getjButtonConectarCliente() {
+        return jButtonConectarCliente;
+    }
+
+    public void setjButtonConectarCliente(JButton jButtonConectarCliente) {
+        this.jButtonConectarCliente = jButtonConectarCliente;
+    }
+
+    public JButton getjButtonConectarServidor() {
+        return jButtonConectarServidor;
+    }
+
+    public void setjButtonConectarServidor(JButton jButtonConectarServidor) {
+        this.jButtonConectarServidor = jButtonConectarServidor;
+    }
+
+    public JButton getjButtonConfirmarCrearCuenta() {
+        return jButtonConfirmarCrearCuenta;
+    }
+
+    public void setjButtonConfirmarCrearCuenta(JButton jButtonConfirmarCrearCuenta) {
+        this.jButtonConfirmarCrearCuenta = jButtonConfirmarCrearCuenta;
+    }
+
+    public JButton getjButtonCrearAvatar() {
+        return jButtonCrearAvatar;
+    }
+
+    public void setjButtonCrearAvatar(JButton jButtonCrearAvatar) {
+        this.jButtonCrearAvatar = jButtonCrearAvatar;
+    }
+
+    public JButton getjButtonCrearCuenta() {
+        return jButtonCrearCuenta;
+    }
+
+    public void setjButtonCrearCuenta(JButton jButtonCrearCuenta) {
+        this.jButtonCrearCuenta = jButtonCrearCuenta;
+    }
+
+    public JButton getjButtonEditarPerfil() {
+        return jButtonEditarPerfil;
+    }
+
+    public void setjButtonEditarPerfil(JButton jButtonEditarPerfil) {
+        this.jButtonEditarPerfil = jButtonEditarPerfil;
+    }
+
+    public JButton getjButtonEliminarServidor() {
+        return jButtonEliminarServidor;
+    }
+
+    public void setjButtonEliminarServidor(JButton jButtonEliminarServidor) {
+        this.jButtonEliminarServidor = jButtonEliminarServidor;
+    }
+
+    public JButton getjButtonEnviar() {
+        return jButtonEnviar;
+    }
+
+    public void setjButtonEnviar(JButton jButtonEnviar) {
+        this.jButtonEnviar = jButtonEnviar;
+    }
+
+    public JButton getjButtonEnviarArchivo() {
+        return jButtonEnviarArchivo;
+    }
+
+    public void setjButtonEnviarArchivo(JButton jButtonEnviarArchivo) {
+        this.jButtonEnviarArchivo = jButtonEnviarArchivo;
+    }
+
+    public JButton getjButtonVerPerfil() {
+        return jButtonVerPerfil;
+    }
+
+    public void setjButtonVerPerfil(JButton jButtonVerPerfil) {
+        this.jButtonVerPerfil = jButtonVerPerfil;
+    }
+
+    public JButton getjButtonVolverChatToChats() {
+        return jButtonVolverChatToChats;
+    }
+
+    public void setjButtonVolverChatToChats(JButton jButtonVolverChatToChats) {
+        this.jButtonVolverChatToChats = jButtonVolverChatToChats;
+    }
+
+    public JButton getjButtonVolverCrearCuentaToInicioSesion() {
+        return jButtonVolverCrearCuentaToInicioSesion;
+    }
+
+    public void setjButtonVolverCrearCuentaToInicioSesion(JButton jButtonVolverCrearCuentaToInicioSesion) {
+        this.jButtonVolverCrearCuentaToInicioSesion = jButtonVolverCrearCuentaToInicioSesion;
+    }
+
+    public JButton getjButtonVolverPerfilToChats() {
+        return jButtonVolverPerfilToChats;
+    }
+
+    public void setjButtonVolverPerfilToChats(JButton jButtonVolverPerfilToChats) {
+        this.jButtonVolverPerfilToChats = jButtonVolverPerfilToChats;
+    }
+
+    public JLabel getjLabelConfirmarContraseña() {
+        return jLabelConfirmarContraseña;
+    }
+
+    public void setjLabelConfirmarContraseña(JLabel jLabelConfirmarContraseña) {
+        this.jLabelConfirmarContraseña = jLabelConfirmarContraseña;
+    }
+
+    public JLabel getjLabelConfirmarContraseñaPerfil() {
+        return jLabelConfirmarContraseñaPerfil;
+    }
+
+    public void setjLabelConfirmarContraseñaPerfil(JLabel jLabelConfirmarContraseñaPerfil) {
+        this.jLabelConfirmarContraseñaPerfil = jLabelConfirmarContraseñaPerfil;
+    }
+
+    public JLabel getjLabelContraseñaInicioSesion() {
+        return jLabelContraseñaInicioSesion;
+    }
+
+    public void setjLabelContraseñaInicioSesion(JLabel jLabelContraseñaInicioSesion) {
+        this.jLabelContraseñaInicioSesion = jLabelContraseñaInicioSesion;
+    }
+
+    public JLabel getjLabelContraseñaPerfil() {
+        return jLabelContraseñaPerfil;
+    }
+
+    public void setjLabelContraseñaPerfil(JLabel jLabelContraseñaPerfil) {
+        this.jLabelContraseñaPerfil = jLabelContraseñaPerfil;
+    }
+
+    public JLabel getjLabelCrearContraseña() {
+        return jLabelCrearContraseña;
+    }
+
+    public void setjLabelCrearContraseña(JLabel jLabelCrearContraseña) {
+        this.jLabelCrearContraseña = jLabelCrearContraseña;
+    }
+
+    public JLabel getjLabelCrearCuenta() {
+        return jLabelCrearCuenta;
+    }
+
+    public void setjLabelCrearCuenta(JLabel jLabelCrearCuenta) {
+        this.jLabelCrearCuenta = jLabelCrearCuenta;
+    }
+
+    public JLabel getjLabelCrearNombre() {
+        return jLabelCrearNombre;
+    }
+
+    public void setjLabelCrearNombre(JLabel jLabelCrearNombre) {
+        this.jLabelCrearNombre = jLabelCrearNombre;
+    }
+
+    public JLabel getjLabelIconoApp() {
+        return jLabelIconoApp;
+    }
+
+    public void setjLabelIconoApp(JLabel jLabelIconoApp) {
+        this.jLabelIconoApp = jLabelIconoApp;
     }
 
     public JLabel getjLabelImagenCrearCliente() {
         return jLabelImagenCrearCliente;
     }
 
+    public void setjLabelImagenCrearCliente(JLabel jLabelImagenCrearCliente) {
+        this.jLabelImagenCrearCliente = jLabelImagenCrearCliente;
+    }
+
     public JLabel getjLabelImagenPerfilCliente() {
         return jLabelImagenPerfilCliente;
     }
 
+    public void setjLabelImagenPerfilCliente(JLabel jLabelImagenPerfilCliente) {
+        this.jLabelImagenPerfilCliente = jLabelImagenPerfilCliente;
+    }
+
+    public JLabel getjLabelNombreInicioSesion() {
+        return jLabelNombreInicioSesion;
+    }
+
+    public void setjLabelNombreInicioSesion(JLabel jLabelNombreInicioSesion) {
+        this.jLabelNombreInicioSesion = jLabelNombreInicioSesion;
+    }
+
+    public JLabel getjLabelNombrePerfil() {
+        return jLabelNombrePerfil;
+    }
+
+    public void setjLabelNombrePerfil(JLabel jLabelNombrePerfil) {
+        this.jLabelNombrePerfil = jLabelNombrePerfil;
+    }
+
+    public JLabel getjLabelPerfil() {
+        return jLabelPerfil;
+    }
+
+    public void setjLabelPerfil(JLabel jLabelPerfil) {
+        this.jLabelPerfil = jLabelPerfil;
+    }
+
     public JLabel getjLabelServidorPuerto() {
         return jLabelServidorPuerto;
+    }
+
+    public void setjLabelServidorPuerto(JLabel jLabelServidorPuerto) {
+        this.jLabelServidorPuerto = jLabelServidorPuerto;
+    }
+
+    public JPanel getjPanel1() {
+        return jPanel1;
+    }
+
+    public void setjPanel1(JPanel jPanel1) {
+        this.jPanel1 = jPanel1;
+    }
+
+    public JPanel getjPanel2() {
+        return jPanel2;
+    }
+
+    public void setjPanel2(JPanel jPanel2) {
+        this.jPanel2 = jPanel2;
+    }
+
+    public JPanel getjPanel3() {
+        return jPanel3;
+    }
+
+    public void setjPanel3(JPanel jPanel3) {
+        this.jPanel3 = jPanel3;
+    }
+
+    public JPanel getjPanelBotones() {
+        return jPanelBotones;
+    }
+
+    public void setjPanelBotones(JPanel jPanelBotones) {
+        this.jPanelBotones = jPanelBotones;
+    }
+
+    public JPanel getjPanelBotones1() {
+        return jPanelBotones1;
+    }
+
+    public void setjPanelBotones1(JPanel jPanelBotones1) {
+        this.jPanelBotones1 = jPanelBotones1;
+    }
+
+    public JPanel getjPanelBotones2() {
+        return jPanelBotones2;
+    }
+
+    public void setjPanelBotones2(JPanel jPanelBotones2) {
+        this.jPanelBotones2 = jPanelBotones2;
+    }
+
+    public JPanel getjPanelChat() {
+        return jPanelChat;
+    }
+
+    public void setjPanelChat(JPanel jPanelChat) {
+        this.jPanelChat = jPanelChat;
+    }
+
+    public JPanel getjPanelContraseña() {
+        return jPanelContraseña;
+    }
+
+    public void setjPanelContraseña(JPanel jPanelContraseña) {
+        this.jPanelContraseña = jPanelContraseña;
+    }
+
+    public JPanel getjPanelContraseña1() {
+        return jPanelContraseña1;
+    }
+
+    public void setjPanelContraseña1(JPanel jPanelContraseña1) {
+        this.jPanelContraseña1 = jPanelContraseña1;
+    }
+
+    public JPanel getjPanelContraseña2() {
+        return jPanelContraseña2;
+    }
+
+    public void setjPanelContraseña2(JPanel jPanelContraseña2) {
+        this.jPanelContraseña2 = jPanelContraseña2;
+    }
+
+    public JPanel getjPanelContraseña3() {
+        return jPanelContraseña3;
+    }
+
+    public void setjPanelContraseña3(JPanel jPanelContraseña3) {
+        this.jPanelContraseña3 = jPanelContraseña3;
+    }
+
+    public JPanel getjPanelContraseña4() {
+        return jPanelContraseña4;
+    }
+
+    public void setjPanelContraseña4(JPanel jPanelContraseña4) {
+        this.jPanelContraseña4 = jPanelContraseña4;
+    }
+
+    public JPanel getjPanelCrearCuenta() {
+        return jPanelCrearCuenta;
+    }
+
+    public void setjPanelCrearCuenta(JPanel jPanelCrearCuenta) {
+        this.jPanelCrearCuenta = jPanelCrearCuenta;
+    }
+
+    public JPanel getjPanelImagen() {
+        return jPanelImagen;
+    }
+
+    public void setjPanelImagen(JPanel jPanelImagen) {
+        this.jPanelImagen = jPanelImagen;
+    }
+
+    public JPanel getjPanelImagen1() {
+        return jPanelImagen1;
+    }
+
+    public void setjPanelImagen1(JPanel jPanelImagen1) {
+        this.jPanelImagen1 = jPanelImagen1;
+    }
+
+    public JPanel getjPanelImagen2() {
+        return jPanelImagen2;
+    }
+
+    public void setjPanelImagen2(JPanel jPanelImagen2) {
+        this.jPanelImagen2 = jPanelImagen2;
+    }
+
+    public JPanel getjPanelImagen3() {
+        return jPanelImagen3;
+    }
+
+    public void setjPanelImagen3(JPanel jPanelImagen3) {
+        this.jPanelImagen3 = jPanelImagen3;
+    }
+
+    public JPanel getjPanelImagen4() {
+        return jPanelImagen4;
+    }
+
+    public void setjPanelImagen4(JPanel jPanelImagen4) {
+        this.jPanelImagen4 = jPanelImagen4;
+    }
+
+    public JPanel getjPanelInicio() {
+        return jPanelInicio;
+    }
+
+    public void setjPanelInicio(JPanel jPanelInicio) {
+        this.jPanelInicio = jPanelInicio;
+    }
+
+    public JPanel getjPanelInicioSesion() {
+        return jPanelInicioSesion;
+    }
+
+    public void setjPanelInicioSesion(JPanel jPanelInicioSesion) {
+        this.jPanelInicioSesion = jPanelInicioSesion;
+    }
+
+    public JPanel getjPanelLayout() {
+        return jPanelLayout;
+    }
+
+    public void setjPanelLayout(JPanel jPanelLayout) {
+        this.jPanelLayout = jPanelLayout;
+    }
+
+    public JPanel getjPanelMensajes() {
+        return jPanelMensajes;
+    }
+
+    public void setjPanelMensajes(JPanel jPanelMensajes) {
+        this.jPanelMensajes = jPanelMensajes;
+    }
+
+    public JPanel getjPanelMenuInferior1() {
+        return jPanelMenuInferior1;
+    }
+
+    public void setjPanelMenuInferior1(JPanel jPanelMenuInferior1) {
+        this.jPanelMenuInferior1 = jPanelMenuInferior1;
+    }
+
+    public JPanel getjPanelMenuInferior2() {
+        return jPanelMenuInferior2;
+    }
+
+    public void setjPanelMenuInferior2(JPanel jPanelMenuInferior2) {
+        this.jPanelMenuInferior2 = jPanelMenuInferior2;
+    }
+
+    public JPanel getjPanelMenuInferiorChats() {
+        return jPanelMenuInferiorChats;
+    }
+
+    public void setjPanelMenuInferiorChats(JPanel jPanelMenuInferiorChats) {
+        this.jPanelMenuInferiorChats = jPanelMenuInferiorChats;
+    }
+
+    public JPanel getjPanelMenuSuperior1() {
+        return jPanelMenuSuperior1;
+    }
+
+    public void setjPanelMenuSuperior1(JPanel jPanelMenuSuperior1) {
+        this.jPanelMenuSuperior1 = jPanelMenuSuperior1;
+    }
+
+    public JPanel getjPanelMenuSuperiorChats() {
+        return jPanelMenuSuperiorChats;
+    }
+
+    public void setjPanelMenuSuperiorChats(JPanel jPanelMenuSuperiorChats) {
+        this.jPanelMenuSuperiorChats = jPanelMenuSuperiorChats;
+    }
+
+    public JPanel getjPanelMenuSuperiorChats2() {
+        return jPanelMenuSuperiorChats2;
+    }
+
+    public void setjPanelMenuSuperiorChats2(JPanel jPanelMenuSuperiorChats2) {
+        this.jPanelMenuSuperiorChats2 = jPanelMenuSuperiorChats2;
+    }
+
+    public JPanel getjPanelMenuSuperiorChats3() {
+        return jPanelMenuSuperiorChats3;
+    }
+
+    public void setjPanelMenuSuperiorChats3(JPanel jPanelMenuSuperiorChats3) {
+        this.jPanelMenuSuperiorChats3 = jPanelMenuSuperiorChats3;
+    }
+
+    public JPanel getjPanelNombre() {
+        return jPanelNombre;
+    }
+
+    public void setjPanelNombre(JPanel jPanelNombre) {
+        this.jPanelNombre = jPanelNombre;
+    }
+
+    public JPanel getjPanelNombre1() {
+        return jPanelNombre1;
+    }
+
+    public void setjPanelNombre1(JPanel jPanelNombre1) {
+        this.jPanelNombre1 = jPanelNombre1;
+    }
+
+    public JPanel getjPanelNombre2() {
+        return jPanelNombre2;
+    }
+
+    public void setjPanelNombre2(JPanel jPanelNombre2) {
+        this.jPanelNombre2 = jPanelNombre2;
+    }
+
+    public JPanel getjPanelPerfil() {
+        return jPanelPerfil;
+    }
+
+    public void setjPanelPerfil(JPanel jPanelPerfil) {
+        this.jPanelPerfil = jPanelPerfil;
+    }
+
+    public JPanel getjPanelScrollChat() {
+        return jPanelScrollChat;
+    }
+
+    public void setjPanelScrollChat(JPanel jPanelScrollChat) {
+        this.jPanelScrollChat = jPanelScrollChat;
+    }
+
+    public JPanel getjPanelScrollServidores() {
+        return jPanelScrollServidores;
+    }
+
+    public void setjPanelScrollServidores(JPanel jPanelScrollServidores) {
+        this.jPanelScrollServidores = jPanelScrollServidores;
+    }
+
+    public JPanel getjPanelServidores() {
+        return jPanelServidores;
+    }
+
+    public void setjPanelServidores(JPanel jPanelServidores) {
+        this.jPanelServidores = jPanelServidores;
+    }
+
+    public JPanel getjPanelTitulo() {
+        return jPanelTitulo;
+    }
+
+    public void setjPanelTitulo(JPanel jPanelTitulo) {
+        this.jPanelTitulo = jPanelTitulo;
+    }
+
+    public JPanel getjPanelTitulo1() {
+        return jPanelTitulo1;
+    }
+
+    public void setjPanelTitulo1(JPanel jPanelTitulo1) {
+        this.jPanelTitulo1 = jPanelTitulo1;
+    }
+
+    public JPasswordField getjPasswordFieldConfirmarContraseña() {
+        return jPasswordFieldConfirmarContraseña;
+    }
+
+    public void setjPasswordFieldConfirmarContraseña(JPasswordField jPasswordFieldConfirmarContraseña) {
+        this.jPasswordFieldConfirmarContraseña = jPasswordFieldConfirmarContraseña;
+    }
+
+    public JPasswordField getjPasswordFieldConfirmarContraseñaPerfil() {
+        return jPasswordFieldConfirmarContraseñaPerfil;
+    }
+
+    public void setjPasswordFieldConfirmarContraseñaPerfil(JPasswordField jPasswordFieldConfirmarContraseñaPerfil) {
+        this.jPasswordFieldConfirmarContraseñaPerfil = jPasswordFieldConfirmarContraseñaPerfil;
+    }
+
+    public JPasswordField getjPasswordFieldContraseñaInicioSesion() {
+        return jPasswordFieldContraseñaInicioSesion;
+    }
+
+    public void setjPasswordFieldContraseñaInicioSesion(JPasswordField jPasswordFieldContraseñaInicioSesion) {
+        this.jPasswordFieldContraseñaInicioSesion = jPasswordFieldContraseñaInicioSesion;
+    }
+
+    public JPasswordField getjPasswordFieldContraseñaPerfil() {
+        return jPasswordFieldContraseñaPerfil;
+    }
+
+    public void setjPasswordFieldContraseñaPerfil(JPasswordField jPasswordFieldContraseñaPerfil) {
+        this.jPasswordFieldContraseñaPerfil = jPasswordFieldContraseñaPerfil;
+    }
+
+    public JPasswordField getjPasswordFieldCrearContraseña() {
+        return jPasswordFieldCrearContraseña;
+    }
+
+    public void setjPasswordFieldCrearContraseña(JPasswordField jPasswordFieldCrearContraseña) {
+        this.jPasswordFieldCrearContraseña = jPasswordFieldCrearContraseña;
+    }
+
+    public JScrollPane getjScrollPaneChat() {
+        return jScrollPaneChat;
+    }
+
+    public void setjScrollPaneChat(JScrollPane jScrollPaneChat) {
+        this.jScrollPaneChat = jScrollPaneChat;
+    }
+
+    public JScrollPane getjScrollPaneServidores() {
+        return jScrollPaneServidores;
+    }
+
+    public void setjScrollPaneServidores(JScrollPane jScrollPaneServidores) {
+        this.jScrollPaneServidores = jScrollPaneServidores;
     }
 
     public JTextField getjTextFieldCrearNombre() {
@@ -1664,75 +2425,6 @@ public class ChatApp extends javax.swing.JFrame {
     public void setjTextFieldServerIP(JTextField jTextFieldServerIP) {
         this.jTextFieldServerIP = jTextFieldServerIP;
     }
-
-    public JPasswordField getjPasswordFieldConfirmarContraseña() {
-        return jPasswordFieldConfirmarContraseña;
-    }
-
-    public void setjPasswordFieldConfirmarContraseña(JPasswordField jPasswordFieldConfirmarContraseña) {
-        this.jPasswordFieldConfirmarContraseña = jPasswordFieldConfirmarContraseña;
-    }
-
-    public JPasswordField getjPasswordFieldConfirmarContraseñaPerfil() {
-        return jPasswordFieldConfirmarContraseñaPerfil;
-    }
-
-    public void setjPasswordFieldConfirmarContraseñaPerfil(JPasswordField jPasswordFieldConfirmarContraseñaPerfil) {
-        this.jPasswordFieldConfirmarContraseñaPerfil = jPasswordFieldConfirmarContraseñaPerfil;
-    }
-
-    public JPasswordField getjPasswordFieldContraseñaInicioSesion() {
-        return jPasswordFieldContraseñaInicioSesion;
-    }
-
-    public void setjPasswordFieldContraseñaInicioSesion(JPasswordField jPasswordFieldContraseñaInicioSesion) {
-        this.jPasswordFieldContraseñaInicioSesion = jPasswordFieldContraseñaInicioSesion;
-    }
-
-    public JPasswordField getjPasswordFieldContraseñaPerfil() {
-        return jPasswordFieldContraseñaPerfil;
-    }
-
-    public void setjPasswordFieldContraseñaPerfil(JPasswordField jPasswordFieldContraseñaPerfil) {
-        this.jPasswordFieldContraseñaPerfil = jPasswordFieldContraseñaPerfil;
-    }
-
-    public JPasswordField getjPasswordFieldCrearContraseña() {
-        return jPasswordFieldCrearContraseña;
-    }
-
-    public void setjPasswordFieldCrearContraseña(JPasswordField jPasswordFieldCrearContraseña) {
-        this.jPasswordFieldCrearContraseña = jPasswordFieldCrearContraseña;
-    }
-
-    public JPanel getjPanelChat() {
-        return jPanelChat;
-    }
-
-    public JPanel getjPanelChats() {
-        return jPanelServidores;
-    }
-
-    public void setCardLayout(CardLayout cardLayout) {
-        this.cardLayout = cardLayout;
-    }
-
-    public JButton getjButtonEditarPerfil() {
-        return jButtonEditarPerfil;
-    }
-
-    public Controller getCtrlr() {
-        return ctrlr;
-    }
-
-    public PanelsController getPc() {
-        return pc;
-    }
-
-    public UserController getUc() {
-        return uc;
-    }
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonAcceder;

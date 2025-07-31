@@ -4,10 +4,9 @@ package ui;
  * Kevin Gómez Valderas 2ºDAM
  */
 import controllers.Controller;
+import controllers.UserController;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -22,8 +21,18 @@ import org.json.JSONObject;
 
 public class ConsoleMode {
 
-    /**
-     * Ejecutar en consola
+    /*
+     * -----------------------------------------------------------------------
+     * CONSTRUCTOR
+     * -----------------------------------------------------------------------
+     */
+    public ConsoleMode() {
+    }
+
+    /*
+     * -----------------------------------------------------------------------
+     * MÉTODOS
+     * -----------------------------------------------------------------------
      */
     public static void runCLI() {
 
@@ -31,7 +40,7 @@ public class ConsoleMode {
         boolean welcomeShown = false;  // Controla si se mostró el mensaje de bienvenida
 
         // Configurar encoding UTF-8
-        configurarUTF8Encoding();
+        Controller.configurarUTF8Encoding();
 
         // Mostrar menú inicial
         System.out.println("""
@@ -46,7 +55,7 @@ public class ConsoleMode {
         // Bucle principal de la aplicación
         while (true) {
 
-            if (Main.getCurrentUser() == null) {
+            if (UserController.getCurrentUser() == null) {
                 initialOptions(sca, welcomeShown);
 
             } else {
@@ -58,9 +67,6 @@ public class ConsoleMode {
 
     }
 
-    /**
-     * Initial Options
-     */
     private static void initialOptions(Scanner sca, boolean welcomeShown) {
 
         welcomeShown = false;  // Resetear variable
@@ -69,6 +75,7 @@ public class ConsoleMode {
         String opcion = sca.nextLine();
 
         switch (opcion) {
+
             case "1" ->
                 login(sca);
             case "2" ->
@@ -143,7 +150,7 @@ public class ConsoleMode {
             }
 
             // Configurar perfil y finalizar
-            Main.getCurrentUser().loadClientData();
+            UserController.getCurrentUser().loadClientData();
             System.out.println("\n¡Inicio de sesión exitoso!");
             break;
 
@@ -157,8 +164,10 @@ public class ConsoleMode {
         System.out.println("Advertencia: La consola no admite entrada oculta. La contraseña será visible.\n");
 
         while (true) {
+
             // Solicitar y validar nombre de usuario
             String nombre;
+
             while (true) {
 
                 System.out.print("Introduzca nombre de usuario ('0' para cancelar): ");
@@ -185,7 +194,9 @@ public class ConsoleMode {
 
             // Solicitar y validar contraseña
             String contraseña;
+
             while (true) {
+
                 System.out.print("Introduzca contraseña (mínimo 6 caracteres) ('0' para cancelar): ");
                 contraseña = sca.nextLine();
 
@@ -213,6 +224,7 @@ public class ConsoleMode {
                 }
 
                 break; // Contraseña válida
+
             }
 
             // Solicitar URL del avatar
@@ -225,7 +237,7 @@ public class ConsoleMode {
             }
 
             if (avatarURL.isEmpty()) {
-                avatarURL = Main.getUSER_ICON_URL();
+                avatarURL = UserController.getUSER_ICON_URL();
                 System.out.println("Usando avatar por defecto: " + avatarURL);
             }
 
@@ -233,7 +245,7 @@ public class ConsoleMode {
             Client cliente = new Client(nombre, contraseña.toCharArray(), avatarURL);
 
             // Guardar y configurar el usuario
-            Main.setCurrentUser(cliente);
+            UserController.setCurrentUser(cliente);
             cliente.createClientFolder();
             cliente.saveClientData();
 
@@ -247,14 +259,11 @@ public class ConsoleMode {
 
     }
 
-    /**
-     * Main Options
-     */
     private static boolean mainOptions(Scanner sca, boolean welcomeShown) {
 
         // Mostrar mensaje de bienvenida solo la primera vez
         if (!welcomeShown) {
-            System.out.println("\n--- BIENVENIDO, " + Main.getCurrentUser().getUsername() + "---");
+            System.out.println("\n--- BIENVENIDO, " + UserController.getCurrentUser().getUsername() + "---");
             welcomeShown = true;
         }
 
@@ -301,12 +310,15 @@ public class ConsoleMode {
     private static void connectToServer(Scanner sca) {
 
         // Verificar si hay un usuario conectado
-        if (Main.getCurrentUser() == null) {
+        if (UserController.getCurrentUser() == null) {
+
             login(sca);
-            if (Main.getCurrentUser() == null) {
+
+            if (UserController.getCurrentUser() == null) {
                 System.out.println("\nDebe iniciar sesión primero.");
                 return;
             }
+
         }
 
         // Mostrar opción de ver servidores anteriores
@@ -316,11 +328,11 @@ public class ConsoleMode {
         if (verServidores.equalsIgnoreCase("s")) {
 
             if (!showPreviousServers(sca)) {
+
                 System.out.println("\nNo hay servidores guardados o no se seleccionó ninguno.");
 
             } else {
                 return; // Si se seleccionó un servidor, salir
-
             }
 
         }
@@ -331,6 +343,7 @@ public class ConsoleMode {
             String portInput;
 
             try {
+
                 System.out.print("\nIntroduzca la IP del servidor (o 'salir' para cancelar): ");
                 serverIP = sca.nextLine().trim();
 
@@ -352,6 +365,7 @@ public class ConsoleMode {
                 Main.setPort(port);
 
                 try {
+
                     Main.getServer().connect(Main.getServerIP(), Main.getPort());
                     System.out.println("\n✅ Servidor iniciado en " + serverIP + ":" + port);
 
@@ -370,7 +384,7 @@ public class ConsoleMode {
                 }
 
             } catch (NumberFormatException e) {
-                System.out.println("\nError: El puerto debe ser un número válido.\n");
+                System.err.println("\nError: El puerto debe ser un número válido.\n");
 
             } catch (Exception e) {
                 System.err.println("\nError inesperado: " + e.getMessage());
@@ -391,8 +405,8 @@ public class ConsoleMode {
         try {
 
             // Leer el archivo JSON del usuario
-            File jsonFile = new File(Main.getCurrentUser().getClientFolderPath()
-                    + Controller.getSeparator() + Main.getCLIENT_JSON_NAME());
+            File jsonFile = new File(UserController.getCurrentUser().getClientFolderPath()
+                    + "/" + UserController.getCLIENT_JSON_NAME());
             if (!jsonFile.exists()) {
                 return false;
             }
@@ -449,6 +463,7 @@ public class ConsoleMode {
                         for (int i = 0; i < serverArray.length(); i++) {
 
                             if (index == selectedIndex) {
+
                                 JSONObject server = serverArray.getJSONObject(i);
                                 String serverAddress = server.getString("servers");
 
@@ -456,6 +471,7 @@ public class ConsoleMode {
                                 String[] parts = serverAddress.split(":");
 
                                 if (parts.length == 2) {
+
                                     Main.setServerIP(parts[0]);
                                     Main.setPort(Integer.parseInt(parts[1]));
 
@@ -467,6 +483,7 @@ public class ConsoleMode {
                                 }
 
                             }
+
                             index++;
 
                         }
@@ -476,16 +493,18 @@ public class ConsoleMode {
                 }
 
             } catch (NumberFormatException e) {
-                System.out.println("\nEntrada inválida.");
+                System.err.println("\nEntrada inválida.");
                 return false;
 
             } catch (JSONException e) {
                 System.err.println("\nError al conectar: " + e.getMessage());
                 return false;
+
             }
 
         } catch (IOException | JSONException e) {
             System.err.println("\nError al leer los servidores guardados: " + e.getMessage());
+
         }
 
         return false;
@@ -495,12 +514,14 @@ public class ConsoleMode {
     private static void saveServerToHistory(String serverIP, int port) {
 
         try {
+
             // Leer el archivo JSON actual
-            File jsonFile = new File(Main.getCurrentUser().getClientFolderPath()
-                    + Controller.getSeparator() + Main.getCLIENT_JSON_NAME());
+            File jsonFile = new File(UserController.getCurrentUser().getClientFolderPath()
+                    + "/" + UserController.getCLIENT_JSON_NAME());
             JSONObject clientData;
 
             if (jsonFile.exists()) {
+
                 String content = new String(Files.readAllBytes(jsonFile.toPath()));
                 clientData = new JSONObject(content);
 
@@ -510,10 +531,13 @@ public class ConsoleMode {
 
             // Obtener o crear la sección de servidores
             JSONObject servers;
+
             if (clientData.has("servers")) {
+
                 servers = clientData.getJSONObject("servers");
 
             } else {
+
                 servers = new JSONObject();
                 clientData.put("servers", servers);
 
@@ -534,6 +558,7 @@ public class ConsoleMode {
 
         } catch (IOException | JSONException e) {
             System.err.println("\nError al guardar el servidor en el historial: " + e.getMessage());
+
         }
 
     }
@@ -541,7 +566,7 @@ public class ConsoleMode {
     public static void connectUserToServer(Scanner sca) {
 
         // Verificar si el usuario ya está conectado
-        if (Main.getCurrentUser().isConnected()) {
+        if (UserController.getCurrentUser().isConnected()) {
             System.out.println("\nAdvertencia: Ya estás conectado al servidor.");
             return;
         }
@@ -551,18 +576,19 @@ public class ConsoleMode {
 
             try {
 
-                Main.getCurrentUser().setServerIP(Main.getServerIP());
-                Main.getCurrentUser().setPort(Main.getPort());
-                Main.getCurrentUser().connect();
+                UserController.getCurrentUser().setServerIP(Main.getServerIP());
+                UserController.getCurrentUser().setPort(Main.getPort());
+                UserController.getCurrentUser().connect();
 
-                if (Main.getCurrentUser().isConnected()) {
+                if (UserController.getCurrentUser().isConnected()) {
+
                     System.out.println("\n✅ Usuario conectado al servidor " + Main.getServerIP() + ":" + Main.getPort());
-                    String connectionMsg = Main.getCurrentUser().isConnected()
-                            ? Main.getCurrentUser().getUsername() + ": Conectado a " + Main.getServerIP() + ":" + Main.getPort()
-                            : Main.getCurrentUser().getUsername() + ": Error al conectar a " + Main.getServerIP() + ":" + Main.getPort();
+                    String connectionMsg = UserController.getCurrentUser().isConnected()
+                            ? UserController.getCurrentUser().getUsername() + ": Conectado a " + Main.getServerIP() + ":" + Main.getPort()
+                            : UserController.getCurrentUser().getUsername() + ": Error al conectar a " + Main.getServerIP() + ":" + Main.getPort();
 
                     // Enviar mensaje al servidor
-                    Main.getCurrentUser().sendMessage(connectionMsg);
+                    UserController.getCurrentUser().sendMessage(connectionMsg);
                     showConnectionMenu(sca);
                     return;
 
@@ -570,31 +596,33 @@ public class ConsoleMode {
 
             } catch (Exception e) {
                 System.err.println("\nLa conexión automática falló: " + e.getMessage());
+
             }
 
         }
 
         // Si no hay configuración o falló la conexión automática, pedir datos manualmente
-        while (!Main.getCurrentUser().isConnected()) {
+        while (!UserController.getCurrentUser().isConnected()) {
 
             connectToServer(sca);
-            Main.getCurrentUser().setServerIP(Main.getServerIP());
-            Main.getCurrentUser().setPort(Main.getPort());
-            Main.getCurrentUser().connect();
+            UserController.getCurrentUser().setServerIP(Main.getServerIP());
+            UserController.getCurrentUser().setPort(Main.getPort());
+            UserController.getCurrentUser().connect();
 
             // Si connectToServer() devuelve, verificar si la conexión fue exitosa
-            if (Main.getCurrentUser().isConnected()) {
+            if (UserController.getCurrentUser().isConnected()) {
 
                 System.out.println("\n✅ Usuario conectado al servidor " + Main.getServerIP() + ":" + Main.getPort());
-                String connectionMsg = Main.getCurrentUser().isConnected()
-                        ? Main.getCurrentUser().getUsername() + ": Conectado a " + Main.getServerIP() + ":" + Main.getPort()
-                        : Main.getCurrentUser().getUsername() + ": Error al conectar a " + Main.getServerIP() + ":" + Main.getPort();
+                String connectionMsg = UserController.getCurrentUser().isConnected()
+                        ? UserController.getCurrentUser().getUsername() + ": Conectado a " + Main.getServerIP() + ":" + Main.getPort()
+                        : UserController.getCurrentUser().getUsername() + ": Error al conectar a " + Main.getServerIP() + ":" + Main.getPort();
 
                 // Enviar mensaje al servidor
-                Main.getCurrentUser().sendMessage(connectionMsg);
+                UserController.getCurrentUser().sendMessage(connectionMsg);
                 showConnectionMenu(sca);
 
             } else {
+
                 System.out.println("\n¿Desea intentar conectarse de nuevo? (s/n)");
                 String respuesta = sca.nextLine();
 
@@ -612,10 +640,9 @@ public class ConsoleMode {
 
         // Aquí puedes agregar la lógica para ver el perfil
         System.out.println("\n--- PERFIL ---\n");
-
-        System.out.println("Avatar: " + Main.getCurrentUser().getAvatar());
-        System.out.println("Usuario: " + Main.getCurrentUser().getUsername());
-        System.out.println("Contraseña: " + Main.getCurrentUser().getPasswdAsString());
+        System.out.println("Avatar: " + UserController.getCurrentUser().getAvatar());
+        System.out.println("Usuario: " + UserController.getCurrentUser().getUsername());
+        System.out.println("Contraseña: " + UserController.getCurrentUser().getPasswdAsString());
 
     }
 
@@ -625,6 +652,7 @@ public class ConsoleMode {
         String newUsername;
 
         do {
+
             System.out.println("\nIntroduzca el nuevo nombre de usuario:");
             newUsername = sca.nextLine().trim();
 
@@ -671,47 +699,50 @@ public class ConsoleMode {
         } while (true);
 
         // Asignar los valores al cliente logeado
-        Main.getCurrentUser().setUsername(newUsername);
-        Main.getCurrentUser().setPasswd(newPasswd);
+        UserController.getCurrentUser().setUsername(newUsername);
+        UserController.getCurrentUser().setPasswd(newPasswd);
 
-        System.out.println("\nNombre de usuario actualizado: " + Main.getCurrentUser().getUsername());
-        Main.getCurrentUser().setClientFolderPath(newUsername);
-        System.out.println("Ruta de la carpeta del cliente actualizada: " + Main.getCurrentUser().getClientFolderPath());
-        Main.getCurrentUser().createClientFolder();
+        System.out.println("\nNombre de usuario actualizado: " + UserController.getCurrentUser().getUsername());
+        UserController.getCurrentUser().setClientFolderPath(newUsername);
+        System.out.println("Ruta de la carpeta del cliente actualizada: " + UserController.getCurrentUser().getClientFolderPath());
+        UserController.getCurrentUser().createClientFolder();
 
         // Actualizar la ruta del avatar si es necesario
         try {
 
-            String avatarPath = Main.getCurrentUser().getAvatar();
+            String avatarPath = UserController.getCurrentUser().getAvatar();
 
             if (avatarPath != null && !avatarPath.isBlank()) {
+
                 Path source = Paths.get(avatarPath);
                 Path oldFolder = source.getParent(); // Carpeta actual donde está el avatar
-                Path newFolder = Paths.get(Main.getCurrentUser().getClientFolderPath()); // Nuevo nombre de carpeta
+                Path newFolder = Paths.get(UserController.getCurrentUser().getClientFolderPath()); // Nuevo nombre de carpeta
 
                 if (Files.exists(oldFolder) && Files.isDirectory(oldFolder)) {
+
                     // Renombrar la carpeta
                     Files.move(oldFolder, newFolder, StandardCopyOption.REPLACE_EXISTING);
 
                     // Actualizar la ruta del avatar con la nueva ubicación
                     Path newAvatarPath = newFolder.resolve(source.getFileName());
-                    Main.getCurrentUser().setAvatar(newAvatarPath.toString());
+                    UserController.getCurrentUser().setAvatar(newAvatarPath.toString());
 
                     System.out.println("Carpeta y cliente renombrados.");
 
                 } else {
-                    System.out.println("La carpeta del avatar no existe.");
+                    System.err.println("La carpeta del avatar no existe.");
 
                 }
 
             }
 
         } catch (IOException e) {
-            System.out.println("\nError: No se pudo renombrar la carpeta del avatar.");
+            System.err.println("\nError: No se pudo renombrar la carpeta del avatar.");
+
         }
 
         // Guardar los datos actualizados del cliente
-        Main.getCurrentUser().saveClientData();
+        UserController.getCurrentUser().saveClientData();
         System.out.println("\nPerfil editado correctamente.");
 
     }
@@ -723,9 +754,11 @@ public class ConsoleMode {
             Main.getServer().close();
         }
 
-        if (Main.getCurrentUser() != null) {
-            Main.getCurrentUser().close();
-            Main.setCurrentUser(null);
+        if (UserController.getCurrentUser() != null) {
+
+            UserController.getCurrentUser().close();
+            UserController.setCurrentUser(null);
+
         }
 
         // Aquí puedes agregar la lógica para cerrar la sesión
@@ -733,17 +766,14 @@ public class ConsoleMode {
 
     }
 
-    /**
-     * Connection Options
-     */
     private static void showConnectionMenu(Scanner sca) {
 
-        if (Main.getCurrentUser() == null) {
+        if (UserController.getCurrentUser() == null) {
 
             System.out.println("\n🔒 Sesión no iniciada. Redirigiendo al login...");
             login(sca);
 
-            if (Main.getCurrentUser() == null) {
+            if (UserController.getCurrentUser() == null) {
                 return;
 
             }
@@ -752,17 +782,20 @@ public class ConsoleMode {
 
         while (true) {
 
-            System.out.println("\nSeleccione una opción:"
-                    + "\n- 1. Enviar mensaje."
-                    + "\n- 2. Enviar archivo."
-                    + "\n- 3. Volver al menú principal."
-                    + "\n- 4. Salir.");
+            System.out.println("""
+                               
+                               Seleccione una opci\u00f3n:
+                               - 1. Enviar mensaje.
+                               - 2. Enviar archivo.
+                               - 3. Volver al men\u00fa principal.
+                               - 4. Salir.""");
 
             System.out.print("\nOpción: ");
 
             String opcion = sca.nextLine();
 
             switch (opcion) {
+
                 case "1" ->
                     sendMessage(sca);
                 case "2" ->
@@ -776,6 +809,7 @@ public class ConsoleMode {
                 }
                 default ->
                     System.err.println("\n ⚠️ Opción no válida.");
+
             }
 
         }
@@ -784,12 +818,12 @@ public class ConsoleMode {
 
     private static void sendMessage(Scanner sca) {
 
-        if (Main.getCurrentUser() == null) {
+        if (UserController.getCurrentUser() == null) {
 
             System.out.println("\n❌ Error: Debes iniciar sesión primero.");
             login(sca); // Redirigir al login
 
-            if (Main.getCurrentUser() == null) {
+            if (UserController.getCurrentUser() == null) {
                 return; // Si sigue sin usuario, salir
             }
 
@@ -798,8 +832,8 @@ public class ConsoleMode {
         System.out.print("\nIntroduzca el mensaje:");
         String message = sca.nextLine();
 
-        String messageToSend = Main.getCurrentUser().getUsername() + ": " + message;
-        Main.getCurrentUser().sendMessage(messageToSend);
+        String messageToSend = UserController.getCurrentUser().getUsername() + ": " + message;
+        UserController.getCurrentUser().sendMessage(messageToSend);
 
         System.out.println("\n📩 Mensaje enviado: " + message);
 
@@ -808,12 +842,12 @@ public class ConsoleMode {
     private static void sendFile(Scanner sca) {
 
         // Verificar si el usuario ha iniciado sesión
-        if (Main.getCurrentUser() == null) {
+        if (UserController.getCurrentUser() == null) {
 
             System.out.println("\n❌ Error: Debes iniciar sesión primero.");
             login(sca);
 
-            if (Main.getCurrentUser() == null) {
+            if (UserController.getCurrentUser() == null) {
                 return;  // Salir si aún no ha iniciado sesión
             }
 
@@ -830,7 +864,7 @@ public class ConsoleMode {
         }
 
         // Intentar enviar el archivo
-        boolean success = Main.getCurrentUser().sendFile(filePath);
+        boolean success = UserController.getCurrentUser().sendFile(filePath);
 
         if (success) {
             System.out.println("\n📁 Archivo enviado correctamente: " + filePath);
@@ -841,25 +875,9 @@ public class ConsoleMode {
 
     }
 
-    /**
-     * Other Methods
-     */
-    private static void configurarUTF8Encoding() {
-
-        try {
-            System.setOut(new PrintStream(System.out, true, "UTF-8"));
-            System.setProperty("file.encoding", "UTF-8");
-
-        } catch (UnsupportedEncodingException e) {
-            System.err.println("Error: " + e);
-
-        }
-
-    }
-
     private static boolean verifyPassword(String username, String password) {
 
-        File jsonFile = new File(Main.getCLIENTS_FOLDER_PATH() + Controller.getSeparator() + username + Controller.getSeparator() + Main.getCLIENT_JSON_NAME());
+        File jsonFile = new File(UserController.getCLIENTS_FOLDER_PATH() + "/" + username + "/" + UserController.getCLIENT_JSON_NAME());
 
         try {
 
@@ -868,14 +886,15 @@ public class ConsoleMode {
 
             if (clientData.getString("password").equals(password)) {
                 // Solo ahora establecemos el usuario actual
-                Main.setCurrentUser(new Client(username,
+                UserController.setCurrentUser(new Client(username,
                         password.toCharArray(),
-                        clientData.optString("avatar", Main.getUSER_ICON_URL())));
+                        clientData.optString("avatar", UserController.getUSER_ICON_URL())));
                 return true;
             }
 
         } catch (IOException | JSONException e) {
             System.err.println("\nError al verificar contraseña: " + e.getMessage() + "\n");
+
         }
 
         return false;
@@ -884,7 +903,7 @@ public class ConsoleMode {
 
     private static boolean existUser(String user) {
 
-        File jsonFile = new File(Main.getCLIENTS_FOLDER_PATH() + Controller.getSeparator() + user + Controller.getSeparator() + Main.getCLIENT_JSON_NAME());
+        File jsonFile = new File(UserController.getCLIENTS_FOLDER_PATH() + "/" + user + "/" + UserController.getCLIENT_JSON_NAME());
 
         if (!jsonFile.exists()) {
             return false;
@@ -902,6 +921,7 @@ public class ConsoleMode {
 
         } catch (IOException | JSONException e) {
             System.err.println("\nError al acceder a los datos del usuario: " + e.getMessage() + "\n");
+
         }
 
         return false;
@@ -911,8 +931,9 @@ public class ConsoleMode {
     public static boolean existServer(String serverAddress) {
 
         // Obtener los datos del archivo JSON
-        File jsonFile = new File(Main.getCurrentUser().getClientFolderPath()
-                + Controller.getSeparator() + Main.getCLIENT_JSON_NAME());
+        File jsonFile = new File(UserController.getCurrentUser().getClientFolderPath()
+                + "/" + UserController.getCLIENT_JSON_NAME());
+
         if (!jsonFile.exists()) {
             System.out.println("\nError: El archivo de datos del cliente no existe.\n");
             return false;
@@ -950,20 +971,21 @@ public class ConsoleMode {
             }
 
         } catch (IOException | JSONException e) {
-            System.out.println("\nError al comprobar los servidores: " + e.getMessage() + "\n");
+            System.err.println("\nError al comprobar los servidores: " + e.getMessage() + "\n");
+
         }
 
         return false;
 
     }
 
-    /**
-     * Main
-     *
-     * @param args
+    /*
+     * -----------------------------------------------------------------------
+     * MAIN
+     * -----------------------------------------------------------------------
      */
     public static void main(String args[]) {
-        ConsoleMode.runCLI(); // Ejecutar en modo CLI
+        ConsoleMode.runCLI();
     }
 
 }

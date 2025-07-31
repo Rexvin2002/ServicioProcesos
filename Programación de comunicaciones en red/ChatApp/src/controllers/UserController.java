@@ -13,6 +13,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import main.Main;
@@ -30,21 +31,34 @@ public class UserController {
     private ChatApp APP;
     private PanelsController PC;
 
-    /**
-     * Constructor
-     *
-     * @param APP
+    private static final String USER_ICON_URL = "src\\img\\userIcon.png";
+    private static final String CLIENTS_FOLDER_PATH = "src\\clients";
+    private static final String CLIENT_JSON_NAME = "client_data.json";
+    private static final String AVATAR_FILE_NAME = "avatar.jpg";
+
+    private static String avatarPathSelected;
+    private static Client currentUser;
+
+    /*
+     * -----------------------------------------------------------------------
+     * CONSTRUCTOR
+     * -----------------------------------------------------------------------
      */
     public UserController(ChatApp APP) {
+
         this.CTRLR = new Controller();
         this.APP = APP;
         this.PC = APP.getPc();
+
     }
 
-    /**
-     * Crear Cliente
+    /*
+     * -----------------------------------------------------------------------
+     * MÉTODOS
+     * -----------------------------------------------------------------------
      */
     public void createAvatar() {
+
         // Crear el FileChooser
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Seleccionar imagen");
@@ -56,16 +70,20 @@ public class UserController {
         int seleccion = fileChooser.showOpenDialog(APP);
 
         if (seleccion == JFileChooser.APPROVE_OPTION) {
+
             // Obtener el path seleccionado
             String imagePath = fileChooser.getSelectedFile().getAbsolutePath();
 
-            Main.setAvatarPathSelected(imagePath);
+            avatarPathSelected = imagePath;
 
-            CTRLR.escalarEstablecerImagenFromString(APP.getjLabelImagenCrearCliente(), Main.getAvatarPathSelected());
+            CTRLR.escalarEstablecerImagenFromString(APP.getjLabelImagenCrearCliente(), avatarPathSelected);
+
         }
+
     }
 
     public void createUser() {
+
         // Validaciones de campos
         if (APP.getjTextFieldCrearNombre().getText().trim().isEmpty()
                 || APP.getjPasswordFieldCrearContraseña().getPassword().length == 0
@@ -92,18 +110,18 @@ public class UserController {
             return;
         }
 
-        if (Main.getAvatarPathSelected() == null || Main.getAvatarPathSelected().isBlank()) {
-            Main.setAvatarPathSelected(Main.getUSER_ICON_URL());
-            CTRLR.escalarEstablecerImagenFromString(APP.getjLabelImagenCrearCliente(), Main.getUSER_ICON_URL());
+        if (avatarPathSelected == null || avatarPathSelected.isBlank()) {
+            avatarPathSelected = USER_ICON_URL;
+            CTRLR.escalarEstablecerImagenFromString(APP.getjLabelImagenCrearCliente(), USER_ICON_URL);
         }
 
         char[] contraseña = APP.getjPasswordFieldCrearContraseña().getPassword();
 
-        System.out.println("avatarPathSelected: " + Main.getAvatarPathSelected());
+        System.out.println("avatarPathSelected: " + avatarPathSelected);
 
-        Client cliente = new Client(nombre, contraseña, Main.getAvatarPathSelected());
+        Client cliente = new Client(nombre, contraseña, avatarPathSelected);
 
-        Main.setCurrentUser(cliente);
+        currentUser = cliente;
         cliente.createClientFolder();
         cliente.saveClientData();
 
@@ -120,10 +138,8 @@ public class UserController {
 
     }
 
-    /**
-     * Acceso Cliente
-     */
     public void accesUser() {
+
         String usuarioIntroducido = APP.getjTextFieldNombreInicioSesion().getText();
 
         if (usuarioIntroducido.isEmpty()) {
@@ -136,70 +152,72 @@ public class UserController {
             return;
         }
 
-        char[] contraseñaUsuario = Main.getCurrentUser().getPasswd();
+        char[] contraseñaUsuario = currentUser.getPasswd();
         char[] contraseñaIntroducida = APP.getjPasswordFieldContraseñaInicioSesion().getPassword();
 
         if (contraseñaIntroducida.length == 0) {
+
             MensajeDialog.showMessageDialog(APP, "Por favor, complete todos los campos.", "Alerta");
+
         } else if (!Arrays.equals(contraseñaIntroducida, contraseñaUsuario)) {
+
             MensajeDialog.showMessageDialog(APP, "Contraseña incorrecta.", "Alerta");
+
         } else {
+
             setProfile();
             APP.cambiarLayout("cardInicio");
+
         }
 
         // Limpiar la contraseña ingresada por seguridad
         Arrays.fill(contraseñaIntroducida, '\0');
     }
 
-    /**
-     * Establecer Perfil
-     */
     private void setProfile() {
-        Main.getCurrentUser().loadClientData();
+
+        currentUser.loadClientData();
         // Actualizar la interfaz de usuario
         PC.updateServerPanels();
-        CTRLR.escalarEstablecerImagenFromString(APP.getjLabelImagenPerfilCliente(), Main.getCurrentUser().getAvatar());
-        APP.getjTextFieldNombrePerfil().setText(Main.getCurrentUser().getUsername());
-        APP.getjPasswordFieldContraseñaPerfil().setText(Main.getCurrentUser().getPasswdAsString());
-        APP.getjPasswordFieldConfirmarContraseñaPerfil().setText(Main.getCurrentUser().getPasswdAsString());
+        CTRLR.escalarEstablecerImagenFromString(APP.getjLabelImagenPerfilCliente(), currentUser.getAvatar());
+        APP.getjTextFieldNombrePerfil().setText(currentUser.getUsername());
+        APP.getjPasswordFieldContraseñaPerfil().setText(currentUser.getPasswdAsString());
+        APP.getjPasswordFieldConfirmarContraseñaPerfil().setText(currentUser.getPasswdAsString());
 
     }
 
-    /**
-     * Existencia Cliente
-     *
-     * @param user
-     * @return
-     */
     public boolean existUser(String user) {
-        File jsonFile = new File(Main.getCLIENTS_FOLDER_PATH() + Controller.getSeparator() + user + Controller.getSeparator() + Main.getCLIENT_JSON_NAME());
+
+        File jsonFile = new File(CLIENTS_FOLDER_PATH + "/" + user + "/" + CLIENT_JSON_NAME);
 
         if (!jsonFile.exists()) {
             return false;
         }
 
         try {
+
             String content = new String(Files.readAllBytes(jsonFile.toPath()));
             JSONObject clientData = new JSONObject(content);
 
             if (clientData.has("username") && clientData.getString("username").equalsIgnoreCase(user)) {
-                Main.setCurrentUser(new Client(clientData.getString("username"),
+
+                currentUser = new Client(clientData.getString("username"),
                         clientData.getString("password").toCharArray(),
-                        Main.getAvatarPathSelected()));
+                        avatarPathSelected);
                 return true;
+
             }
+
         } catch (IOException | JSONException e) {
             MensajeDialog.showMessageDialog(APP, "Error al acceder a los datos del usuario: " + e.getMessage(), "Error");
         }
 
         return false;
+
     }
 
-    /**
-     * Editar Cliente
-     */
     public void changeAvatar() {
+
         // Crear el FileChooser
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Seleccionar imagen");
@@ -211,20 +229,24 @@ public class UserController {
         int seleccion = fileChooser.showOpenDialog(APP);
 
         if (seleccion == JFileChooser.APPROVE_OPTION) {
+
             // Obtener el path seleccionado
             String imagePath = fileChooser.getSelectedFile().getAbsolutePath();
 
             // Guardar el path en una variable (puedes usar una variable de clase si es necesario)
-            Main.getCurrentUser().setAvatar(imagePath);
-            Main.getCurrentUser().createClientFolder();
-            Main.getCurrentUser().saveClientData();
+            currentUser.setAvatar(imagePath);
+            currentUser.createClientFolder();
+            currentUser.saveClientData();
 
-            CTRLR.escalarEstablecerImagenFromString(APP.getjLabelImagenCrearCliente(), Main.getCurrentUser().getAvatar());
-            CTRLR.escalarEstablecerImagenFromString(APP.getjLabelImagenPerfilCliente(), Main.getCurrentUser().getAvatar());
+            CTRLR.escalarEstablecerImagenFromString(APP.getjLabelImagenCrearCliente(), currentUser.getAvatar());
+            CTRLR.escalarEstablecerImagenFromString(APP.getjLabelImagenPerfilCliente(), currentUser.getAvatar());
+
         }
+
     }
 
     public void editProfile() {
+
         if (APP.getjButtonEditarPerfil().getText().equals("Editar")) {
 
             APP.getjButtonEditarPerfil().setText("Aceptar");
@@ -233,6 +255,7 @@ public class UserController {
             APP.getjPasswordFieldConfirmarContraseñaPerfil().setEnabled(true);
 
         } else {
+
             APP.getjButtonEditarPerfil().setText("Editar");
             APP.getjTextFieldNombrePerfil().setEnabled(false);
             APP.getjPasswordFieldContraseñaPerfil().setEnabled(false);
@@ -243,7 +266,7 @@ public class UserController {
                     || APP.getjPasswordFieldContraseñaPerfil().getPassword().length == 0
                     || APP.getjPasswordFieldConfirmarContraseñaPerfil().getPassword().length == 0
                     || APP.getjLabelImagenPerfilCliente().getIcon() == null
-                    || Main.getCurrentUser().getAvatar() == null || Main.getCurrentUser().getAvatar().isBlank()) {
+                    || currentUser.getAvatar() == null || currentUser.getAvatar().isBlank()) {
                 MensajeDialog.showMessageDialog(APP, "Complete todos los campos y seleccione un avatar.", "Alerta");
                 return;
             }
@@ -259,6 +282,7 @@ public class UserController {
             }
 
             try {
+
                 String nombre = APP.getjTextFieldNombrePerfil().getText().trim();
                 char[] passwd = APP.getjPasswordFieldContraseñaPerfil().getPassword();
 
@@ -269,39 +293,42 @@ public class UserController {
                 }
 
                 // Asignar los valores al cliente logeado
-                Main.getCurrentUser().setUsername(nombre);
-                Main.getCurrentUser().setPasswd(passwd);
+                currentUser.setUsername(nombre);
+                currentUser.setPasswd(passwd);
 
-                System.out.println("username: " + Main.getCurrentUser().getUsername());
-                Main.getCurrentUser().setClientFolderPath(nombre);
-                System.out.println("ClientFolderPath: " + Main.getCurrentUser().getClientFolderPath());
-                Main.getCurrentUser().createClientFolder();
+                System.out.println("username: " + currentUser.getUsername());
+                currentUser.setClientFolderPath(nombre);
+                System.out.println("ClientFolderPath: " + currentUser.getClientFolderPath());
+                currentUser.createClientFolder();
 
                 try {
-                    String avatarPath = Main.getCurrentUser().getAvatar();
+
+                    String avatarPath = currentUser.getAvatar();
                     Path source = Paths.get(avatarPath);
                     Path oldFolder = source.getParent(); // Carpeta actual donde está el avatar
-                    Path newFolder = Paths.get(Main.getCurrentUser().getClientFolderPath()); // Nuevo nombre de carpeta
+                    Path newFolder = Paths.get(currentUser.getClientFolderPath()); // Nuevo nombre de carpeta
 
                     if (Files.exists(oldFolder) && Files.isDirectory(oldFolder)) {
+
                         // Renombrar la carpeta
                         Files.move(oldFolder, newFolder, StandardCopyOption.REPLACE_EXISTING);
 
                         // Actualizar la ruta del avatar con la nueva ubicación
                         Path newAvatarPath = newFolder.resolve(source.getFileName());
-                        Main.getCurrentUser().setAvatar(newAvatarPath.toString());
+                        currentUser.setAvatar(newAvatarPath.toString());
 
                         System.out.println("Carpeta y cliente renombrado");
 
                     } else {
-                        System.out.println("La carpeta del avatar no existe.");
+                        System.err.println("La carpeta del avatar no existe.");
                     }
+
                 } catch (IOException e) {
                     MensajeDialog.showMessageDialog(APP, "Error al renombrar la carpeta del avatar.", "Error");
                 }
 
-                System.out.println("Avatar: " + Main.getCurrentUser().getAvatar());
-                Main.getCurrentUser().saveClientData();
+                System.out.println("Avatar: " + currentUser.getAvatar());
+                currentUser.saveClientData();
 
                 // Mensaje de éxito o acción adicional después de editar el perfil
                 MensajeDialog.showMessageDialog(APP, "Perfil editado correctamente.", "Éxito");
@@ -309,14 +336,15 @@ public class UserController {
             } catch (NumberFormatException e) {
                 MensajeDialog.showMessageDialog(APP, "El número de teléfono debe ser un valor numérico.", "Error");
             }
+
         }
+
     }
 
-    /**
-     * Conectar Cliente a Servidor
-     */
     public void connectUserToServer() {
-        if (Main.getCurrentUser().isConnected()) {
+
+        if (currentUser.isConnected()) {
+
             MensajeDialog.showMessageDialog(APP, "Ya estás conectado al servidor.", "Advertencia");
 
             APP.getjLabelServidorPuerto().setText("Servidor: " + Main.getServerIP() + " | Puerto: " + Main.getPort());
@@ -324,6 +352,7 @@ public class UserController {
             APP.cambiarLayout("cardChat");
 
             return;  // Salir del método si ya está conectado
+
         }
 
         Main.setServerIP(APP.getjTextFieldServerIP().getText());  // Obtener IP desde el campo de texto
@@ -341,27 +370,30 @@ public class UserController {
             return;
         }
 
-        Main.getCurrentUser().setPort(Main.getPort());
-        Main.getCurrentUser().setServerIP(Main.getServerIP());
+        currentUser.setPort(Main.getPort());
+        currentUser.setServerIP(Main.getServerIP());
 
         try {
-            Main.getCurrentUser().connect();  // Conectar al servidor
 
-            if (Main.getCurrentUser().isConnected()) {
+            currentUser.connect();  // Conectar al servidor
+
+            if (currentUser.isConnected()) {
+
                 MensajeDialog.showMessageDialog(APP, "Conectado al servidor en " + Main.getServerIP() + ":" + Main.getPort(), "Información");
-                APP.getjLabelServidorPuerto().setText(Main.getCurrentUser().getUsername() + ": " + Main.getServerIP() + " | Puerto: " + Main.getPort());
+                APP.getjLabelServidorPuerto().setText(currentUser.getUsername() + ": " + Main.getServerIP() + " | Puerto: " + Main.getPort());
 
                 APP.cambiarLayout("cardChat");
 
                 // Agregar mensaje de conexión al chat
                 String message = Main.getServerIP() + ":" + Main.getPort();
-                String currentUserName = Main.getCurrentUser().getUsername();
+                String currentUserName = currentUser.getUsername();
 
                 // Evitar mostrar el mensaje duplicado si el servidor lo reenvía
                 if (!existServer(message)) {
                     PC.updateServersPanel(currentUserName + ": " + message);
                 }
-                Main.getCurrentUser().sendMessage(Main.getCurrentUser().getUsername() + ": Conectado a " + Main.getCurrentUser().getServerIP() + ":" + Main.getCurrentUser().getPort());
+
+                currentUser.sendMessage(currentUser.getUsername() + ": Conectado a " + currentUser.getServerIP() + ":" + currentUser.getPort());
 
             }
 
@@ -372,21 +404,18 @@ public class UserController {
 
     }
 
-    /**
-     * Existencia Servidor
-     *
-     * @param serverAddress
-     * @return
-     */
     public boolean existServer(String serverAddress) {
+
         // Obtener los datos del archivo JSON
-        File jsonFile = new File(Main.getCurrentUser().getClientFolderPath() + Controller.getSeparator() + Main.getCLIENT_JSON_NAME());
+        File jsonFile = new File(currentUser.getClientFolderPath() + "/" + CLIENT_JSON_NAME);
+
         if (!jsonFile.exists()) {
             MensajeDialog.showMessageDialog(APP, "El archivo de datos del cliente no existe.", "Error");
             return false;
         }
 
         try {
+
             // Leer el contenido actual del archivo JSON
             String content = new String(Files.readAllBytes(jsonFile.toPath()));
             JSONObject clientData = new JSONObject(content);
@@ -399,10 +428,12 @@ public class UserController {
 
             // Comprobar cada servidor registrado
             for (String serverName : serversJSON.keySet()) {
+
                 JSONArray serverArray = serversJSON.getJSONArray(serverName);
 
                 // Buscar en cada servidor si el address coincide
                 for (int i = 0; i < serverArray.length(); i++) {
+
                     JSONObject server = serverArray.getJSONObject(i);
                     String serverAddressInJson = server.getString("servers");
 
@@ -410,7 +441,9 @@ public class UserController {
                     if (serverAddressInJson.equals(serverAddress)) {
                         return true; // El servidor ya existe
                     }
+
                 }
+
             }
 
         } catch (IOException | JSONException e) {
@@ -418,12 +451,15 @@ public class UserController {
         }
 
         return false; // No se encontró el servidor
+
     }
 
     public void saveClientsServers() {
+
         try {
+
             // Cargar los datos existentes del archivo JSON
-            File jsonFile = new File(Main.getCurrentUser().getClientFolderPath() + Controller.getSeparator() + Main.getCLIENT_JSON_NAME());
+            File jsonFile = new File(currentUser.getClientFolderPath() + "/" + CLIENT_JSON_NAME);
             if (!jsonFile.exists()) {
                 MensajeDialog.showMessageDialog(APP, "El archivo de datos del cliente no existe.", "Error");
                 return;
@@ -440,15 +476,21 @@ public class UserController {
             }
 
             // Agregar los servidores al JSON
-            for (Map.Entry<String, List<ServerMessage>> entry : Main.getCurrentUser().getServerList().entrySet()) {
+            for (Map.Entry<String, List<ServerMessage>> entry : currentUser.getServerList().entrySet()) {
+
                 JSONArray serverArray = new JSONArray();
+
                 for (ServerMessage srv : entry.getValue()) {
+
                     JSONObject messageJson = new JSONObject();
                     messageJson.put("username", srv.getUsername());
                     messageJson.put("servers", srv.getMessage());
                     serverArray.put(messageJson);
+
                 }
+
                 serversJSON.put(entry.getKey(), serverArray);
+
             }
 
             // Actualizar la sección "servers" en el JSON principal
@@ -464,19 +506,18 @@ public class UserController {
         } catch (IOException e) {
             System.err.println("Error al guardar los datos de los servidores: " + e.getMessage());
             MensajeDialog.showMessageDialog(APP, "Error al guardar los datos de los servidores: " + e.getMessage(), "Error");
+
         } catch (JSONException e) {
             System.err.println("Error inesperado: " + e.getMessage());
             MensajeDialog.showMessageDialog(APP, "Error inesperado al guardar los datos de los servidores.", "Error");
-        }
-    }
 
-    public ChatApp getAPP() {
-        return APP;
+        }
+
     }
 
     public String getUserAvatar(String username) {
         // Si no se encuentra, intentar cargar desde archivo
-        String userFile = Main.getCLIENTS_FOLDER_PATH() + Controller.getSeparator() + username + Controller.getSeparator() + "profile.json";
+        String userFile = CLIENTS_FOLDER_PATH + "/" + username + "/" + "profile.json";
         File file = new File(userFile);
 
         if (file.exists()) {
@@ -495,12 +536,115 @@ public class UserController {
         return null;
     }
 
+    /*
+     * -----------------------------------------------------------------------
+     * GETTERS Y SETTERS
+     * -----------------------------------------------------------------------
+     */
+    public static String getUSER_ICON_URL() {
+        return USER_ICON_URL;
+    }
+
+    public static String getCLIENTS_FOLDER_PATH() {
+        return CLIENTS_FOLDER_PATH;
+    }
+
+    public static String getCLIENT_JSON_NAME() {
+        return CLIENT_JSON_NAME;
+    }
+
+    public static String getAVATAR_FILE_NAME() {
+        return AVATAR_FILE_NAME;
+    }
+
     public Controller getCTRLR() {
         return CTRLR;
     }
 
+    public void setCTRLR(Controller CTRLR) {
+        this.CTRLR = CTRLR;
+    }
+
+    public ChatApp getAPP() {
+        return APP;
+    }
+
+    public void setAPP(ChatApp APP) {
+        this.APP = APP;
+    }
+
     public PanelsController getPC() {
         return PC;
+    }
+
+    public void setPC(PanelsController PC) {
+        this.PC = PC;
+    }
+
+    public static String getAvatarPathSelected() {
+        return avatarPathSelected;
+    }
+
+    public static void setAvatarPathSelected(String avatarPathSelected) {
+        UserController.avatarPathSelected = avatarPathSelected;
+    }
+
+    public static Client getCurrentUser() {
+        return currentUser;
+    }
+
+    public static void setCurrentUser(Client currentUser) {
+        UserController.currentUser = currentUser;
+    }
+
+    /*
+     * -----------------------------------------------------------------------
+     * TOSTRING
+     * -----------------------------------------------------------------------
+     */
+    @Override
+    public String toString() {
+        return "UserController{" + "CTRLR=" + CTRLR + ", APP=" + APP + ", PC=" + PC + '}';
+    }
+
+    /*
+     * -----------------------------------------------------------------------
+     * HASHCODE
+     * -----------------------------------------------------------------------
+     */
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 19 * hash + Objects.hashCode(this.CTRLR);
+        hash = 19 * hash + Objects.hashCode(this.APP);
+        hash = 19 * hash + Objects.hashCode(this.PC);
+        return hash;
+    }
+
+    /*
+     * -----------------------------------------------------------------------
+     * EQUALS
+     * -----------------------------------------------------------------------
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final UserController other = (UserController) obj;
+        if (!Objects.equals(this.CTRLR, other.CTRLR)) {
+            return false;
+        }
+        if (!Objects.equals(this.APP, other.APP)) {
+            return false;
+        }
+        return Objects.equals(this.PC, other.PC);
     }
 
 }
