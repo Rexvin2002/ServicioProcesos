@@ -263,7 +263,7 @@ public class ConsoleMode {
 
         // Mostrar mensaje de bienvenida solo la primera vez
         if (!welcomeShown) {
-            System.out.println("\n--- BIENVENIDO, " + UserController.getCurrentUser().getUsername() + "---");
+            System.out.println("\n--- BIENVENIDO, " + UserController.getCurrentUser().getUsername() + " ---");
             welcomeShown = true;
         }
 
