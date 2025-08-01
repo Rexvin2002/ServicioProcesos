@@ -46,7 +46,6 @@ public class Main {
 
         } else {
 
-            // Ejecutar en modo GUI
             try {
 
                 for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -63,7 +62,7 @@ public class Main {
             }
 
             java.awt.EventQueue.invokeLater(() -> {
-                new ChatApp().setVisible(true);
+                new ChatApp().setVisible(true); // Ejecutar en modo GUI
             });
 
         }

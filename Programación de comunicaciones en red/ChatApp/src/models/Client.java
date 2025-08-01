@@ -385,7 +385,7 @@ public class Client {
 
     public void sendMessage(String messageToSend) {
 
-        if (UC.getCurrentUser() != null && messageToSend != null && !messageToSend.isEmpty()) {
+        if (UserController.getCurrentUser() != null && messageToSend != null && !messageToSend.isEmpty()) {
 
             if (out != null) {
                 out.println(messageToSend);  // Enviar mensaje al servidor
@@ -633,10 +633,6 @@ public class Client {
             return false;
         }
         return Arrays.equals(this.passwd, other.passwd);
-    }
-
-    private String String(char[] passwd) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
 }

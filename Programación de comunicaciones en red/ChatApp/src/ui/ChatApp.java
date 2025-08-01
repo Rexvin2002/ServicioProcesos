@@ -99,7 +99,7 @@ public class ChatApp extends javax.swing.JFrame {
 
     public boolean existUser(String user) {
 
-        File jsonFile = new File(UC.getCLIENTS_FOLDER_PATH() + "/" + user + "/" + UC.getCLIENT_JSON_NAME());
+        File jsonFile = new File(UserController.getCLIENTS_FOLDER_PATH() + "/" + user + "/" + UserController.getCLIENT_JSON_NAME());
 
         if (!jsonFile.exists()) {
             return false;
@@ -112,7 +112,7 @@ public class ChatApp extends javax.swing.JFrame {
 
             if (clientData.has("username") && clientData.getString("username").equalsIgnoreCase(user)) {
 
-                UC.setCurrentUser(new Client(clientData.getString("username"),
+                UserController.setCurrentUser(new Client(clientData.getString("username"),
                         clientData.getString("password").toCharArray(),
                         UC.getAvatarPathSelected()));
                 return true;
@@ -129,13 +129,13 @@ public class ChatApp extends javax.swing.JFrame {
 
     private void setProfile() {
 
-        UC.getCurrentUser().loadClientData();
+        UserController.getCurrentUser().loadClientData();
         // Actualizar la interfaz de usuario
         Main.getPc().updateServerPanels();
-        CTRLR.escalarEstablecerImagenFromString(this.getjLabelImagenPerfilCliente(), UC.getCurrentUser().getAvatar());
-        this.getjTextFieldNombrePerfil().setText(UC.getCurrentUser().getUsername());
-        this.getjPasswordFieldContraseñaPerfil().setText(UC.getCurrentUser().getPasswdAsString());
-        this.getjPasswordFieldConfirmarContraseñaPerfil().setText(UC.getCurrentUser().getPasswdAsString());
+        CTRLR.escalarEstablecerImagenFromString(this.getjLabelImagenPerfilCliente(), UserController.getCurrentUser().getAvatar());
+        this.getjTextFieldNombrePerfil().setText(UserController.getCurrentUser().getUsername());
+        this.getjPasswordFieldContraseñaPerfil().setText(UserController.getCurrentUser().getPasswdAsString());
+        this.getjPasswordFieldConfirmarContraseñaPerfil().setText(UserController.getCurrentUser().getPasswdAsString());
 
     }
 
@@ -144,7 +144,7 @@ public class ChatApp extends javax.swing.JFrame {
         try {
 
             // Cargar los datos existentes del archivo JSON
-            File jsonFile = new File(UC.getCurrentUser().getClientFolderPath() + "/" + UC.getCLIENT_JSON_NAME());
+            File jsonFile = new File(UserController.getCurrentUser().getClientFolderPath() + "/" + UserController.getCLIENT_JSON_NAME());
 
             if (!jsonFile.exists()) {
                 MensajeDialog.showMessageDialog(this, "El archivo de datos del cliente no existe.", "Error");
@@ -163,7 +163,7 @@ public class ChatApp extends javax.swing.JFrame {
             }
 
             // Agregar los servidores al JSON
-            for (Map.Entry<String, List<ServerMessage>> entry : UC.getCurrentUser().getServerList().entrySet()) {
+            for (Map.Entry<String, List<ServerMessage>> entry : UserController.getCurrentUser().getServerList().entrySet()) {
 
                 JSONArray serverArray = new JSONArray();
 
@@ -204,7 +204,7 @@ public class ChatApp extends javax.swing.JFrame {
 
     public void connectUserToServer() {
 
-        if (UC.getCurrentUser().isConnected()) {
+        if (UserController.getCurrentUser().isConnected()) {
 
             MensajeDialog.showMessageDialog(this, "Ya estás conectado al servidor.", "Advertencia");
 
@@ -234,30 +234,30 @@ public class ChatApp extends javax.swing.JFrame {
 
         }
 
-        UC.getCurrentUser().setPort(Main.getPort());
-        UC.getCurrentUser().setServerIP(Main.getServerIP());
+        UserController.getCurrentUser().setPort(Main.getPort());
+        UserController.getCurrentUser().setServerIP(Main.getServerIP());
 
         try {
 
-            UC.getCurrentUser().connect();  // Conectar al servidor
+            UserController.getCurrentUser().connect();  // Conectar al servidor
 
-            if (UC.getCurrentUser().isConnected()) {
+            if (UserController.getCurrentUser().isConnected()) {
 
                 MensajeDialog.showMessageDialog(this, "Conectado al servidor en " + Main.getServerIP() + ":" + Main.getPort(), "Información");
-                this.getjLabelServidorPuerto().setText(UC.getCurrentUser().getUsername() + ": " + Main.getServerIP() + " | Puerto: " + Main.getPort());
+                this.getjLabelServidorPuerto().setText(UserController.getCurrentUser().getUsername() + ": " + Main.getServerIP() + " | Puerto: " + Main.getPort());
 
                 cambiarLayout("cardChat");
 
                 // Agregar mensaje de conexión al chat
                 String message = Main.getServerIP() + ":" + Main.getPort();
-                String currentUserName = UC.getCurrentUser().getUsername();
+                String currentUserName = UserController.getCurrentUser().getUsername();
 
                 // Evitar mostrar el mensaje duplicado si el servidor lo reenvía
                 if (!existServer(message)) {
                     Main.getPc().updateServersPanel(currentUserName + ": " + message);
                 }
 
-                UC.getCurrentUser().sendMessage(UC.getCurrentUser().getUsername() + ": Conectado a " + UC.getCurrentUser().getServerIP() + ":" + UC.getCurrentUser().getPort());
+                UserController.getCurrentUser().sendMessage(UserController.getCurrentUser().getUsername() + ": Conectado a " + UserController.getCurrentUser().getServerIP() + ":" + UserController.getCurrentUser().getPort());
 
             }
 
@@ -272,7 +272,7 @@ public class ChatApp extends javax.swing.JFrame {
     public boolean existServer(String serverAddress) {
 
         // Obtener los datos del archivo JSON
-        File jsonFile = new File(UC.getCurrentUser().getClientFolderPath() + "/" + UC.getCLIENT_JSON_NAME());
+        File jsonFile = new File(UserController.getCurrentUser().getClientFolderPath() + "/" + UserController.getCLIENT_JSON_NAME());
 
         if (!jsonFile.exists()) {
             MensajeDialog.showMessageDialog(this, "El archivo de datos del cliente no existe.", "Error");
@@ -324,7 +324,7 @@ public class ChatApp extends javax.swing.JFrame {
     private void enterEditMode() {
 
         // Guardar valores originales
-        Client currentUser2 = UC.getCurrentUser();
+        Client currentUser2 = UserController.getCurrentUser();
         originalUsername = currentUser2.getUsername();
         originalPassword = currentUser2.getPasswdAsString();
 
@@ -360,7 +360,7 @@ public class ChatApp extends javax.swing.JFrame {
             updateUserProfile(nuevoNombre, nuevaPasswd);
 
             // Guardar cambios
-            UC.getCurrentUser().saveClientData();
+            UserController.getCurrentUser().saveClientData();
             MensajeDialog.showMessageDialog(this, "Perfil actualizado correctamente", "Éxito");
 
             // Restablecer UI
@@ -406,7 +406,7 @@ public class ChatApp extends javax.swing.JFrame {
 
     private void updateUserProfile(String nuevoNombre, char[] nuevaPasswd) throws IOException {
 
-        Client currentUser2 = UC.getCurrentUser();
+        Client currentUser2 = UserController.getCurrentUser();
         boolean nombreCambiado = !nuevoNombre.equals(originalUsername);
 
         // Manejar cambio de nombre (y carpeta)
@@ -424,7 +424,7 @@ public class ChatApp extends javax.swing.JFrame {
             handleAvatarChange(currentUser2);
 
         } else if (nombreCambiado && currentUser2.getAvatar() != null
-                && !currentUser2.getAvatar().equals(UC.getUSER_ICON_URL())) {
+                && !currentUser2.getAvatar().equals(UserController.getUSER_ICON_URL())) {
 
             // Si cambió el nombre pero no el avatar, y el avatar no es el por defecto,
             // asegurarnos de que la ruta del avatar sea correcta
@@ -448,11 +448,11 @@ public class ChatApp extends javax.swing.JFrame {
     private void handleUsernameChange(Client user, String nuevoNombre) throws IOException {
 
         // 1. Crear nueva estructura de carpetas
-        Path nuevaCarpeta = Paths.get(UC.getCLIENTS_FOLDER_PATH(), nuevoNombre);
+        Path nuevaCarpeta = Paths.get(UserController.getCLIENTS_FOLDER_PATH(), nuevoNombre);
         Files.createDirectories(nuevaCarpeta);
 
         // 2. Copiar archivos de la carpeta antigua a la nueva
-        Path carpetaAntigua = Paths.get(UC.getCLIENTS_FOLDER_PATH(), originalUsername);
+        Path carpetaAntigua = Paths.get(UserController.getCLIENTS_FOLDER_PATH(), originalUsername);
 
         if (Files.exists(carpetaAntigua)) {
 
@@ -482,7 +482,7 @@ public class ChatApp extends javax.swing.JFrame {
         user.setClientFolderPath(nuevoNombre);
 
         // 5. Manejar el avatar por defecto
-        if (user.getAvatar() != null && user.getAvatar().equals(UC.getUSER_ICON_URL())) {
+        if (user.getAvatar() != null && user.getAvatar().equals(UserController.getUSER_ICON_URL())) {
 
             // No necesita cambios, sigue siendo el avatar por defecto
         } else if (user.getAvatar() != null && user.getAvatar().contains(originalUsername)) {
@@ -509,7 +509,7 @@ public class ChatApp extends javax.swing.JFrame {
         String nuevoAvatarPath = UC.getAvatarPathSelected();
 
         // Si es el avatar por defecto, solo guardar la referencia
-        if (nuevoAvatarPath.equals(UC.getUSER_ICON_URL())) {
+        if (nuevoAvatarPath.equals(UserController.getUSER_ICON_URL())) {
 
             user.setAvatar(nuevoAvatarPath);
 
@@ -1423,7 +1423,7 @@ public class ChatApp extends javax.swing.JFrame {
             return;
         }
 
-        char[] contraseñaUsuario = UC.getCurrentUser().getPasswd();
+        char[] contraseñaUsuario = UserController.getCurrentUser().getPasswd();
         char[] contraseñaIntroducida = this.getjPasswordFieldContraseñaInicioSesion().getPassword();
 
         if (contraseñaIntroducida.length == 0) {
@@ -1482,8 +1482,8 @@ public class ChatApp extends javax.swing.JFrame {
         }
 
         if (UC.getAvatarPathSelected() == null || UC.getAvatarPathSelected().isBlank()) {
-            UC.setAvatarPathSelected(UC.getUSER_ICON_URL());
-            CTRLR.escalarEstablecerImagenFromString(this.getjLabelImagenCrearCliente(), UC.getUSER_ICON_URL());
+            UC.setAvatarPathSelected(UserController.getUSER_ICON_URL());
+            CTRLR.escalarEstablecerImagenFromString(this.getjLabelImagenCrearCliente(), UserController.getUSER_ICON_URL());
         }
 
         char[] contraseña = this.getjPasswordFieldCrearContraseña().getPassword();
@@ -1492,7 +1492,7 @@ public class ChatApp extends javax.swing.JFrame {
 
         Client cliente = new Client(nombre, contraseña, UC.getAvatarPathSelected());
 
-        UC.setCurrentUser(cliente);
+        UserController.setCurrentUser(cliente);
         cliente.createClientFolder();
         cliente.saveClientData();
 
@@ -1564,8 +1564,8 @@ public class ChatApp extends javax.swing.JFrame {
     private void jButtonEnviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEnviarActionPerformed
 
         String message = getjTextFieldMensaje().getText(); // Obtener mensaje del campo de texto
-        String messageToSend = UC.getCurrentUser().getUsername() + ": " + message;
-        UC.getCurrentUser().sendMessage(messageToSend);
+        String messageToSend = UserController.getCurrentUser().getUsername() + ": " + message;
+        UserController.getCurrentUser().sendMessage(messageToSend);
         jTextFieldMensaje.setText("");  // Limpiar el campo de texto
 
     }//GEN-LAST:event_jButtonEnviarActionPerformed
@@ -1578,7 +1578,7 @@ public class ChatApp extends javax.swing.JFrame {
 
     private void jButtonVolverChatToChatsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonVolverChatToChatsActionPerformed
 
-        UC.getCurrentUser().close();
+        UserController.getCurrentUser().close();
         cambiarLayout("cardInicio");
 
     }//GEN-LAST:event_jButtonVolverChatToChatsActionPerformed
@@ -1597,9 +1597,9 @@ public class ChatApp extends javax.swing.JFrame {
             Main.getServer().close();
         }
 
-        if (UC.getCurrentUser() != null) {
-            UC.getCurrentUser().close();
-            UC.setCurrentUser(null);
+        if (UserController.getCurrentUser() != null) {
+            UserController.getCurrentUser().close();
+            UserController.setCurrentUser(null);
         }
 
         getRootPane().setDefaultButton(jButtonAcceder);
@@ -1625,12 +1625,12 @@ public class ChatApp extends javax.swing.JFrame {
             String imagePath = fileChooser.getSelectedFile().getAbsolutePath();
 
             // Guardar el path en una variable (puedes usar una variable de clase si es necesario)
-            UC.getCurrentUser().setAvatar(imagePath);
-            UC.getCurrentUser().createClientFolder();
-            UC.getCurrentUser().saveClientData();
+            UserController.getCurrentUser().setAvatar(imagePath);
+            UserController.getCurrentUser().createClientFolder();
+            UserController.getCurrentUser().saveClientData();
 
-            CTRLR.escalarEstablecerImagenFromString(this.getjLabelImagenCrearCliente(), UC.getCurrentUser().getAvatar());
-            CTRLR.escalarEstablecerImagenFromString(this.getjLabelImagenPerfilCliente(), UC.getCurrentUser().getAvatar());
+            CTRLR.escalarEstablecerImagenFromString(this.getjLabelImagenCrearCliente(), UserController.getCurrentUser().getAvatar());
+            CTRLR.escalarEstablecerImagenFromString(this.getjLabelImagenPerfilCliente(), UserController.getCurrentUser().getAvatar());
 
         }
 
@@ -1642,7 +1642,7 @@ public class ChatApp extends javax.swing.JFrame {
         this.getjButtonEditarPerfil().setText("Editar");
 
         // Guardar valores originales
-        Client currentUser2 = UC.getCurrentUser();
+        Client currentUser2 = UserController.getCurrentUser();
         originalUsername = currentUser2.getUsername();
         originalPassword = currentUser2.getPasswdAsString();
 
@@ -1683,6 +1683,7 @@ public class ChatApp extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonVerPerfilActionPerformed
 
     private void jButtonEnviarArchivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEnviarArchivoActionPerformed
+        
         // (REVISAR)
         JFileChooser fileChooser = new JFileChooser();
         int result = fileChooser.showOpenDialog(this);
@@ -1690,7 +1691,7 @@ public class ChatApp extends javax.swing.JFrame {
         if (result == JFileChooser.APPROVE_OPTION) {
 
             File file = fileChooser.getSelectedFile();
-            UC.getCurrentUser().sendFile(file.getPath());  // Llamar al método de envío de archivo
+            UserController.getCurrentUser().sendFile(file.getPath());  // Llamar al método de envío de archivo
 
         }
 
@@ -1698,7 +1699,6 @@ public class ChatApp extends javax.swing.JFrame {
 
     private void jButtonEliminarServidorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEliminarServidorActionPerformed
 
-        // Ejemplo de uso:
         PC.removeServerPanel(jTextFieldServerIP.getText() + ":" + jTextFieldPuerto.getText());
 
     }//GEN-LAST:event_jButtonEliminarServidorActionPerformed
