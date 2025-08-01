@@ -1699,6 +1699,7 @@ public class ChatApp extends javax.swing.JFrame {
 
     private void jButtonEliminarServidorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEliminarServidorActionPerformed
 
+        UC.deleteServer(jTextFieldServerIP.getText(), Integer.parseInt(jTextFieldPuerto.getText()));
         PC.removeServerPanel(jTextFieldServerIP.getText() + ":" + jTextFieldPuerto.getText());
 
     }//GEN-LAST:event_jButtonEliminarServidorActionPerformed

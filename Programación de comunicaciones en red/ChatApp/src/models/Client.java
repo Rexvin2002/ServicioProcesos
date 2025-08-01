@@ -292,7 +292,7 @@ public class Client {
             clientData.put("servers", serversJSON);
 
             // Guardar el JSON
-            File jsonFile = new File(clientFolderPath + "/" + UserController.getCLIENT_JSON_NAME());
+            File jsonFile = new File(clientFolderPath + "\\" + UserController.getCLIENT_JSON_NAME());
             System.out.println("JSON Creado");
 
             try (FileWriter writer = new FileWriter(jsonFile)) {
@@ -312,7 +312,7 @@ public class Client {
 
     public void loadClientData() {
 
-        File jsonFile = new File(clientFolderPath + "/" + UserController.getCLIENT_JSON_NAME());
+        File jsonFile = new File(clientFolderPath + "\\" + UserController.getCLIENT_JSON_NAME());
 
         if (jsonFile.exists()) {
 

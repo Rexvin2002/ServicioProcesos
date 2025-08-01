@@ -518,6 +518,83 @@ public class UserController {
 
     }
 
+    public void deleteServer(String ip, int port) {
+        
+        try {
+            
+            // Cargar los datos existentes del archivo JSON
+            File jsonFile = new File(currentUser.getClientFolderPath() + "/" + CLIENT_JSON_NAME);
+            if (!jsonFile.exists()) {
+                MensajeDialog.showMessageDialog(APP, "El archivo de datos del cliente no existe.", "Error");
+                return;
+            }
+
+            // Leer el contenido actual del archivo JSON
+            String content = new String(Files.readAllBytes(jsonFile.toPath()));
+            JSONObject clientData = new JSONObject(content);
+
+            // Obtener la sección de servidores
+            JSONObject serversJSON = clientData.optJSONObject("servers");
+            if (serversJSON == null) {
+                MensajeDialog.showMessageDialog(APP, "No hay servidores registrados.", "Error");
+                return;
+            }
+
+            // Buscar el servidor por IP y puerto
+            String serverKeyToRemove = null;
+            
+            for (String serverName : serversJSON.keySet()) {
+                
+                JSONArray serverArray = serversJSON.getJSONArray(serverName);
+                
+                if (!serverArray.isEmpty()) {
+                    
+                    JSONObject firstMessage = serverArray.getJSONObject(0);
+                    String serverInfo = firstMessage.getString("servers"); // Asumo que aquí está la IP:puerto
+
+                    // Verificar si coincide con la IP y puerto buscados
+                    if (serverInfo.equals(ip + ":" + port) || serverInfo.contains(ip + ":" + port)) {
+                        serverKeyToRemove = serverName;
+                        break;
+                    }
+                    
+                }
+                
+            }
+
+            if (serverKeyToRemove == null) {
+                MensajeDialog.showMessageDialog(APP, "No se encontró un servidor con IP " + ip + " y puerto " + port, "Error");
+                return;
+            }
+
+            // Eliminar el servidor del JSON
+            serversJSON.remove(serverKeyToRemove);
+
+            // Actualizar la sección "servers" en el JSON principal
+            clientData.put("servers", serversJSON);
+
+            // Guardar el JSON completo
+            try (FileWriter writer = new FileWriter(jsonFile)) {
+                writer.write(clientData.toString(4));
+            }
+
+            // Eliminar el servidor de la lista en memoria
+            currentUser.getServerList().remove(serverKeyToRemove);
+
+            System.out.println("Servidor " + ip + ":" + port + " eliminado exitosamente");
+
+        } catch (IOException e) {
+            System.err.println("Error al eliminar el servidor: " + e.getMessage());
+            MensajeDialog.showMessageDialog(APP, "Error al eliminar el servidor: " + e.getMessage(), "Error");
+            
+        } catch (JSONException e) {
+            System.err.println("Error inesperado: " + e.getMessage());
+            MensajeDialog.showMessageDialog(APP, "Error inesperado al eliminar el servidor.", "Error");
+            
+        }
+        
+    }
+
     public String getUserAvatar(String username) {
         // Si no se encuentra, intentar cargar desde archivo
         String userFile = CLIENTS_FOLDER_PATH + "/" + username + "/" + "profile.json";
