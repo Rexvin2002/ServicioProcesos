@@ -220,16 +220,10 @@ public class Controller {
 
     }
 
-    public static void configurarUTF8Encoding() {
+    public static void configurarUTF8Encoding() throws UnsupportedEncodingException {
 
-        try {
-
-            System.setOut(new PrintStream(System.out, true, "UTF-8"));
-            System.setProperty("file.encoding", "UTF-8");
-
-        } catch (UnsupportedEncodingException e) {
-            System.err.println("Error: " + e);
-        }
+        System.setOut(new PrintStream(System.out, true, "UTF-8"));
+        System.setProperty("file.encoding", "UTF-8");
 
     }
 

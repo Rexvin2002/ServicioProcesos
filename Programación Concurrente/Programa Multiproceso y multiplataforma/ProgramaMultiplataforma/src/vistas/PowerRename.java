@@ -387,10 +387,12 @@ public class PowerRename extends javax.swing.JFrame {
             filePath = selectedFile.getAbsolutePath();
 
             // Mostrar la ruta del archivo
-            System.out.println("Selected file path: " + filePath);
+            System.out.println("\nSelected file path: " + filePath);
+            System.out.println("\n---------------------------------------------------");
 
         } else {
-            System.err.println("No file was selected.");
+            System.err.println("\nNo file was selected.");
+            System.out.println("\n---------------------------------------------------");
         }
 
     }//GEN-LAST:event_jButtonFolderActionPerformed

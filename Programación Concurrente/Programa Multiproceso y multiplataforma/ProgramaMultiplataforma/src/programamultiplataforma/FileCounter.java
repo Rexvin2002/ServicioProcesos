@@ -6,6 +6,7 @@ package programamultiplataforma;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 // import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -26,11 +27,13 @@ public class FileCounter {
      * -----------------------------------------------------------------------
      */
     private static FileCounts countFilesExternal(String path, boolean recursive) throws Exception {
+
         String countCommand;
         String sizeCommand;
         String os = System.getProperty("os.name").toLowerCase();
 
         if (os.contains("windows")) {
+
             // Comando para contar archivos
             countCommand = recursive
                     ? "dir /s /b /a-d \"" + path + "\" | find /c /v \"\""
@@ -40,7 +43,9 @@ public class FileCounter {
             sizeCommand = recursive
                     ? "for /r \"" + path + "\" %i in (*) do @echo %~zi"
                     : "for %i in (\"" + path + "\\*\") do @echo %~zi";
+
         } else {
+
             // Para sistemas Unix/Linux
             countCommand = recursive
                     ? "find \"" + path + "\" -type f | wc -l"
@@ -49,6 +54,7 @@ public class FileCounter {
             sizeCommand = recursive
                     ? "find \"" + path + "\" -type f -exec ls -l {} \\; | awk '{sum += $5} END {print sum}'"
                     : "ls -l \"" + path + "\" | awk '{sum += $5} END {print sum}'";
+
         }
 
         // Obtener conteo de archivos
@@ -61,18 +67,26 @@ public class FileCounter {
         BufferedReader sizeReader = new BufferedReader(new InputStreamReader(sizeProcess.getInputStream()));
         long totalSize = 0;
         String line;
+
         while ((line = sizeReader.readLine()) != null) {
+
             try {
+
                 totalSize += Long.parseLong(line.trim());
+
             } catch (NumberFormatException e) {
-                // Ignorar líneas que no son números
+                System.err.println("\nError: " + e.getMessage());
+                System.out.println("\n---------------------------------------------------");
             }
+
         }
 
         return new FileCounts(fileCount, totalSize);
+
     }
 
     private static FileCounts countFilesJava(File directory, boolean recursive) {
+
         if (!directory.exists() || !directory.isDirectory()) {
             return new FileCounts(0, 0);
         }
@@ -82,28 +96,41 @@ public class FileCounter {
         File[] files = directory.listFiles();
 
         if (files != null) {
+
             for (File file : files) {
+
                 if (file.isFile()) {
+
                     count.incrementAndGet();
                     size.addAndGet(file.length());
+
                 } else if (recursive && file.isDirectory()) {
+
                     FileCounts subDirCounts = countFilesJava(file, true);
                     count.addAndGet(subDirCounts.fileCount);
                     size.addAndGet(subDirCounts.totalSize);
+
                 }
+
             }
+
         }
 
         return new FileCounts(count.get(), size.get());
+
     }
 
     private static String formatSize(long bytes) {
+
         if (bytes < 1024) {
             return bytes + " B";
         }
+
         int exp = (int) (Math.log(bytes) / Math.log(1024));
         String pre = "KMGTPE".charAt(exp - 1) + "";
+
         return String.format("%.1f %sB", bytes / Math.pow(1024, exp), pre);
+
     }
 
     private static class FileCounts {
@@ -112,26 +139,34 @@ public class FileCounter {
         final long totalSize;
 
         FileCounts(int fileCount, long totalSize) {
+
             this.fileCount = fileCount;
             this.totalSize = totalSize;
+
         }
 
         @Override
         public boolean equals(Object obj) {
+
             if (!(obj instanceof FileCounts)) {
                 return false;
             }
+
             FileCounts other = (FileCounts) obj;
             return this.fileCount == other.fileCount && this.totalSize == other.totalSize;
+
         }
 
         @Override
         public int hashCode() {
+
             int hash = 5;
             hash = 71 * hash + this.fileCount;
             hash = 71 * hash + (int) (this.totalSize ^ (this.totalSize >>> 32));
             return hash;
+
         }
+
     }
 
     /*
@@ -141,15 +176,24 @@ public class FileCounter {
      */
     public static void main(String[] args) {
 
+        try {
+
+            Controller.configurarUTF8Encoding();
+
+        } catch (UnsupportedEncodingException e) {
+            System.err.println("\nError: " + e.getMessage());
+            System.out.println("\n---------------------------------------------------");
+        }
+
         // Scanner scanner = new Scanner(System.in);
         // Solicitar al usuario la ruta del directorio
-        System.out.print("Introduce la ruta del directorio: ");
+        System.out.println("\nIntroduce la ruta del directorio: ");
 
         String path = ProgramaMultiplataforma.getCARPETAEJEMPLO();
         // String path = scanner.nextLine();
 
         // Solicitar si debe ser recursivo
-        System.out.print("¿Quieres contar los archivos de forma recursiva? (true/false): ");
+        System.out.println("\n¿Quieres contar los archivos de forma recursiva? (true/false): ");
         boolean recursive = true;
         // boolean recursive = Boolean.parseBoolean(scanner.nextLine());
 
@@ -171,6 +215,7 @@ public class FileCounter {
             if (externalCounts.equals(javaCounts)) {
 
                 System.out.println("\n¡Los conteos coinciden!");
+                System.out.println("\n---------------------------------------------------");
 
             } else {
 
@@ -193,7 +238,8 @@ public class FileCounter {
             }
 
         } catch (Exception e) {
-            System.err.println("Error: " + e.getMessage());
+            System.err.println("\nError: " + e.getMessage());
+            System.out.println("\n---------------------------------------------------");
         }
 
         // scanner.close();

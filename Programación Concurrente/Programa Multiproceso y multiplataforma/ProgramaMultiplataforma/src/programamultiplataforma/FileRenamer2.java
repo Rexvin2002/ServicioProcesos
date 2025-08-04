@@ -4,6 +4,7 @@ package programamultiplataforma;
  * Kevin Gómez Valderas 2ºDAM
  */
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 // import java.util.Scanner;
 
@@ -26,6 +27,7 @@ public class FileRenamer2 {
 
         int renamedCount = 0;
 
+        System.out.println("\n");
         for (File file : dir.listFiles()) {
 
             if (file.isDirectory()) {
@@ -52,7 +54,8 @@ public class FileRenamer2 {
                         System.out.println("Renamed: " + originalName + " -> " + newName);
 
                     } else {
-                        System.err.println("Failed to rename: " + originalName);
+                        System.err.println("\nFailed to rename: " + originalName);
+                        System.out.println("\n---------------------------------------------------");
                     }
 
                 }
@@ -104,19 +107,28 @@ public class FileRenamer2 {
      */
     public static void main(String[] args) {
 
+        try {
+
+            Controller.configurarUTF8Encoding();
+
+        } catch (UnsupportedEncodingException e) {
+            System.err.println("\nError: " + e.getMessage());
+            System.out.println("\n---------------------------------------------------");
+        }
+
         // Scanner scanner = new Scanner(System.in);
         // Solicitar ruta del directorio
-        System.out.println("Enter the directory path:");
+        System.out.println("\nEnter the directory path:");
         String directoryPath = ProgramaMultiplataforma.getCARPETAEJEMPLO();
         // String directoryPath = scanner.nextLine();
 
         // Solicitar expresión regular
-        System.out.println("Enter the regex pattern to replace:");
+        System.out.println("\nEnter the regex pattern to replace:");
         String regex = ".*\\.txt";
         // String regex = scanner.nextLine();
 
         // Solicitar nuevo texto
-        System.out.println("Enter the replacement text:");
+        System.out.println("\nEnter the replacement text:");
         String replacement = "hola";
         // String replacement = scanner.nextLine();
 
@@ -125,7 +137,8 @@ public class FileRenamer2 {
 
         if (!directory.exists() || !directory.isDirectory()) {
 
-            System.err.println("Invalid directory path!");
+            System.err.println("\nInvalid directory path!");
+            System.out.println("\n---------------------------------------------------");
             return;
 
         }
@@ -135,7 +148,8 @@ public class FileRenamer2 {
 
         // Reemplazar nombres de archivos recursivamente
         int renamedCount = replaceFileNames(directory, regex, replacement, nameCounter);
-        System.out.println("Files renamed: " + renamedCount);
+        System.out.println("\nFiles renamed: " + renamedCount);
+        System.out.println("\n---------------------------------------------------");
 
     }
 

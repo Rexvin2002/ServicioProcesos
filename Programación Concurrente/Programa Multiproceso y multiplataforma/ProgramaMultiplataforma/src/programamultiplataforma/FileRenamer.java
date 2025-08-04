@@ -5,6 +5,7 @@ package programamultiplataforma;
  */
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 // import java.util.Scanner;
@@ -27,34 +28,50 @@ public class FileRenamer {
      */
     public static void main(String[] args) {
 
+        try {
+
+            Controller.configurarUTF8Encoding();
+
+        } catch (UnsupportedEncodingException e) {
+            System.err.println("\nError: " + e.getMessage());
+            System.out.println("\n---------------------------------------------------");
+        }
+
         // Crear un objeto Scanner para leer desde la consola
         // Scanner scanner = new Scanner(System.in);
         // Preguntar al usuario por el directorio
-        System.out.print("Introduce el directorio donde renombrar los archivos: ");
+        System.out.print("\nIntroduce el directorio donde renombrar los archivos: ");
         String folderPath = ProgramaMultiplataforma.getCARPETAEJEMPLO();
         // String folderPath = scanner.nextLine();
 
         // Preguntar al usuario por la expresión regular
-        System.out.print("Introduce la expresión regular para los nombres de los archivos: ");
-        String regex = ".*\\.txt";
+        System.out.print("\n\nIntroduce la expresión regular para los nombres de los archivos: ");
+        String regex = ".*.txt";
         // String regex = scanner.nextLine();
 
         // Preguntar al usuario por el reemplazo
-        System.out.print("Introduce el reemplazo para los nombres de los archivos: ");
+        System.out.print("\n\nIntroduce el reemplazo para los nombres de los archivos: ");
         String replacement = "renamed_file";
         // String replacement = scanner.nextLine();
 
         try {
+
             AtomicInteger counter = new AtomicInteger(1); // Contador para nombres únicos
             boolean success = renameFilesRecursively(new File(folderPath), regex, replacement, counter);
 
             if (success) {
-                System.out.println("Archivos renombrados exitosamente.");
+
+                System.out.println("\nArchivos renombrados exitosamente.");
+                System.out.println("\n---------------------------------------------------");
+
             } else {
-                System.out.println("Ocurrieron algunos errores al renombrar los archivos.");
+                System.err.println("\nOcurrieron algunos errores al renombrar los archivos.");
+                System.out.println("\n---------------------------------------------------");
             }
+
         } catch (Exception e) {
-            System.err.println("Error: " + e.getMessage());
+            System.err.println("\nError: " + e.getMessage());
+            System.out.println("\n---------------------------------------------------");
         }
 
         // Cerrar el scanner
@@ -90,10 +107,11 @@ public class FileRenamer {
                 try {
 
                     Files.move(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                    System.out.println("Renombrado: " + file.getName() + " -> " + newFile.getName());
+                    System.out.println("\n\nRenombrado: " + file.getName() + " -> " + newFile.getName());
 
                 } catch (IOException e) {
-                    System.err.println("Error renombrando el archivo: " + file.getAbsolutePath());
+                    System.err.println("\nError renombrando el archivo: " + file.getAbsolutePath());
+                    System.out.println("\n---------------------------------------------------");
                     allRenamedSuccessfully = false;
                 }
 

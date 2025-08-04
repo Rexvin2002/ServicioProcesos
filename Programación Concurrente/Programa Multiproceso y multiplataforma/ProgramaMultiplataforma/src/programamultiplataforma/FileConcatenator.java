@@ -116,11 +116,11 @@ public class FileConcatenator {
      */
     public static void main(String[] args) {
 
-        // Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(System.in);
         // Solicitar la ruta del directorio
         System.out.println("Enter the directory path:");
-        String directoryPath = ProgramaMultiplataforma.getCARPETAEJEMPLO();
-        // String directoryPath = scanner.nextLine();
+        // String directoryPath = ProgramaMultiplataforma.getCARPETAEJEMPLO();
+        String directoryPath = scanner.nextLine();
 
         // Asegurarse de que la ruta de directorio esté bien formada
         if (directoryPath.endsWith(File.separator)) {
@@ -139,7 +139,7 @@ public class FileConcatenator {
 
         // Solicitar el nombre del archivo de salida
         System.out.println("Enter the name of the output file (with .txt extension):");
-        String outputFileName = "output.txt";
+        String outputFileName = ProgramaMultiplataforma.getCARPETAEJEMPLO()+"output.txt";
         // String outputFileName = scanner.nextLine();
 
         // Validar que el nombre del archivo de salida tenga la extensión .txt

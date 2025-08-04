@@ -3,12 +3,15 @@ package programamultiplataforma;
 /**
  * Kevin Gómez Valderas 2ºDAM
  */
+import java.io.UnsupportedEncodingException;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import vistas.PowerRename;
 
 public class ProgramaMultiplataforma {
 
-    private static final String CARPETAEJEMPLO = "src\\CarpetaEjemplo";
+    private static final String CARPETAEJEMPLO = "src\\CarpetaEjemplo\\";
 
     /*
      * -----------------------------------------------------------------------
@@ -16,6 +19,14 @@ public class ProgramaMultiplataforma {
      * -----------------------------------------------------------------------
      */
     public static void main(String[] args) {
+
+        try {
+
+            Controller.configurarUTF8Encoding();
+
+        } catch (UnsupportedEncodingException e) {
+            System.err.println("Error: " + e.getMessage());
+        }
 
         try (Scanner scanner = new Scanner(System.in)) {
 
@@ -40,7 +51,9 @@ public class ProgramaMultiplataforma {
                 switch (opcion) {
                     case 1 -> {
 
-                        System.out.println("\nHas seleccionado: Contador de archivos.");
+                        System.out.println("\n---------------------------------------------------");
+                        System.out.println("Has seleccionado: Contador de archivos.");
+                        System.out.println("---------------------------------------------------");
 
                         // Ejecutar el script FileCounter
                         try {
@@ -54,12 +67,14 @@ public class ProgramaMultiplataforma {
                     }
                     case 2 -> {
 
-                        System.out.println("\nHas seleccionado: Renombrar.");
+                        System.out.println("\n---------------------------------------------------");
+                        System.out.println("Has seleccionado: Renombrar.");
+                        System.out.println("---------------------------------------------------");
                         // Ejecutar el script FileRenamer
 
                         try {
 
-                            FileRenamer.main(new String[]{CARPETAEJEMPLO, ".*\\.txt", "renamed_file"});
+                            FileRenamer.main(new String[]{CARPETAEJEMPLO, ".*.txt", "renamed_file"});
 
                         } catch (Exception e) {
                             System.err.println("\nError al ejecutar el renombrado de archivos: " + e.getMessage());
@@ -68,7 +83,9 @@ public class ProgramaMultiplataforma {
                     }
                     case 3 -> {
 
-                        System.out.println("\nHas seleccionado: Reemplazar.");
+                        System.out.println("\n---------------------------------------------------");
+                        System.out.println("Has seleccionado: Reemplazar.");
+                        System.out.println("---------------------------------------------------");
 
                         // Ejecutar el script FileRenamer2
                         try {
@@ -82,7 +99,9 @@ public class ProgramaMultiplataforma {
                     }
                     case 4 -> {
 
-                        System.out.println("\nHas seleccionado: PowerRename.");
+                        System.out.println("\n---------------------------------------------------");
+                        System.out.println("Has seleccionado: PowerRename.");
+                        System.out.println("---------------------------------------------------");
 
                         // Ejecutar el script PowerRename
                         try {
@@ -96,7 +115,9 @@ public class ProgramaMultiplataforma {
                     }
                     case 5 -> {
 
+                        System.out.println("\n---------------------------------------------------");
                         System.out.println("\nHas seleccionado: Concatenador.");
+                        System.out.println("---------------------------------------------------");
 
                         // Ejecutar el script FileConcatenator
                         try {
