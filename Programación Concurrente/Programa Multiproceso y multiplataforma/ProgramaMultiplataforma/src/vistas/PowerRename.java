@@ -1,20 +1,24 @@
-
 package vistas;
 
+/**
+ * Kevin Gómez Valderas 2ºDAM
+ */
 import java.io.File;
 import javax.swing.JFileChooser;
 import programamultiplataforma.Controller;
 
-/**
- *
- * @author kgv17
- */
 public class PowerRename extends javax.swing.JFrame {
 
     private String filePath;
     private String content = "";
-    
+
+    /*
+     * -----------------------------------------------------------------------
+     * CONSTRUCTOR
+     * -----------------------------------------------------------------------
+     */
     public PowerRename() {
+
         initComponents();
         setLocationRelativeTo(null);
         Controller.escalarEstablecerImagen(this.jLabelOptions3, "/imgs/OptionsIcon.png");
@@ -22,8 +26,9 @@ public class PowerRename extends javax.swing.JFrame {
         Controller.escalarEstablecerImagenBoton(this.jButtonFolder, "/imgs/FolderIcon.png", 5);
         Controller.escalarEstablecerImagenBoton(this.jButtonText, "/imgs/TextIcon.png", 5);
         Controller.escalarEstablecerImagenBoton(this.jButtonTextFormat, "/imgs/TextIcon.png", 5);
+
     }
-    
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -56,7 +61,8 @@ public class PowerRename extends javax.swing.JFrame {
         jLabelOptions2 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("PowerRename");
         setMinimumSize(new java.awt.Dimension(1700, 1000));
         setPreferredSize(new java.awt.Dimension(1700, 1000));
         setSize(new java.awt.Dimension(1700, 1000));
@@ -66,11 +72,6 @@ public class PowerRename extends javax.swing.JFrame {
         jTextFieldSearch.setText("jTextField1");
         jTextFieldSearch.setMinimumSize(new java.awt.Dimension(282, 40));
         jTextFieldSearch.setPreferredSize(new java.awt.Dimension(282, 40));
-        jTextFieldSearch.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextFieldSearchActionPerformed(evt);
-            }
-        });
 
         jCheckBoxRegularExpression.setText("Use regular expressions");
         jCheckBoxRegularExpression.setMaximumSize(new java.awt.Dimension(282, 20));
@@ -360,7 +361,13 @@ public class PowerRename extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /*
+     * -----------------------------------------------------------------------
+     * EVENTOS
+     * -----------------------------------------------------------------------
+     */
     private void jButtonFolderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonFolderActionPerformed
+
         // Crear un JFileChooser
         JFileChooser fileChooser = new JFileChooser();
 
@@ -372,6 +379,7 @@ public class PowerRename extends javax.swing.JFrame {
 
         // Comprobar si se seleccionó un archivo
         if (result == JFileChooser.APPROVE_OPTION) {
+
             // Obtener el archivo seleccionado
             File selectedFile = fileChooser.getSelectedFile();
 
@@ -380,15 +388,12 @@ public class PowerRename extends javax.swing.JFrame {
 
             // Mostrar la ruta del archivo
             System.out.println("Selected file path: " + filePath);
-        } else {
-            System.out.println("No file was selected.");
-        }
-        
-    }//GEN-LAST:event_jButtonFolderActionPerformed
 
-    private void jTextFieldSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldSearchActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextFieldSearchActionPerformed
+        } else {
+            System.err.println("No file was selected.");
+        }
+
+    }//GEN-LAST:event_jButtonFolderActionPerformed
 
     private void jCheckBoxCaseSensitive2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxCaseSensitive2ActionPerformed
         this.jTextFieldSearch.getText();
@@ -396,7 +401,6 @@ public class PowerRename extends javax.swing.JFrame {
 
     private void jCheckBoxMatchOcurrencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxMatchOcurrencesActionPerformed
         this.jTextFieldSearch.getText();
-        
     }//GEN-LAST:event_jCheckBoxMatchOcurrencesActionPerformed
 
     private void jCheckBoxRegularExpressionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxRegularExpressionActionPerformed
@@ -411,33 +415,32 @@ public class PowerRename extends javax.swing.JFrame {
         this.content = this.content.toUpperCase();
     }//GEN-LAST:event_jButtonAA2ActionPerformed
 
-    /**
-     * @param args the command line arguments
+    /*
+     * -----------------------------------------------------------------------
+     * MAIN
+     * -----------------------------------------------------------------------
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
+
         try {
+
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
+
             }
+
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(PowerRename.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
-        
-        //</editor-fold>
 
-        /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
             new PowerRename().setVisible(true);
         });
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
