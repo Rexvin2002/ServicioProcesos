@@ -1,13 +1,14 @@
 package vistas;
 
-/**
- * Kevin Gómez Valderas 2ºDAM
- */
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import javax.swing.JFileChooser;
 import programamultiplataforma.Controller;
 
+/**
+ *
+ * @author kgv17
+ */
 public class PowerRename extends javax.swing.JFrame {
 
     private String filePath;
@@ -20,22 +21,25 @@ public class PowerRename extends javax.swing.JFrame {
      * -----------------------------------------------------------------------
      */
     public PowerRename() {
+
         initComponents();
         setLocationRelativeTo(null);
 
         try {
+
             Controller.configurarUTF8Encoding();
+
         } catch (UnsupportedEncodingException e) {
             System.err.println("\nError: " + e.getMessage());
             System.out.println("\n" + SEPARATOR);
         }
 
-        // Usar rutas absolutas del classpath
         Controller.escalarEstablecerImagen(this.jLabelOptions3, "/imgs/OptionsIcon.png");
         Controller.escalarEstablecerImagenBoton(this.jButtonDocument, "/imgs/DocumentIcon.png", 5);
         Controller.escalarEstablecerImagenBoton(this.jButtonFolder, "/imgs/FolderIcon.png", 5);
         Controller.escalarEstablecerImagenBoton(this.jButtonText, "/imgs/TextIcon.png", 5);
         Controller.escalarEstablecerImagenBoton(this.jButtonTextFormat, "/imgs/TextIcon.png", 5);
+
     }
 
     @SuppressWarnings("unchecked")
@@ -70,8 +74,7 @@ public class PowerRename extends javax.swing.JFrame {
         jLabelOptions2 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("PowerRename");
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(1700, 1000));
         setPreferredSize(new java.awt.Dimension(1700, 1000));
         setSize(new java.awt.Dimension(1700, 1000));
@@ -372,7 +375,7 @@ public class PowerRename extends javax.swing.JFrame {
 
     /*
      * -----------------------------------------------------------------------
-     * EVENTOS
+     * MÉTODOS
      * -----------------------------------------------------------------------
      */
     private void jButtonFolderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonFolderActionPerformed
@@ -399,11 +402,16 @@ public class PowerRename extends javax.swing.JFrame {
             System.out.println("\nSelected file path: " + filePath);
 
         } else {
-            System.err.println("\nNo file was selected.");
+            System.out.println("\nNo file was selected.");
         }
 
     }//GEN-LAST:event_jButtonFolderActionPerformed
 
+    /*
+     * -----------------------------------------------------------------------
+     * EVENTOS
+     * -----------------------------------------------------------------------
+     */
     private void jCheckBoxCaseSensitive2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxCaseSensitive2ActionPerformed
         this.jTextFieldSearch.getText();
     }//GEN-LAST:event_jCheckBoxCaseSensitive2ActionPerformed
@@ -433,20 +441,13 @@ public class PowerRename extends javax.swing.JFrame {
 
         try {
 
-            Controller.configurarUTF8Encoding();
-
-        } catch (UnsupportedEncodingException e) {
-            System.err.println("\nError: " + e.getMessage());
-            System.out.println("\n" + SEPARATOR);
-        }
-
-        try {
-
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
 
                 if ("Nimbus".equals(info.getName())) {
+
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
+
                 }
 
             }

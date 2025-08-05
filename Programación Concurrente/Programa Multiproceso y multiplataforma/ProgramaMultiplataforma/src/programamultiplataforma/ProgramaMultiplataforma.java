@@ -41,15 +41,14 @@ public class ProgramaMultiplataforma {
                                    
                                    Selecciona una opci\u00f3n:
                                    1. Contador de archivos.
-                                   2. Renombrar.
-                                   3. Reemplazar.
-                                   4. PowerRename. 
-                                   5. Concatenador. 
-                                   6. Buscador de directorios vacíos.
-                                   7. Buscador de archivos por extensión.
-                                   8. Salir.""");
+                                   2. Renombrar Ficheros.
+                                   3. PowerRename. 
+                                   4. Concatenador. 
+                                   5. Buscador de directorios vacíos.
+                                   6. Buscador de archivos por extensión.
+                                   7. Salir.""");
 
-                System.out.println("\nIntroduce el número de la opción: ");
+                System.out.print("\nIntroduce el número de la opción: ");
                 opcion = SCANNER.nextInt();
 
                 switch (opcion) {
@@ -62,6 +61,7 @@ public class ProgramaMultiplataforma {
                         // Ejecutar el script FileCounter
                         try {
 
+                            SCANNER.nextLine();
                             FileCounter.main(new String[]{});
 
                         } catch (Exception e) {
@@ -73,12 +73,13 @@ public class ProgramaMultiplataforma {
                     case 2 -> {
 
                         System.out.println("\n" + SEPARATOR);
-                        System.out.println("Has seleccionado: Renombrar.");
+                        System.out.println("Has seleccionado: Renombrar Ficheros.");
                         System.out.println(SEPARATOR);
                         // Ejecutar el script FileRenamer2
 
                         try {
 
+                            SCANNER.nextLine();
                             FileRenamer.main(new String[]{CARPETAEJEMPLO, ".*.txt", "renamed_file"});
 
                         } catch (Exception e) {
@@ -90,28 +91,13 @@ public class ProgramaMultiplataforma {
                     case 3 -> {
 
                         System.out.println("\n" + SEPARATOR);
-                        System.out.println("Has seleccionado: Reemplazar.");
-                        System.out.println(SEPARATOR);
-
-                        // Ejecutar el script FileRenamer
-                        try {
-
-                            FileRenamer.main(new String[]{CARPETAEJEMPLO, ".*\\.txt", "renamed_file"});
-
-                        } catch (Exception e) {
-                            System.err.println("\nError al ejecutar el remplazo de archivos: " + e.getMessage());
-                            System.out.println("\n" + SEPARATOR);
-                        }
-
-                    }
-                    case 4 -> {
-                        System.out.println("\n" + SEPARATOR);
                         System.out.println("Has seleccionado: PowerRename.");
                         System.out.println(SEPARATOR);
 
                         // Ejecutar el script PowerRename
                         try {
 
+                            SCANNER.nextLine();
                             PowerRename powerRename = new PowerRename();
 
                             // Agregar WindowListener para saber cuando se cierra
@@ -145,7 +131,7 @@ public class ProgramaMultiplataforma {
                         }
 
                     }
-                    case 5 -> {
+                    case 4 -> {
 
                         System.out.println("\n" + SEPARATOR);
                         System.out.println("Has seleccionado: Concatenador.");
@@ -154,7 +140,25 @@ public class ProgramaMultiplataforma {
                         // Ejecutar el script FileConcatenator
                         try {
 
+                            SCANNER.nextLine();
                             FileConcatenator.main(new String[]{});
+
+                        } catch (Exception e) {
+                            System.err.println("\nError al ejecutar concatenador de archivos: " + e.getMessage());
+                            System.out.println("\n" + SEPARATOR);
+                        }
+
+                    }
+                    case 5 -> {
+
+                        System.out.println("\n" + SEPARATOR);
+                        System.out.println("Has seleccionado: Buscador de directorios vacíos.");
+                        System.out.println(SEPARATOR);
+
+                        try {
+
+                            SCANNER.nextLine();
+                            DirectoryCleaner.main(new String[]{});
 
                         } catch (Exception e) {
                             System.err.println("\nError al ejecutar concatenador de archivos: " + e.getMessage());
@@ -165,27 +169,12 @@ public class ProgramaMultiplataforma {
                     case 6 -> {
 
                         System.out.println("\n" + SEPARATOR);
-                        System.out.println("Has seleccionado: Buscador de directorios vacíos.");
-                        System.out.println(SEPARATOR);
-
-                        try {
-
-                            DirectoryCleaner.main(new String[]{});
-
-                        } catch (Exception e) {
-                            System.err.println("\nError al ejecutar concatenador de archivos: " + e.getMessage());
-                            System.out.println("\n" + SEPARATOR);
-                        }
-
-                    }
-                    case 7 -> {
-
-                        System.out.println("\n" + SEPARATOR);
                         System.out.println("Has seleccionado: Buscador de archivos por extensión.");
                         System.out.println(SEPARATOR);
 
                         try {
 
+                            SCANNER.nextLine();
                             FindFileByExtension.main(new String[]{});
 
                         } catch (Exception e) {
@@ -194,7 +183,7 @@ public class ProgramaMultiplataforma {
                         }
 
                     }
-                    case 8 -> {
+                    case 7 -> {
 
                         try {
 

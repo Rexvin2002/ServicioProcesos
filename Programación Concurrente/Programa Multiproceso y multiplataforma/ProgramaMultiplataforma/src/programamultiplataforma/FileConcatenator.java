@@ -28,7 +28,7 @@ public class FileConcatenator {
 
             System.out.println("\nIntroduce el patrón para los nombres de archivo:");
             String fileRegexInput = SCANNER.nextLine().trim();
-            String fileRegex = fileRegexInput.isEmpty() ? "archivo\\d+" : fileRegexInput;
+            String fileRegex = fileRegexInput.isEmpty() ? ".*\\d*\\.txt" : fileRegexInput;
 
             System.out.println("Introduce el patrón para buscar errores:");
             String contentRegexInput = SCANNER.nextLine().trim();
@@ -63,7 +63,7 @@ public class FileConcatenator {
             System.out.println("- Patrón archivos: " + fileRegex);
             System.out.println("- Patrón errores: " + contentRegex);
             System.out.println("- Archivo errores: " + errorsFileName);
-            System.out.println("- Archivo combinado: " + combinedFileName);
+            System.out.println("- Archivo combinado: " + combinedFileName + "\n");
 
             try (BufferedWriter errorsWriter = Files.newBufferedWriter(errorsFile); BufferedWriter combinedWriter = Files.newBufferedWriter(combinedFile)) {
 
@@ -87,7 +87,7 @@ public class FileConcatenator {
 
                     // Verificar patrón del nombre (solo si se especificó un patrón)
                     if (!fileRegex.isEmpty() && !fileName.matches(fileRegex)) {
-                        System.out.printf("\nArchivo %s no coincide con el patrón%n", fileName);
+                        System.out.printf("Archivo %s no coincide con el patrón%n", fileName);
                         continue;
                     }
 

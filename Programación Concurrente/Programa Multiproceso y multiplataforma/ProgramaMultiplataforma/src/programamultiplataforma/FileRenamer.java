@@ -119,7 +119,7 @@ public class FileRenamer {
         }
 
         // Solicitar ruta del directorio con valor por defecto
-        System.out.println("\nIntroduzca la ruta del directorio :");
+        System.out.println("\nIntroduzca la ruta del directorio:");
         String directoryPathInput = SCANNER.nextLine().trim();
         String directoryPath = directoryPathInput.isEmpty()
                 ? ProgramaMultiplataforma.getCARPETAEJEMPLO()
@@ -133,7 +133,7 @@ public class FileRenamer {
         // Solicitar texto de reemplazo con valor por defecto
         System.out.println("Introduzca el texto de reemplazo:");
         String replacementInput = SCANNER.nextLine().trim();
-        String replacement = replacementInput.isEmpty() ? "renamed_file.txt" : replacementInput;
+        String replacement = replacementInput.isEmpty() ? "archivo.txt" : replacementInput;
 
         // Verificar el directorio
         File directory = new File(directoryPath);

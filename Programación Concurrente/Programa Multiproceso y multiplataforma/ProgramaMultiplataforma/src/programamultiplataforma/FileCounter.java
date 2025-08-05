@@ -188,7 +188,7 @@ public class FileCounter {
             String path = pathInput.isEmpty() ? ProgramaMultiplataforma.getCARPETAEJEMPLO() : pathInput;
 
             // Solicitar modo recursivo con valor por defecto (true)
-            System.out.println("¿Quieres contar los archivos de forma recursiva?: ");
+            System.out.println("¿Quieres contar los archivos de forma recursiva?:");
             String recursiveInput = SCANNER.nextLine().trim();
             boolean recursive = recursiveInput.isEmpty() ? true : Boolean.parseBoolean(recursiveInput);
 
