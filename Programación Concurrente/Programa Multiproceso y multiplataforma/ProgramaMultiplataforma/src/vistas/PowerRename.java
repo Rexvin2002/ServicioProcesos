@@ -4,6 +4,7 @@ package vistas;
  * Kevin Gómez Valderas 2ºDAM
  */
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import javax.swing.JFileChooser;
 import programamultiplataforma.Controller;
 
@@ -11,6 +12,7 @@ public class PowerRename extends javax.swing.JFrame {
 
     private String filePath;
     private String content = "";
+    private static final String SEPARATOR = Controller.getSEPARATOR();
 
     /*
      * -----------------------------------------------------------------------
@@ -18,15 +20,22 @@ public class PowerRename extends javax.swing.JFrame {
      * -----------------------------------------------------------------------
      */
     public PowerRename() {
-
         initComponents();
         setLocationRelativeTo(null);
+
+        try {
+            Controller.configurarUTF8Encoding();
+        } catch (UnsupportedEncodingException e) {
+            System.err.println("\nError: " + e.getMessage());
+            System.out.println("\n" + SEPARATOR);
+        }
+
+        // Usar rutas absolutas del classpath
         Controller.escalarEstablecerImagen(this.jLabelOptions3, "/imgs/OptionsIcon.png");
         Controller.escalarEstablecerImagenBoton(this.jButtonDocument, "/imgs/DocumentIcon.png", 5);
         Controller.escalarEstablecerImagenBoton(this.jButtonFolder, "/imgs/FolderIcon.png", 5);
         Controller.escalarEstablecerImagenBoton(this.jButtonText, "/imgs/TextIcon.png", 5);
         Controller.escalarEstablecerImagenBoton(this.jButtonTextFormat, "/imgs/TextIcon.png", 5);
-
     }
 
     @SuppressWarnings("unchecked")
@@ -388,11 +397,9 @@ public class PowerRename extends javax.swing.JFrame {
 
             // Mostrar la ruta del archivo
             System.out.println("\nSelected file path: " + filePath);
-            System.out.println("\n---------------------------------------------------");
 
         } else {
             System.err.println("\nNo file was selected.");
-            System.out.println("\n---------------------------------------------------");
         }
 
     }//GEN-LAST:event_jButtonFolderActionPerformed
@@ -423,6 +430,15 @@ public class PowerRename extends javax.swing.JFrame {
      * -----------------------------------------------------------------------
      */
     public static void main(String args[]) {
+
+        try {
+
+            Controller.configurarUTF8Encoding();
+
+        } catch (UnsupportedEncodingException e) {
+            System.err.println("\nError: " + e.getMessage());
+            System.out.println("\n" + SEPARATOR);
+        }
 
         try {
 

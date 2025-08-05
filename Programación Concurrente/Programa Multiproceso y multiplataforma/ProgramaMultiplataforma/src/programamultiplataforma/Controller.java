@@ -14,10 +14,12 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Scanner;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -27,6 +29,9 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 public class Controller {
+
+    private static final Scanner SCANNER = new Scanner(System.in, StandardCharsets.UTF_8.name());
+    private static final String SEPARATOR = "---------------------------------------------------";
 
     /*
      * -----------------------------------------------------------------------
@@ -225,6 +230,19 @@ public class Controller {
         System.setOut(new PrintStream(System.out, true, "UTF-8"));
         System.setProperty("file.encoding", "UTF-8");
 
+    }
+
+    /*
+     * -----------------------------------------------------------------------
+     * GETTERS Y SETTERS
+     * -----------------------------------------------------------------------
+     */
+    public static Scanner getSCANNER() {
+        return SCANNER;
+    }
+
+    public static String getSEPARATOR() {
+        return SEPARATOR;
     }
 
 }

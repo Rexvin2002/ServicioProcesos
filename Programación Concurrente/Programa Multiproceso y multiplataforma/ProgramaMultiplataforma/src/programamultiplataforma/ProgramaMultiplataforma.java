@@ -3,15 +3,17 @@ package programamultiplataforma;
 /**
  * Kevin Gómez Valderas 2ºDAM
  */
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.UnsupportedEncodingException;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import vistas.PowerRename;
 
 public class ProgramaMultiplataforma {
 
+    private static final Scanner SCANNER = Controller.getSCANNER();
     private static final String CARPETAEJEMPLO = "src\\CarpetaEjemplo\\";
+    private static final String SEPARATOR = Controller.getSEPARATOR();
 
     /*
      * -----------------------------------------------------------------------
@@ -25,10 +27,11 @@ public class ProgramaMultiplataforma {
             Controller.configurarUTF8Encoding();
 
         } catch (UnsupportedEncodingException e) {
-            System.err.println("Error: " + e.getMessage());
+            System.err.println("\nError: " + e.getMessage());
+            System.out.println("\n" + SEPARATOR);
         }
 
-        try (Scanner scanner = new Scanner(System.in)) {
+        try (SCANNER) {
 
             int opcion;
 
@@ -43,17 +46,18 @@ public class ProgramaMultiplataforma {
                                    4. PowerRename. 
                                    5. Concatenador. 
                                    6. Buscador de directorios vacíos.
-                                   7. Salir.""");
+                                   7. Buscador de archivos por extensión.
+                                   8. Salir.""");
 
-                System.out.print("\nIntroduce el número de la opción: ");
-                opcion = scanner.nextInt();
+                System.out.println("\nIntroduce el número de la opción: ");
+                opcion = SCANNER.nextInt();
 
                 switch (opcion) {
                     case 1 -> {
 
-                        System.out.println("\n---------------------------------------------------");
+                        System.out.println("\n" + SEPARATOR);
                         System.out.println("Has seleccionado: Contador de archivos.");
-                        System.out.println("---------------------------------------------------");
+                        System.out.println(SEPARATOR);
 
                         // Ejecutar el script FileCounter
                         try {
@@ -62,15 +66,16 @@ public class ProgramaMultiplataforma {
 
                         } catch (Exception e) {
                             System.err.println("\nError al ejecutar el contador de archivos: " + e.getMessage());
+                            System.out.println("\n" + SEPARATOR);
                         }
 
                     }
                     case 2 -> {
 
-                        System.out.println("\n---------------------------------------------------");
+                        System.out.println("\n" + SEPARATOR);
                         System.out.println("Has seleccionado: Renombrar.");
-                        System.out.println("---------------------------------------------------");
-                        // Ejecutar el script FileRenamer
+                        System.out.println(SEPARATOR);
+                        // Ejecutar el script FileRenamer2
 
                         try {
 
@@ -78,46 +83,73 @@ public class ProgramaMultiplataforma {
 
                         } catch (Exception e) {
                             System.err.println("\nError al ejecutar el renombrado de archivos: " + e.getMessage());
+                            System.out.println("\n" + SEPARATOR);
                         }
 
                     }
                     case 3 -> {
 
-                        System.out.println("\n---------------------------------------------------");
+                        System.out.println("\n" + SEPARATOR);
                         System.out.println("Has seleccionado: Reemplazar.");
-                        System.out.println("---------------------------------------------------");
+                        System.out.println(SEPARATOR);
 
-                        // Ejecutar el script FileRenamer2
+                        // Ejecutar el script FileRenamer
                         try {
 
-                            FileRenamer2.main(new String[]{CARPETAEJEMPLO, ".*\\.txt", "renamed_file"});
+                            FileRenamer.main(new String[]{CARPETAEJEMPLO, ".*\\.txt", "renamed_file"});
 
                         } catch (Exception e) {
                             System.err.println("\nError al ejecutar el remplazo de archivos: " + e.getMessage());
+                            System.out.println("\n" + SEPARATOR);
                         }
 
                     }
                     case 4 -> {
-
-                        System.out.println("\n---------------------------------------------------");
+                        System.out.println("\n" + SEPARATOR);
                         System.out.println("Has seleccionado: PowerRename.");
-                        System.out.println("---------------------------------------------------");
+                        System.out.println(SEPARATOR);
 
                         // Ejecutar el script PowerRename
                         try {
 
-                            PowerRename.main(new String[]{});
+                            PowerRename powerRename = new PowerRename();
+
+                            // Agregar WindowListener para saber cuando se cierra
+                            final Thread waitingThread = Thread.currentThread();
+
+                            powerRename.addWindowListener(new WindowAdapter() {
+
+                                @Override
+                                public void windowClosed(WindowEvent e) {
+                                    waitingThread.interrupt(); // Interrumpir el hilo de espera
+                                }
+
+                            });
+
+                            powerRename.setVisible(true);
+
+                            // Esperar hasta que se cierre (sin sleep fijo)
+                            try {
+
+                                synchronized (waitingThread) {
+                                    waitingThread.wait(); // Espera hasta ser notificado/interrumpido
+                                }
+
+                            } catch (InterruptedException e) {
+                                System.out.println("\n" + SEPARATOR);
+                            }
 
                         } catch (Exception e) {
                             System.err.println("\nError al ejecutar PowerRename: " + e.getMessage());
+                            System.out.println("\n" + SEPARATOR);
                         }
 
                     }
                     case 5 -> {
 
-                        System.out.println("\n---------------------------------------------------");
-                        System.out.println("\nHas seleccionado: Concatenador.");
-                        System.out.println("---------------------------------------------------");
+                        System.out.println("\n" + SEPARATOR);
+                        System.out.println("Has seleccionado: Concatenador.");
+                        System.out.println(SEPARATOR);
 
                         // Ejecutar el script FileConcatenator
                         try {
@@ -126,12 +158,15 @@ public class ProgramaMultiplataforma {
 
                         } catch (Exception e) {
                             System.err.println("\nError al ejecutar concatenador de archivos: " + e.getMessage());
+                            System.out.println("\n" + SEPARATOR);
                         }
 
                     }
                     case 6 -> {
 
-                        System.out.println("\nHas seleccionado: Buscador de directorios vacíos.");
+                        System.out.println("\n" + SEPARATOR);
+                        System.out.println("Has seleccionado: Buscador de directorios vacíos.");
+                        System.out.println(SEPARATOR);
 
                         try {
 
@@ -139,11 +174,51 @@ public class ProgramaMultiplataforma {
 
                         } catch (Exception e) {
                             System.err.println("\nError al ejecutar concatenador de archivos: " + e.getMessage());
+                            System.out.println("\n" + SEPARATOR);
                         }
 
                     }
                     case 7 -> {
-                        System.out.println("\n¡Hasta luego!");
+
+                        System.out.println("\n" + SEPARATOR);
+                        System.out.println("Has seleccionado: Buscador de archivos por extensión.");
+                        System.out.println(SEPARATOR);
+
+                        try {
+
+                            FindFileByExtension.main(new String[]{});
+
+                        } catch (Exception e) {
+                            System.err.println("\nError al ejecutar concatenador de archivos: " + e.getMessage());
+                            System.out.println("\n" + SEPARATOR);
+                        }
+
+                    }
+                    case 8 -> {
+
+                        try {
+
+                            System.out.println("\n" + SEPARATOR);
+                            System.out.println("¡Hasta luego!");
+                            System.out.println(SEPARATOR);
+
+                        } catch (Exception e) {
+
+                            System.err.println("\nError: " + e.getMessage());
+                            System.out.println("\n" + SEPARATOR);
+
+                        } finally {
+
+                            if (SCANNER != null) {
+
+                                SCANNER.close();
+                                System.out.println("Scanner cerrado correctamente");
+                                System.out.println("\n" + SEPARATOR);
+
+                            }
+
+                        }
+
                     }
                     default ->
                         System.err.println("\nOpción no válida. Por favor, selecciona un número entre 1 y 7.");

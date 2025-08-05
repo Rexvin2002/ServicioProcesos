@@ -5,10 +5,12 @@ package programamultiplataforma;
  */
 import java.io.*;
 import java.nio.file.*;
-// import java.nio.charset.StandardCharsets;
-// import java.util.*;
+import java.util.Scanner;
 
 public class DirectoryCleaner {
+
+    private static final Scanner SCANNER = Controller.getSCANNER();
+    private static final String SEPARATOR = Controller.getSEPARATOR();
 
     /*
      * -----------------------------------------------------------------------
@@ -24,21 +26,20 @@ public class DirectoryCleaner {
      * -----------------------------------------------------------------------
      */
     public static void listEmptyDirectories(String rootDirectory) throws IOException {
+
         Path rootDirPath = Paths.get(rootDirectory).toAbsolutePath();
 
-        // Verificar si la ruta es válida
         if (!Files.isDirectory(rootDirPath)) {
             throw new IllegalArgumentException("La ruta proporcionada no es un directorio válido: " + rootDirectory);
         }
 
-        // Listar los directorios vacíos
-        System.out.println("Buscando directorios vacíos en: " + rootDirPath.toString());
+        System.out.println("Iniciando búsqueda de directorios vacíos en:");
+        System.out.println(rootDirPath.toString());
 
-        Files.walk(rootDirPath).filter(Files::isDirectory).filter(path -> { // Filtrar solo directorios
+        long emptyDirCount = Files.walk(rootDirPath).filter(Files::isDirectory).filter(path -> {
 
             try {
 
-                // Comprobar si el directorio está vacío
                 return Files.list(path).count() == 0;
 
             } catch (IOException e) {
@@ -46,7 +47,10 @@ public class DirectoryCleaner {
                 return false;
             }
 
-        }).forEach(path -> System.out.println("Directorio vacío encontrado: " + path.toString()));
+        }).peek(path -> System.out.println("• " + path.toString())).count();
+
+        System.out.println("\nBúsqueda completada. Directorios vacíos encontrados: " + emptyDirCount);
+
     }
 
     /*
@@ -56,20 +60,37 @@ public class DirectoryCleaner {
      */
     public static void main(String[] args) {
 
-        // Scanner scanner = new Scanner(System.in, StandardCharsets.UTF_8.name());
-        // Solicitar la ruta del directorio
-        System.out.println("Introduce la ruta del directorio raíz para buscar directorios vacíos:");
-        String directoryPath = ProgramaMultiplataforma.getCARPETAEJEMPLO();
-        // String directoryPath = scanner.nextLine();
-
         try {
 
-            listEmptyDirectories(directoryPath);
+            Controller.configurarUTF8Encoding();
 
-        } catch (IOException e) {
-            System.err.println("Error durante la búsqueda de directorios: " + e.getMessage());
+            System.out.println("\nIntroduce la ruta del directorio raíz:");
+            String directoryPathInput = SCANNER.nextLine().trim();
+            String directoryPath = directoryPathInput.isEmpty()
+                    ? ProgramaMultiplataforma.getCARPETAEJEMPLO()
+                    : directoryPathInput;
+
+            try {
+
+                listEmptyDirectories(directoryPath);
+
+            } catch (IllegalArgumentException e) {
+                System.err.println("\nError: " + e.getMessage());
+                System.out.println("\n" + SEPARATOR);
+
+            } catch (IOException e) {
+                System.err.println("\nError durante la búsqueda: " + e.getMessage());
+                System.out.println("\n" + SEPARATOR);
+            }
+
+        } catch (UnsupportedEncodingException e) {
+            System.err.println("\nError de configuración: " + e.getMessage());
+            System.out.println("\n" + SEPARATOR);
+
+        } finally {
+            System.out.println("\nProceso finalizado");
+            System.out.println("\n" + SEPARATOR);
         }
 
     }
-
 }

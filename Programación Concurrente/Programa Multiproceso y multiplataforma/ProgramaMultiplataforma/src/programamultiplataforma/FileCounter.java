@@ -6,12 +6,14 @@ package programamultiplataforma;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-// import java.util.Scanner;
+import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class FileCounter {
+
+    private static final Scanner SCANNER = Controller.getSCANNER();
+    private static final String SEPARATOR = Controller.getSEPARATOR();
 
     /*
      * -----------------------------------------------------------------------
@@ -76,7 +78,7 @@ public class FileCounter {
 
             } catch (NumberFormatException e) {
                 System.err.println("\nError: " + e.getMessage());
-                System.out.println("\n---------------------------------------------------");
+                System.out.println("\n" + SEPARATOR);
             }
 
         }
@@ -180,24 +182,20 @@ public class FileCounter {
 
             Controller.configurarUTF8Encoding();
 
-        } catch (UnsupportedEncodingException e) {
-            System.err.println("\nError: " + e.getMessage());
-            System.out.println("\n---------------------------------------------------");
-        }
+            // Solicitar ruta del directorio con valor por defecto
+            System.out.println("\nIntroduce la ruta del directorio:");
+            String pathInput = SCANNER.nextLine().trim();
+            String path = pathInput.isEmpty() ? ProgramaMultiplataforma.getCARPETAEJEMPLO() : pathInput;
 
-        // Scanner scanner = new Scanner(System.in);
-        // Solicitar al usuario la ruta del directorio
-        System.out.println("\nIntroduce la ruta del directorio: ");
+            // Solicitar modo recursivo con valor por defecto (true)
+            System.out.println("¿Quieres contar los archivos de forma recursiva?: ");
+            String recursiveInput = SCANNER.nextLine().trim();
+            boolean recursive = recursiveInput.isEmpty() ? true : Boolean.parseBoolean(recursiveInput);
 
-        String path = ProgramaMultiplataforma.getCARPETAEJEMPLO();
-        // String path = scanner.nextLine();
-
-        // Solicitar si debe ser recursivo
-        System.out.println("\n¿Quieres contar los archivos de forma recursiva? (true/false): ");
-        boolean recursive = true;
-        // boolean recursive = Boolean.parseBoolean(scanner.nextLine());
-
-        try {
+            // Mostrar configuración que se usará
+            System.out.println("Configuración seleccionada:");
+            System.out.println("Directorio: " + path);
+            System.out.println("Recursivo: " + recursive);
 
             // Conteo usando programa externo
             FileCounts externalCounts = countFilesExternal(path, recursive);
@@ -215,7 +213,6 @@ public class FileCounter {
             if (externalCounts.equals(javaCounts)) {
 
                 System.out.println("\n¡Los conteos coinciden!");
-                System.out.println("\n---------------------------------------------------");
 
             } else {
 
@@ -237,12 +234,15 @@ public class FileCounter {
 
             }
 
+            System.out.println("\n" + SEPARATOR);
+
         } catch (Exception e) {
+
             System.err.println("\nError: " + e.getMessage());
-            System.out.println("\n---------------------------------------------------");
+            System.out.println("\n" + SEPARATOR);
+
         }
 
-        // scanner.close();
     }
 
 }

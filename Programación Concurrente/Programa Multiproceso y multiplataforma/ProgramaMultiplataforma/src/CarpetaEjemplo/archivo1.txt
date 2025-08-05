@@ -1,0 +1,4 @@
+ID: 123-45-6789 | Nombre: Ana López | Departamento: Ventas
+ID: 987-65-4321 | Nombre: Carlos Ruiz | Departamento: IT
+ID: 456-78-9123 | Nombre: Marta Sánchez | Departamento: RH
+ID: 789-12-3456 | Nombre: Error: Datos inválidos

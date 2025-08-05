@@ -1,0 +1,4 @@
+Transacción 001 | Código: 111-22-3333 | Monto: $150.00
+Transacción 002 | Código: 444-55-6666 | Monto: $275.50
+Transacción ERROR | Código: 000-00-0000 | Monto: $0.00
+Transacción 003 | Código: 777-88-9999 | Monto: $420.75

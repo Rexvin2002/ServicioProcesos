@@ -6,108 +6,11 @@ package programamultiplataforma;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
-import java.util.regex.*;
 
 public class FileConcatenator {
 
-    /*
-     * -----------------------------------------------------------------------
-     * CONSTRUCTOR
-     * -----------------------------------------------------------------------
-     */
-    public FileConcatenator() {
-    }
-
-
-    /*
-     * -----------------------------------------------------------------------
-     * MÉTODOS
-     * -----------------------------------------------------------------------
-     */
-    private static int concatenateFiles(String directoryPath, String fileRegex, String contentRegex, Path outputFile) throws IOException {
-
-        File dir = new File(directoryPath);
-
-        if (!dir.exists() || !dir.isDirectory()) {
-            throw new IllegalArgumentException("Invalid directory path: " + directoryPath);
-        }
-
-        System.out.println("\nSearching in directory: " + dir.getAbsolutePath());
-        System.out.println("File pattern: " + fileRegex);
-        System.out.println("Content pattern: " + contentRegex);
-
-        Pattern filePattern = Pattern.compile(fileRegex);
-        Pattern contentPattern = Pattern.compile(contentRegex);
-
-        int[] processedFiles = {0};
-        int[] matchingFiles = {0};
-
-        try (BufferedWriter writer = Files.newBufferedWriter(outputFile, StandardOpenOption.WRITE, StandardOpenOption.APPEND)) {
-
-            // Listar todos los archivos en el directorio primero
-            System.out.println("\nFiles in directory:");
-
-            Files.walk(dir.toPath())
-                    .filter(Files::isRegularFile)
-                    .forEach(path -> System.out.println("Found file: " + path.getFileName()));
-
-            // Procesar los archivos que coinciden con el patrón
-            Files.walk(dir.toPath()).filter(Files::isRegularFile).forEach(path -> {
-
-                processedFiles[0]++;
-                String fileName = path.getFileName().toString();
-                System.out.println("\nChecking file: " + fileName);
-
-                if (filePattern.matcher(fileName).matches()) {
-
-                    System.out.println("File matches pattern: " + fileName);
-                    matchingFiles[0]++;
-
-                    try {
-
-                        List<String> lines = Files.readAllLines(path);
-                        System.out.println("Reading " + lines.size() + " lines from " + fileName);
-
-                        boolean foundMatch = false;
-
-                        for (String line : lines) {
-
-                            if (contentPattern.matcher(line).find()) {
-                                writer.write(line);
-                                writer.newLine();
-                                System.out.println("Added matching line: " + line);
-                                foundMatch = true;
-                            }
-
-                        }
-
-                        if (!foundMatch) {
-                            System.err.println("No matching content found in: " + fileName);
-                        }
-
-                    } catch (IOException e) {
-                        System.err.println("Error processing file " + fileName + ": " + e.getMessage());
-                    }
-
-                } else {
-                    System.err.println("File does not match pattern: " + fileName);
-                }
-
-            });
-
-        }
-
-        System.out.println("\nSummary:");
-        System.out.println("Total files found: " + processedFiles[0]);
-        System.out.println("Files matching name pattern: " + matchingFiles[0]);
-
-        return processedFiles[0];
-
-    }
-
-    private static long verifyOutputFile(Path outputFile) throws IOException {
-        return Files.lines(outputFile).count();
-    }
+    private static final Scanner SCANNER = Controller.getSCANNER();
+    private static final String SEPARATOR = Controller.getSEPARATOR();
 
     /*
      * -----------------------------------------------------------------------
@@ -116,84 +19,122 @@ public class FileConcatenator {
      */
     public static void main(String[] args) {
 
-        Scanner scanner = new Scanner(System.in);
-        // Solicitar la ruta del directorio
-        System.out.println("Enter the directory path:");
-        // String directoryPath = ProgramaMultiplataforma.getCARPETAEJEMPLO();
-        String directoryPath = scanner.nextLine();
-
-        // Asegurarse de que la ruta de directorio esté bien formada
-        if (directoryPath.endsWith(File.separator)) {
-            directoryPath = directoryPath.substring(0, directoryPath.length() - 1); // Eliminar el separador final si lo tiene
-        }
-
-        // Solicitar la expresión regular para filtrar los archivos
-        System.out.println("Enter the regex pattern for file names:");
-        String fileRegex = ".*\\.txt$";
-        // String fileRegex = scanner.nextLine();
-
-        // Solicitar la expresión regular para filtrar el contenido
-        System.out.println("Enter the regex pattern for content:");
-        String contentRegex = ".*";
-        // String contentRegex = scanner.nextLine();
-
-        // Solicitar el nombre del archivo de salida
-        System.out.println("Enter the name of the output file (with .txt extension):");
-        String outputFileName = ProgramaMultiplataforma.getCARPETAEJEMPLO()+"output.txt";
-        // String outputFileName = scanner.nextLine();
-
-        // Validar que el nombre del archivo de salida tenga la extensión .txt
-        if (!outputFileName.endsWith(".txt")) {
-            System.out.println("The output file must have a .txt extension.");
-            return;
-        }
-
-        // Crear un archivo de salida con ruta absoluta
-        Path outputFilePath = Paths.get(outputFileName).toAbsolutePath();
-
         try {
 
-            if (Files.exists(outputFilePath)) {
-                Files.delete(outputFilePath); // Eliminar si ya existe
+            Controller.configurarUTF8Encoding();
+
+            // 1. Configuración con valores por defecto
+            String directoryPath = ProgramaMultiplataforma.getCARPETAEJEMPLO();
+
+            System.out.println("\nIntroduce el patrón para los nombres de archivo:");
+            String fileRegexInput = SCANNER.nextLine().trim();
+            String fileRegex = fileRegexInput.isEmpty() ? "archivo\\d+" : fileRegexInput;
+
+            System.out.println("Introduce el patrón para buscar errores:");
+            String contentRegexInput = SCANNER.nextLine().trim();
+            String contentRegex = contentRegexInput.isEmpty() ? ".*Error.*" : contentRegexInput;
+
+            System.out.println("Introduce el nombre para el archivo de errores:");
+            String errorsFileNameInput = SCANNER.nextLine().trim();
+            String errorsFileName = errorsFileNameInput.isEmpty() ? "errores_encontrados.txt" : errorsFileNameInput;
+
+            System.out.println("Introduce el nombre para el archivo combinado:");
+            String combinedFileNameInput = SCANNER.nextLine().trim();
+            String combinedFileName = combinedFileNameInput.isEmpty() ? "combined_output.txt" : combinedFileNameInput;
+
+            // 2. Preparar archivos de salida
+            Path errorsFile = Paths.get(directoryPath, errorsFileName);
+            Path combinedFile = Paths.get(directoryPath, combinedFileName);
+
+            // Eliminar archivos si ya existen
+            if (Files.exists(errorsFile)) {
+                Files.delete(errorsFile);
+            }
+            if (Files.exists(combinedFile)) {
+                Files.delete(combinedFile);
             }
 
-            Files.createFile(outputFilePath);
-            System.out.println("Created new output file: " + outputFilePath);
+            Files.createFile(errorsFile);
+            Files.createFile(combinedFile);
 
-        } catch (IOException e) {
-            System.err.println("Error creating the output file: " + e.getMessage());
-            return;
-        }
+            // 3. Procesamiento
+            System.out.println("Iniciando búsqueda...");
+            System.out.println("\nConfiguración usada:");
+            System.out.println("- Patrón archivos: " + fileRegex);
+            System.out.println("- Patrón errores: " + contentRegex);
+            System.out.println("- Archivo errores: " + errorsFileName);
+            System.out.println("- Archivo combinado: " + combinedFileName);
 
-        // Ejecutar la concatenación
-        try {
+            try (BufferedWriter errorsWriter = Files.newBufferedWriter(errorsFile); BufferedWriter combinedWriter = Files.newBufferedWriter(combinedFile)) {
 
-            int processedFiles = concatenateFiles(directoryPath, fileRegex, contentRegex, outputFilePath);
-            System.out.println("File concatenation completed. Processed " + processedFiles + " files.");
+                int totalFiles = 0;
+                int filesWithErrors = 0;
+                int totalErrors = 0;
 
-        } catch (IOException e) {
-            System.err.println("Error during concatenation: " + e.getMessage());
-            return;
-        }
+                for (File file : new File(directoryPath).listFiles()) {
 
-        // Verificar el contenido del archivo de salida
-        try {
+                    if (!file.isFile()) {
+                        continue;
+                    }
 
-            long lineCount = verifyOutputFile(outputFilePath);
+                    String fileName = file.getName();
+                    totalFiles++;
 
-            if (lineCount > 0) {
+                    // Saltar archivos de salida
+                    if (fileName.equals(errorsFileName) || fileName.equals(combinedFileName)) {
+                        continue;
+                    }
 
-                System.out.println("The output file was created successfully with " + lineCount + " lines.");
-                // Mostrar el contenido del archivo
-                System.out.println("\nOutput file contents:");
-                Files.lines(outputFilePath).forEach(System.out::println);
+                    // Verificar patrón del nombre (solo si se especificó un patrón)
+                    if (!fileRegex.isEmpty() && !fileName.matches(fileRegex)) {
+                        System.out.printf("\nArchivo %s no coincide con el patrón%n", fileName);
+                        continue;
+                    }
 
-            } else {
-                System.err.println("Warning: The output file is empty. No matching content found.");
+                    System.out.println("\nProcesando " + fileName + "...");
+                    List<String> lines = Files.readAllLines(file.toPath());
+                    boolean hasErrors = false;
+
+                    // Escribir todo el contenido en combined_output
+                    combinedWriter.write("=== Contenido de " + fileName + " ===\n");
+
+                    for (String line : lines) {
+
+                        combinedWriter.write(line + "\n");
+
+                        // Buscar errores
+                        if (line.matches(contentRegex)) {
+
+                            errorsWriter.write(String.format("[%s] %s%n", fileName, line));
+                            totalErrors++;
+                            hasErrors = true;
+                            System.out.println("! Error encontrado: " + line);
+
+                        }
+
+                    }
+
+                    combinedWriter.write("\n"); // Separador entre archivos
+
+                    if (hasErrors) {
+                        filesWithErrors++;
+                    }
+
+                }
+
+                // 4. Resultados
+                System.out.println("\nRESULTADOS:");
+                System.out.println("Total archivos: " + totalFiles);
+                System.out.println("Archivos con errores: " + filesWithErrors);
+                System.out.println("Total errores encontrados: " + totalErrors);
+                System.out.println("Errores guardados en: " + errorsFile.toAbsolutePath());
+                System.out.println("Contenido combinado guardado en: " + combinedFile.toAbsolutePath());
+                System.out.println("\n" + SEPARATOR);
+
             }
 
         } catch (IOException e) {
-            System.err.println("Error verifying output file: " + e.getMessage());
+            System.err.println("\nError: " + e.getMessage());
         }
 
     }
