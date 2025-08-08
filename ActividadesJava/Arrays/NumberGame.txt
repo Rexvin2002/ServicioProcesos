@@ -1,0 +1,73 @@
+# Juego de Números Únicos (1-100)
+
+## Descripción  
+Juego interactivo en Java que reta al usuario a introducir números únicos entre 1 y 100 hasta completar todos los posibles.
+
+## Autor  
+Kevin Gómez Valderas (2ºDAM)
+
+## Características principales
+- **Interfaz gráfica** mediante JOptionPane
+- **Seguimiento de números ingresados** usando un arreglo booleano
+- **Validación de entrada**: 
+  - Números entre 1-100
+  - Solo enteros válidos
+  - Detección de duplicados
+- **Contador progresivo** de números únicos ingresados
+- **Finalización automática** al completar todos los números
+
+## Flujo del juego
+1. **Inicialización**:
+   - Crea arreglo para rastrear números 1-100
+   - Inicia contador de números únicos en 0
+
+2. **Bucle principal**:
+   - Solicita número al usuario
+   - Valida entrada (cancelar, formato, rango)
+   - Verifica si el número es nuevo
+   - Actualiza estado y contador
+   - Muestra feedback al usuario
+
+3. **Finalización**:
+   - Cuando se ingresan todos los números (100 únicos)
+   - O cuando el usuario cancela
+
+## Requisitos
+- Java 8 o superior
+- Soporte para Swing (JOptionPane)
+
+## Instrucciones
+1. Compilar: `javac arrays/NumberGame.java`
+2. Ejecutar: `java arrays.NumberGame`
+
+## Ejemplo de juego
+```
+[Diálogo 1] Enter a number between 1 and 100: → 5
+[Diálogo 2] Number 5 entered successfully.
+[Diálogo 3] Enter a number between 1 and 100: → 5
+[Diálogo 4] The number 5 has already been entered.
+[Diálogo 5] Enter a number between 1 and 100: → 101
+[Diálogo 6] Please enter a number between 1 and 100.
+[Diálogo 7] Enter a number between 1 and 100: → (cancelar)
+[Diálogo 8] Game canceled! Thanks for playing.
+```
+
+## Mecánica avanzada
+- **Sistema anti-trampas**: Bloquea números repetidos
+- **Contador oculto**: Lleva cuenta interna de progreso
+- **Final épico**: Mensaje especial al completar el 100%
+
+## Posibles mejoras
+- Mostrar progreso (% completado)
+- Temporizador/contador de intentos
+- Sistema de puntuación
+- Guardar récords
+- Modo competitivo (2 jugadores)
+- Visualización gráfica de números ingresados
+
+## Ventajas didácticas
+- Excelente para aprender:
+  - Manejo de arreglos
+  - Validación de entrada
+  - Interacción con usuario
+  - Lógica de programación

@@ -1,0 +1,66 @@
+# Eliminador de Valores en Arreglos
+
+## Descripción
+Programa Java interactivo que permite eliminar valores específicos de un arreglo, creando un nuevo arreglo sin los elementos eliminados.
+
+## Autor
+Kevin Gómez Valderas (2ºDAM)
+
+## Características principales
+- Interfaz gráfica mediante JOptionPane
+- Manejo de arreglos de enteros
+- Eliminación de todos los elementos coincidentes con el valor especificado
+- Validación de entrada del usuario
+- Actualización dinámica del arreglo
+- Visualización del estado del arreglo en cada operación
+
+## Flujo del programa
+1. **Inicialización**:
+   - Crea un arreglo predefinido de números enteros
+   - Muestra el arreglo original
+
+2. **Bucle principal**:
+   - Solicita al usuario un valor a eliminar
+   - Valida la entrada (número entero válido)
+   - Verifica si el valor existe en el arreglo
+   - Crea un nuevo arreglo sin los elementos coincidentes
+   - Muestra el arreglo resultante
+   - Repite el proceso con el nuevo arreglo
+
+3. **Validaciones**:
+   - Manejo de diálogos cancelados
+   - Control de entradas no numéricas
+   - Verificación de valores existentes en el arreglo
+
+## Requisitos
+- Java 8 o superior
+- Biblioteca Swing (para JOptionPane)
+
+## Uso
+1. Compilar: `javac arrays/DeleteValueFromArray.java`
+2. Ejecutar: `java arrays/DeleteValueFromArray`
+
+## Ejemplo de uso
+```
+[Diálogo 1] Muestra arreglo original: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+[Diálogo 2] Enter the value to delete: 50
+[Diálogo 3] Muestra arreglo actualizado: [10, 20, 30, 40, 60, 70, 80, 90, 100]
+[Diálogo 4] Enter the value to delete: abc
+[Diálogo 5] Muestra mensaje: "Invalid input! Please enter a valid number."
+[Diálogo 6] Enter the value to delete: 110
+[Diálogo 7] Muestra mensaje: "The value 110 was not found in the array."
+```
+
+## Ventajas
+- Elimina todas las ocurrencias del valor especificado
+- Mantiene la integridad del arreglo (no deja espacios vacíos)
+- Interfaz simple e intuitiva
+- Manejo robusto de errores de entrada
+- Actualización visual del estado del arreglo
+
+## Mejoras posibles
+- Permitir al usuario introducir el arreglo inicial
+- Opción para eliminar por índice en lugar de por valor
+- Soporte para otros tipos de datos (decimales, cadenas)
+- Mostrar estadísticas de operaciones realizadas
+- Implementar interfaz gráfica más completa (JFrame)

@@ -1,0 +1,66 @@
+# Generador de Tabla Aleatoria con Suma
+
+## Descripción  
+Programa Java que genera una tabla de 10 números aleatorios entre 10 y 100, los ordena y calcula su suma total, mostrando los resultados mediante una interfaz gráfica.
+
+## Autor  
+Kevin Gómez Valderas (2ºDAM)
+
+## Características principales
+- **Generación aleatoria** de números entre 10-100
+- **Ordenamiento automático** de los valores
+- **Cálculo instantáneo** de la suma total
+- **Visualización clara** en cuadro de diálogo
+- **Uso eficiente** de:
+  - `Arrays.setAll()` para llenado
+  - `Arrays.sort()` para ordenamiento
+  - `Arrays.stream().sum()` para suma
+
+## Flujo del programa
+1. **Inicialización**:
+   - Crea arreglo de 10 elementos
+   - Prepara generador de números aleatorios
+
+2. **Procesamiento**:
+   - Llena el arreglo con valores 10-100
+   - Ordena los valores ascendentemente
+   - Calcula la suma total
+
+3. **Salida**:
+   - Muestra los valores ordenados
+   - Presenta el resultado de la suma
+   - Formato claro en un solo diálogo
+
+## Requisitos
+- Java 8 o superior
+- Biblioteca Swing (JOptionPane)
+
+## Uso
+1. Compilar: `javac arrays/RandomTable.java`
+2. Ejecutar: `java arrays.RandomTable`
+
+## Ejemplo de salida
+```
+Valores aleatorios en la tabla: [15, 23, 37, 42, 56, 61, 74, 85, 90, 98]
+Suma de los valores: 581
+```
+
+## Aspectos destacables
+- **Eficiencia**: Completa toda la operación en 3 líneas clave
+- **Legibilidad**: Código limpio y bien estructurado
+- **Funcionalidad completa**: Genera, ordena y suma automáticamente
+
+## Posibles mejoras
+- Permitir configurar tamaño del arreglo
+- Opción para establecer rango numérico
+- Mostrar estadísticas adicionales (promedio, mínimo, máximo)
+- Exportar resultados a archivo
+- Gráfico de distribución de valores
+- Opción para generar múltiples tablas
+
+## Valor educativo
+- Excelente ejemplo para aprender:
+  - Manipulación de arreglos con Java 8+
+  - Generación de números aleatorios
+  - Operaciones con streams de arrays
+  - Integración con interfaz gráfica básica

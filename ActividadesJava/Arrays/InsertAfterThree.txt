@@ -1,0 +1,69 @@
+# Insertar Elemento Después del Número 3
+
+## Descripción
+Programa Java que inserta un nuevo elemento (el número 4) inmediatamente después de la primera ocurrencia del número 3 en un arreglo ordenado.
+
+## Autor
+Kevin Gómez Valderas (2ºDAM)
+
+## Características principales
+- Operación sobre arreglos ordenados
+- Búsqueda eficiente con `Arrays.binarySearch()`
+- Inserción de elementos manteniendo el orden
+- Manejo de casos donde el elemento no existe
+- Creación de un nuevo arreglo con tamaño incrementado
+
+## Flujo del programa
+1. **Inicialización**:
+   - Crea un arreglo ordenado predefinido: `[1, 3, 5, 7, 9]`
+   
+2. **Búsqueda**:
+   - Localiza la posición del número 3 usando búsqueda binaria
+   - Verifica si el número existe en el arreglo
+
+3. **Inserción**:
+   - Crea un nuevo arreglo con capacidad aumentada
+   - Desplaza elementos para hacer espacio
+   - Inserta el valor 4 después del 3
+   - Muestra el resultado por consola
+
+4. **Manejo de errores**:
+   - Si el 3 no está presente, muestra mensaje de error
+
+## Requisitos
+- Java 8 o superior
+- No requiere dependencias externas
+
+## Uso
+1. Compilar: `javac arrays/InsertAfterThree.java`
+2. Ejecutar: `java arrays.InsertAfterThree`
+
+## Ejemplo de ejecución
+```
+Entrada: [1, 3, 5, 7, 9]
+Salida: Nuevo array: [1, 3, 4, 5, 7, 9]
+```
+
+## Caso de error
+```
+Entrada: [1, 2, 4, 5] (sin 3)
+Salida: El número 3 no se encontró en el array.
+```
+
+## Ventajas
+- Eficiencia en la búsqueda (O(log n))
+- Mantiene el orden del arreglo
+- Código claro y conciso
+- Manejo explícito del caso de error
+
+## Limitaciones
+- Solo inserta después de la primera ocurrencia del 3
+- Valor a insertar está hardcodeado (4)
+- Solo funciona con arreglos ordenados
+
+## Mejoras posibles
+- Permitir especificar el valor a buscar y a insertar
+- Insertar después de todas las ocurrencias
+- Convertir en método reutilizable
+- Añadir interfaz gráfica de usuario
+- Validar que el arreglo esté ordenado

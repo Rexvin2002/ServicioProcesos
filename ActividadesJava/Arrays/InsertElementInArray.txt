@@ -1,0 +1,57 @@
+# Insertar Elemento en Posición Específica de un Arreglo
+
+## Descripción
+Programa Java que inserta un nuevo elemento (99) en una posición específica (índice 5) de un arreglo de enteros, desplazando los elementos existentes.
+
+## Autor  
+Kevin Gómez Valderas (2ºDAM)
+
+## Características principales
+- Operación sobre arreglos de tamaño fijo
+- Inserción en posición específica
+- Desplazamiento de elementos para hacer espacio
+- Creación de nuevo arreglo con capacidad aumentada
+- Visualización del resultado por consola
+
+## Flujo del programa
+1. **Inicialización**:
+   - Crea arreglo original: `[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]`
+   - Crea nuevo arreglo con tamaño +1
+
+2. **Inserción**:
+   - Desplaza elementos desde la posición 5 hacia la derecha
+   - Inserta el valor 99 en la posición 5
+   - Muestra el arreglo resultante
+
+## Requisitos
+- Java 8 o superior
+- No requiere dependencias externas
+
+## Uso
+1. Compilar: `javac arrays/InsertElementInArray.java`
+2. Ejecutar: `java arrays.InsertElementInArray`
+
+## Ejemplo de ejecución
+```
+Entrada: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]  
+Salida: Nuevo array: [0, 1, 2, 3, 4, 99, 5, 6, 7, 8, 9]
+```
+
+## Ventajas
+- Mantiene todos los elementos originales
+- Simple y directo
+- No modifica el arreglo original
+- Eficiente para operaciones puntuales
+
+## Limitaciones
+- Posición de inserción está hardcodeada (5)
+- Valor a insertar está hardcodeado (99)
+- No valida posición de inserción
+
+## Mejoras posibles
+- Permitir especificar posición y valor dinámicamente
+- Validar que la posición esté dentro de los límites
+- Convertir en método reutilizable
+- Añadir interfaz gráfica de usuario
+- Soporte para múltiples inserciones
+- Versión que modifique el arreglo original en lugar de crear uno nuevo

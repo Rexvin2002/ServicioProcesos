@@ -1,0 +1,64 @@
+# Eliminador de Elementos en Arreglos Ordenados
+
+## Descripción
+Programa Java interactivo que permite eliminar elementos por valor de un arreglo ordenado, manteniendo el orden original.
+
+## Autor
+Kevin Gómez Valderas (2ºDAM)
+
+## Características principales
+- Interfaz gráfica amigable con diálogos personalizados
+- Manejo de arreglos ordenados de enteros
+- Eliminación de elementos por valor (no por índice)
+- Validación de entrada del usuario
+- Actualización dinámica del arreglo
+- Personalización con el nombre del usuario
+
+## Flujo del programa
+1. **Inicio**:
+   - Solicita el nombre del usuario
+   - Inicializa un arreglo ordenado predefinido
+   - Muestra el arreglo original
+
+2. **Bucle principal**:
+   - Pide el valor a eliminar
+   - Valida si el valor existe en el arreglo
+   - Crea un nuevo arreglo sin el elemento eliminado
+   - Muestra el arreglo actualizado
+   - Permite continuar eliminando elementos
+
+3. **Validaciones**:
+   - Manejo de diálogos cancelados
+   - Control de entradas no numéricas
+   - Verificación de valores existentes
+
+## Requisitos
+- Java 8 o superior
+- Soporte para Swing (JOptionPane)
+
+## Uso
+1. Compilar: `javac arrays/DeleteElementFromSortedArray.java`
+2. Ejecutar: `java arrays/DeleteElementFromSortedArray`
+
+## Ejemplo de uso
+```
+[Diálogo 1] ¿Cómo te llamas? → Juan
+[Diálogo 2] Muestra arreglo original: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+[Diálogo 3] Enter the value to delete: 50
+[Diálogo 4] Muestra arreglo actualizado: [10, 20, 30, 40, 60, 70, 80, 90, 100]
+[Diálogo 5] Enter the value to delete: 110
+[Diálogo 6] Muestra mensaje: "The value 110 was not found in the array."
+```
+
+## Ventajas
+- Interfaz personalizada con el nombre del usuario
+- Eliminación por valor (más intuitivo que por índice)
+- Mantiene el orden del arreglo después de cada eliminación
+- Bucle continuo para múltiples eliminaciones
+- Robustez ante entradas inválidas
+
+## Mejoras posibles
+- Permitir reintroducir el arreglo inicial
+- Opción para ver estadísticas (cantidad de eliminaciones)
+- Soporte para valores decimales
+- Visualización gráfica del arreglo

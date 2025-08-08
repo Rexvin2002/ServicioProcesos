@@ -1,0 +1,65 @@
+# Eliminador de Elementos en Arreglos
+
+## Descripción
+Programa Java que permite eliminar un elemento específico de un arreglo de enteros, mostrando el arreglo original y el modificado.
+
+## Autor
+Kevin Gómez Valderas (2ºDAM)
+
+## Características principales
+- Trabaja con un arreglo predefinido de 10 elementos numéricos
+- Muestra el arreglo original usando `Arrays.toString()`
+- Permite seleccionar qué elemento eliminar mediante su índice
+- Crea un nuevo arreglo sin el elemento seleccionado
+- Incluye manejo de errores para entradas inválidas
+
+## Flujo del programa
+1. **Inicialización**:
+   - Crea un arreglo con valores {10, 20, 30,..., 100}
+   - Muestra el arreglo original en un cuadro de diálogo
+
+2. **Interacción con el usuario**:
+   - Solicita al usuario que ingrese el índice del elemento a eliminar (0-9)
+   - Valida si el usuario canceló la operación
+   - Verifica que el índice sea numérico y esté en rango válido
+
+3. **Procesamiento**:
+   - Crea un nuevo arreglo con tamaño reducido
+   - Copia todos los elementos excepto el que se desea eliminar
+   - Muestra el arreglo resultante
+
+## Requisitos
+- Java 8 o superior
+- Entorno con soporte para GUI (JOptionPane)
+
+## Uso
+1. Compilar: `javac arrays/DeleteElementFromArray.java`
+2. Ejecutar: `java arrays/DeleteElementFromArray`
+
+## Ejemplo de interacción
+```
+[Cuadro 1] Muestra arreglo original: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+[Cuadro 2] Solicita índice a eliminar (0-9)
+Usuario ingresa: 4
+[Cuadro 3] Muestra arreglo actualizado: [10, 20, 30, 40, 60, 70, 80, 90, 100]
+```
+
+## Validaciones
+- Manejo de clic en "Cancelar"
+- Verificación de índices fuera de rango
+- Control de entradas no numéricas
+
+## Ventajas
+- Interfaz gráfica sencilla
+- Código claro y estructurado
+- Buen manejo de casos excepcionales
+
+## Limitaciones
+- No permite eliminar por valor (solo por índice)
+- El arreglo original es fijo (no editable por usuario)
+- Crea un nuevo arreglo en lugar de modificar el existente
+
+## Posibles mejoras
+- Opción para eliminar por valor del elemento
+- Permitir al usuario definir el arreglo inicial
+- Mostrar más información sobre el elemento eliminado

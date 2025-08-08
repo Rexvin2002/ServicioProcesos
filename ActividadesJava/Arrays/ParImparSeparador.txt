@@ -1,0 +1,60 @@
+# Separador de Números Pares e Impares
+
+## Descripción
+Programa Java interactivo que recibe números enteros del usuario, los separa en pares e impares, los ordena y muestra los resultados.
+
+## Autor
+Kevin Gómez Valderas (2ºDAM)
+
+## Características principales
+- **Entrada dinámica**: Permite ingresar cantidad variable de números
+- **Validación robusta**: Maneja entradas no numéricas y valores negativos como señal de fin
+- **Separación eficiente**: Clasifica números en pares e impares
+- **Ordenamiento**: Ordena ambos conjuntos de números
+- **Doble salida**: Muestra resultados en interfaz gráfica y consola
+
+## Flujo del programa
+1. **Recolección de datos**:
+   - Bucle infinito para entrada de números
+   - Finaliza con número negativo o al cancelar
+   - Almacena en ArrayList para flexibilidad
+
+2. **Procesamiento**:
+   - Convierte ArrayList a array primitivo
+   - Crea arrays temporales para pares/impares
+   - Clasifica números según paridad
+   - Redimensiona arrays al tamaño exacto
+   - Ordena ambos conjuntos con `Arrays.sort()`
+
+3. **Salida**:
+   - Muestra resultados en diálogo gráfico
+   - Imprime también en consola para registro
+
+## Uso
+1. Compilar: `javac arrays/ParImparSeparador.java`
+2. Ejecutar: `java arrays.ParImparSeparador`
+
+## Ejemplo de interacción
+```
+[Diálogo 1] Introduce un número entero (negativo para finalizar): 5
+[Diálogo 2] Introduce un número entero (negativo para finalizar): 2
+[Diálogo 3] Introduce un número entero (negativo para finalizar): 8
+[Diálogo 4] Introduce un número entero (negativo para finalizar): 3
+[Diálogo 5] Introduce un número entero (negativo para finalizar): -1
+
+[Resultado]
+Números pares: [2, 8]
+Números impares: [3, 5]
+```
+
+## Ventajas
+- **Flexibilidad**: Acepta cualquier cantidad de números
+- **Robustez**: Manejo profesional de errores
+- **Eficiencia**: Uso óptimo de memoria con redimensión
+- **Versatilidad**: Salida gráfica y por consola
+
+## Mejoras posibles
+- Limitar cantidad máxima de números
+- Opción para ingresar números decimales
+- Exportar resultados a archivo
+- Gráficos de distribución

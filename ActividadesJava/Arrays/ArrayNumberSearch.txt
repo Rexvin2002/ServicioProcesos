@@ -1,0 +1,61 @@
+# Buscador de Números en Arreglos
+
+## Descripción
+Programa Java que permite buscar un número específico dentro de un arreglo predefinido, utilizando búsqueda binaria para mayor eficiencia.
+
+## Autor
+Kevin Gómez Valderas (2ºDAM)
+
+## Características principales
+- Utiliza un arreglo predefinido de números enteros
+- Implementa búsqueda binaria mediante `Arrays.binarySearch()`
+- Interfaz gráfica con JOptionPane para interacción con el usuario
+- Validación de entrada del usuario
+
+## Flujo del programa
+1. **Inicialización**: 
+   - Crea un arreglo con valores {3, 7, 10}
+   - Ordena el arreglo (requisito para la búsqueda binaria)
+
+2. **Interacción con el usuario**:
+   - Muestra un cuadro de diálogo para ingresar un número
+   - Convierte la entrada a valor numérico
+
+3. **Búsqueda**:
+   - Realiza búsqueda binaria en el arreglo
+   - Informa si el número existe o no en el arreglo
+   - Repite el proceso hasta que se encuentre un número válido
+
+## Requisitos
+- Java 8 o superior
+- No se requieren librerías externas
+
+## Uso
+1. Compilar: `javac arrays/ArrayNumberSearch.java`
+2. Ejecutar: `java arrays/ArrayNumberSearch`
+
+## Personalización
+- Modificar el arreglo `table` para cambiar los valores de búsqueda
+- Ajustar el rango de números válidos (actualmente 1-10)
+- Cambiar los mensajes de diálogo según necesidades
+
+## Ejemplo de interacción
+```
+Cuadro de diálogo: "Introduce un número entre 1 y 10"
+Usuario ingresa: 5
+Resultado: "El número 5 NO está en la tabla."
+
+Usuario ingresa: 7
+Resultado: "El número 7 está en la tabla."
+[Programa termina]
+```
+
+## Ventajas
+- Eficiencia: La búsqueda binaria tiene complejidad O(log n)
+- Robustez: Manejo básico de entrada del usuario
+- Interfaz amigable: Cuadros de diálogo gráficos
+
+## Limitaciones
+- Solo funciona con arreglos de enteros
+- Requiere que el arreglo esté ordenado previamente
+- Validación básica de entrada (no maneja todos los casos de error)

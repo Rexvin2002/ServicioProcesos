@@ -1,0 +1,58 @@
+# Comparador de Arreglos Numéricos
+
+## Descripción
+Programa Java que permite comparar dos arreglos de números decimales y determinar si son idénticos o encontrar el primer índice donde difieren.
+
+## Autor
+Kevin Gómez Valderas (2ºDAM)
+
+## Características principales
+- Permite ingresar dos conjuntos de 5 números decimales cada uno
+- Utiliza el método `Arrays.mismatch()` para comparación eficiente
+- Interfaz gráfica mediante `JOptionPane` para interacción con el usuario
+- Identifica la primera posición donde los arreglos difieren
+
+## Flujo del programa
+1. **Entrada de datos**:
+   - Crea dos arreglos de tipo `double` con capacidad para 5 elementos
+   - Solicita al usuario ingresar valores para ambos arreglos mediante cuadros de diálogo
+
+2. **Comparación**:
+   - Usa `Arrays.mismatch()` para encontrar la primera discrepancia
+   - Retorna -1 si los arreglos son idénticos
+
+3. **Resultado**:
+   - Muestra mensaje indicando si los arreglos son iguales
+   - O muestra el índice de la primera diferencia encontrada
+
+## Requisitos
+- Java 8 o superior (método `mismatch()` requiere Java 9+)
+- Entorno de ejecución con soporte para GUI (JOptionPane)
+
+## Uso
+1. Compilar: `javac arrays/CompareArrays.java`
+2. Ejecutar: `java arrays/CompareArrays`
+
+## Ejemplo de interacción
+```
+[Cuadro 1] Introduce un número decimal para el primer array (1/5): 1.5
+[Cuadro 2] Introduce un número decimal para el segundo array (1/5): 1.5
+...
+[Cuadro 10] Introduce un número decimal para el segundo array (5/5): 2.1
+
+Si hay diferencia:
+"Los dos arrays son diferentes en el índice: 3"
+
+Si son iguales:
+"Los dos arrays son iguales."
+```
+
+## Ventajas
+- Método eficiente para comparación de arreglos
+- Interfaz gráfica amigable
+- Manejo directo de números decimales
+
+## Mejoras posibles
+- Validación de entrada del usuario
+- Opción para comparar arreglos de diferentes longitudes
+- Visualización completa de ambos arreglos en el resultado
